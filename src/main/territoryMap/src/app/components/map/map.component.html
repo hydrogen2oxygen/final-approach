@@ -1,0 +1,62 @@
+<div id="map" style="top: 0px; left:0px;width: 100%; height: 100%; position:fixed; background-color: #125699"></div>
+<div *ngIf="!map" style="text-align: center; background-color: #ffbb00; top:0px; left:0px; position: fixed;">
+  <h1>{{territoryData.number}} {{territoryData.name}}</h1>
+  <hr>
+  <h2>{{territoryData.assignDate | date:'dd.MM.yyyy'}} - {{territoryData.returnDate | date:'dd.MM.yyyy'}}</h2>
+  <hr>
+  <h3>Il territorio è stato ridistribuito.</h3>
+</div>
+
+<button *ngIf="map" style="top: 1rem; right:1rem; position:fixed;"
+        class="btn btn-sm btn-primary" type="button"
+        (click)="openStreetsOverview()">
+  <i-bs
+    name="journal-bookmark-fill"
+    class="text-white"
+    width="1.5rem"
+    height="1.5rem">
+  </i-bs>
+</button>
+
+<button *ngIf="map" style="bottom: 1rem; right:1rem; position:fixed;"
+        class="btn btn-sm btn-primary" type="button"
+        (click)="centerMap()">
+  <i-bs
+    name="map"
+    class="text-white"
+    width="1.5rem"
+    height="1.5rem">
+  </i-bs>
+</button>
+
+<button *ngIf="map" style="bottom: 3.5rem; right:1rem; position:fixed;"
+        class="btn btn-sm btn-primary" type="button"
+        (click)="switchLayer()">
+  {{currentLayer}}
+</button>
+
+<a *ngIf="map"
+   style="bottom: 5.5rem; right:1rem; position:fixed;"
+   class="btn btn-sm btn-primary"
+   href="https://www.google.com/maps/@{{getCoordinates(map.getView().getCenter()).toString().split(',')[1]}},{{getCoordinates(map.getView().getCenter()).toString().split(',')[0]}},{{map.getView().getZoom()}}z"
+   target="googleMaps">GMaps</a>
+
+<div *ngIf="showMessageDialog" style="width: 100%; height: 100%; top:4rem; left:0px; position: fixed; background-color: #4e555b">
+  <div class="input-group mb-3">
+    <input (keyup)="generateMessageLink()" type="text" class="form-control" placeholder="TEXT" aria-label="TEXT" aria-describedby="basic-addon2" [formControl]="textMessage">
+    <span class="input-group-text btn-success" id="basic-addon2"><a href="{{dynamicUrl}}">SEND</a></span>
+  </div>
+</div>
+<div *ngIf="showMenu" style="width: 100%; height: 100%; top:4rem; left:0px; position: fixed; background-color: #4e555b">
+  <table class="table table-sm">
+    <tr *ngFor="let street of territoryData.streetList" style="background-color: white">
+      <td><input type="checkbox"/></td>
+      <td>{{street.streetName}}</td>
+    </tr>
+  </table>
+</div>
+<div *ngIf="message" class="container" (click)="removeMessage()">
+  <div class="wrap_text">
+      {{message}}
+  </div>
+</div>
