@@ -31,6 +31,7 @@ public class DatabaseService {
     private Nitrite db;
     private ObjectRepository<Congregation> congregationOR;
     private ObjectRepository<MapDesign> mapDesignOR;
+    private ObjectRepository<Settings> settingsOR;
     private ObjectMapper objectMapper;
     private String databaseName = "territory.db";
 
@@ -46,6 +47,7 @@ public class DatabaseService {
 
         congregationOR = db.getRepository(Congregation.class);
         mapDesignOR = db.getRepository(MapDesign.class);
+        settingsOR = db.getRepository(Settings.class);
         objectMapper = new ObjectMapper();
     }
 
@@ -68,6 +70,21 @@ public class DatabaseService {
                 e.printStackTrace();
             }
         }
+    }
+
+    public Settings loadSettings() {
+
+        if (settingsOR.find().size() == 0) {
+            Settings settings = new Settings();
+            settingsOR.insert(settings);
+        }
+
+        return settingsOR.find().firstOrDefault();
+    }
+
+    public void saveSettings(Settings settings) {
+
+        settingsOR.update(settings);
     }
 
     public Congregation loadCongregation() {
