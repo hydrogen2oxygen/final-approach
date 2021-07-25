@@ -15,6 +15,7 @@ import {NgxBootstrapIconsModule, allIcons} from 'ngx-bootstrap-icons';
 import {DesignerComponent} from './components/designer/designer.component';
 import {ToastrModule} from "ngx-toastr";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import { SettingsComponent } from './components/settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
     TerritoryDetailComponent,
     ManageGroupMemberComponent,
     MapsCollectionComponent,
-    DesignerComponent
+    DesignerComponent,
+    SettingsComponent
   ],
   imports: [
     BrowserModule,

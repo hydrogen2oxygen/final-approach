@@ -4,11 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import de.pietro.lusso.territory.domain.*;
+import de.pietro.lusso.territory.utils.SettingsInitializer;
 import org.apache.commons.io.FileUtils;
 import org.dizitart.no2.Nitrite;
 import org.dizitart.no2.objects.ObjectRepository;
 import org.dizitart.no2.tool.Exporter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -20,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
+@DependsOn("ftpService")
 public class DatabaseService {
 
     @Autowired
@@ -79,11 +83,13 @@ public class DatabaseService {
             settingsOR.insert(settings);
         }
 
-        return settingsOR.find().firstOrDefault();
+        Settings settings = settingsOR.find().firstOrDefault();
+        SettingsInitializer.init(settings);
+
+        return settings;
     }
 
     public void saveSettings(Settings settings) {
-
         settingsOR.update(settings);
     }
 

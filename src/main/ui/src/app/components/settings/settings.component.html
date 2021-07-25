@@ -1,0 +1,9 @@
+<p>settings works!</p>
+<div class="form-inline">
+  <div class="form-group mb-2">
+    <label for="ftpUser" class="sr-only">FTP USER</label>
+    <input type="text" class="form-control" id="ftpUser" placeholder="ftpUser" [formControl]="ftpUser">
+  </div>
+</div>
+<hr>
+<button type="submit" class="btn btn-success mb-2" style="margin-left: 0.2rem" (click)="save()">SAVE SETTINGS</button>

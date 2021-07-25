@@ -1,33 +1,42 @@
 package de.pietro.lusso.territory.services;
 
 import com.jcraft.jsch.*;
+import de.pietro.lusso.territory.domain.Settings;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Map;
 import java.util.Vector;
 
 @Service
 public class FtpService {
 
-    @Value("${ftp.user}")
     private String ftpUser;
-
-    @Value("${ftp.password}")
     private String ftpPassword;
-
-    @Value("${ftp.host}")
     private String ftpHost;
-
-    @Value("${ftp.port}")
     private Integer ftpPort;
-
-    @Value("${ssh.knownHosts}")
     private String knownHosts;
-
-    @Value("${ftp.rootPath}")
     private String rootPath;
+
+    @Autowired
+    private DatabaseService databaseService;
+
+    @PostConstruct
+    public void init() {
+        Map<String,String> s = databaseService.loadSettings().getSettings();
+        ftpUser = s.get("ftp.user");
+        ftpPassword = s.get("ftp.password");
+        ftpHost = s.get("ftp.host");
+        try {
+            ftpPort = Integer.valueOf(s.get("ftp.port"));
+        } catch (Exception e) {}
+        knownHosts = s.get("ftp.knownHosts");
+        rootPath = s.get("ftp.rootPath");
+    }
 
     public Vector list(String path) throws JSchException, SftpException {
 
@@ -63,7 +72,7 @@ public class FtpService {
         JSch jsch = new JSch();
 
         jsch.setKnownHosts(knownHosts);
-        Session jschSession = jsch.getSession(ftpUser, ftpHost);
+        Session jschSession = jsch.getSession(ftpUser, ftpHost, ftpPort);
         java.util.Properties config = new java.util.Properties();
         config.put("StrictHostKeyChecking", "no");
         jschSession.setConfig(config);
@@ -89,5 +98,13 @@ public class FtpService {
 
     public void setFtpPort(Integer ftpPort) {
         this.ftpPort = ftpPort;
+    }
+
+    public void setKnownHosts(String knownHosts) {
+        this.knownHosts = knownHosts;
+    }
+
+    public void setRootPath(String rootPath) {
+        this.rootPath = rootPath;
     }
 }
