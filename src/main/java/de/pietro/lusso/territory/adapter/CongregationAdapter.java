@@ -61,10 +61,10 @@ public class CongregationAdapter {
     }
 
     @RequestMapping(value = "territoryImage/{number}", method = RequestMethod.GET)
-    public void getImageAsByteArray(@PathVariable Integer number, HttpServletResponse response) throws IOException {
+    public void getTerritoryImageAsByteArray(@PathVariable String number, HttpServletResponse response) throws IOException {
 
         response.setContentType(MediaType.IMAGE_JPEG_VALUE);
-        BufferedImage image = ImageIO.read(new File("Cartine/territory_map_" + number + ".jpg"));
+        BufferedImage image = ImageIO.read(new File("Cartine/" + number + ".jpg"));
         ImageIO.write(image, "PNG", response.getOutputStream());
     }
 
@@ -74,7 +74,7 @@ public class CongregationAdapter {
     }
 
     @PostMapping("exportTerritoryData/{number}")
-    public void exportTerritoryData(@PathVariable Integer number) throws IOException, JSchException, SftpException {
+    public void exportTerritoryData(@PathVariable String number) throws IOException, JSchException, SftpException {
         databaseService.exportTerritoryData(number);
     }
 

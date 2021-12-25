@@ -107,7 +107,7 @@ public class DatabaseService {
         Collections.sort(territoryList, new Comparator<Territory>() {
             @Override
             public int compare(Territory o1, Territory o2) {
-                return o1.getNumber() - o2.getNumber();
+                return o1.getNumber().compareTo(o2.getNumber());
             }
         });
 
@@ -192,7 +192,7 @@ public class DatabaseService {
             @Override
             public int compare(TerritoryMap o1, TerritoryMap o2) {
 
-                return o1.getTerritoryNumber() - o2.getTerritoryNumber();
+                return o1.getTerritoryNumber().compareTo(o2.getTerritoryNumber());
             }
         });
 
@@ -226,7 +226,7 @@ public class DatabaseService {
         exporter.exportTo(schemaFile);
     }
 
-    public void setActiveTerritory(Integer number, String name) {
+    public void setActiveTerritory(String number, String name) {
 
         Congregation congregation = loadCongregation();
         Territory territory = getTerritoryByNumber(number);
@@ -253,7 +253,7 @@ public class DatabaseService {
         saveCongregation(congregation);
     }
 
-    private void setTerritoryMapActive(Integer number) {
+    private void setTerritoryMapActive(String number) {
 
         MapDesign mapDesign = loadMapDesign();
 
@@ -266,16 +266,16 @@ public class DatabaseService {
         saveMapDesign(mapDesign);
     }
 
-    private Territory getTerritoryByNumber(final Congregation congregation, Integer number) {
+    private Territory getTerritoryByNumber(final Congregation congregation, String number) {
 
         for (Territory territory : congregation.getTerritoryList()) {
-            if (territory.getNumber() == number) return territory;
+            if (territory.getNumber().equals(number)) return territory;
         }
 
         return null;
     }
 
-    private Territory getTerritoryByNumber(Integer number) {
+    private Territory getTerritoryByNumber(String number) {
 
         Congregation congregation = loadCongregation();
 
@@ -286,7 +286,7 @@ public class DatabaseService {
         return null;
     }
 
-    public TerritoryMap getTerritoryMapByNumber(Integer number) {
+    public TerritoryMap getTerritoryMapByNumber(String number) {
 
         MapDesign mapDesign = loadMapDesign();
 
@@ -297,9 +297,9 @@ public class DatabaseService {
         return null;
     }
 
-    private List<Integer> getTerritoryNumbers(Congregation congregation) {
+    private List<String> getTerritoryNumbers(Congregation congregation) {
 
-        List<Integer> territoryNumbers = new ArrayList<>();
+        List<String> territoryNumbers = new ArrayList<>();
 
         for (Territory territory : congregation.getTerritoryList()) {
             territoryNumbers.add(territory.getNumber());
@@ -322,7 +322,7 @@ public class DatabaseService {
      * <p>If something goes wrong with the upload, the local folder has a copy of all data.</p>
      * @param number
      */
-    public void exportTerritoryData(Integer number, boolean onlyRepair) throws IOException, SftpException, JSchException {
+    public void exportTerritoryData(String number, boolean onlyRepair) throws IOException, SftpException, JSchException {
         // Load the territory and the preacher assigned to it
         Map<String, UUID> linkedTerritories = new HashMap<>();
         Congregation congregation = loadCongregation();
@@ -411,7 +411,7 @@ public class DatabaseService {
         }
     }
 
-    public void exportTerritoryData(Integer number) throws IOException, SftpException, JSchException {
+    public void exportTerritoryData(String number) throws IOException, SftpException, JSchException {
         exportTerritoryData(number,false);
     }
 
@@ -537,7 +537,7 @@ public class DatabaseService {
 
                 StringBuilder territoryList = new StringBuilder();
 
-                for (Integer number : preacher.getTerritoryListNumbers()) {
+                for (String number : preacher.getTerritoryListNumbers()) {
                     if (territoryList.length() > 0) {
                         territoryList.append(",");
                     }
@@ -565,5 +565,44 @@ public class DatabaseService {
         }
 
         return result;
+    }
+
+    public void importTerritoriesFromText(String filePath) throws IOException {
+
+        Congregation congregation = loadCongregation();
+        File file = new File(filePath);
+
+        List<String> lines = FileUtils.readLines(file, "UTF-8");
+
+        for (String line : lines) {
+
+            if (line == null || line.trim().length() == 0) continue;
+
+            String parts[] = line.split(" ");
+
+            if (parts.length < 2) continue;
+
+            String number = parts[0];
+            String name = "";
+
+            for (int i = 1; i< parts.length; i++) {
+                name = name + " " + parts[i];
+            }
+
+            Territory territory = new Territory();
+            territory.setNumber(number);
+            territory.setName(name.trim());
+            // First entry assign to congregation
+            RegistryEntry registryEntry = new RegistryEntry();
+            registryEntry.setAssignDate(Calendar.getInstance().getTime());
+            Preacher preacher = new Preacher();
+            preacher.setName("Congregazione");
+            registryEntry.setPreacher(preacher);
+            territory.getRegistryEntryList().add(registryEntry);
+
+            congregation.getTerritoryList().add(territory);
+        }
+
+        saveCongregation(congregation);
     }
 }

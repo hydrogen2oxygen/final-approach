@@ -16,6 +16,7 @@ import {DesignerComponent} from './components/designer/designer.component';
 import {ToastrModule} from "ngx-toastr";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import { SettingsComponent } from './components/settings/settings.component';
+import { UtilitiesComponent } from './components/utilities/utilities.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { SettingsComponent } from './components/settings/settings.component';
     ManageGroupMemberComponent,
     MapsCollectionComponent,
     DesignerComponent,
-    SettingsComponent
+    SettingsComponent,
+    UtilitiesComponent
   ],
   imports: [
     BrowserModule,

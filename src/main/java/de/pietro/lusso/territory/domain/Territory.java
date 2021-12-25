@@ -14,7 +14,7 @@ public class Territory implements Serializable  {
      * The old JSON will be set to inactive.
      */
     private UUID uuid;
-    private int number;
+    private String number;
     private String name;
     private int entryCounts = 0;
     private Date date;
@@ -58,11 +58,11 @@ public class Territory implements Serializable  {
         this.date = date;
     }
 
-    public int getNumber() {
+    public String getNumber() {
         return number;
     }
 
-    public void setNumber(int number) {
+    public void setNumber(String number) {
         this.number = number;
     }
 

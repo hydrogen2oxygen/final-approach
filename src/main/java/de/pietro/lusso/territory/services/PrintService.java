@@ -110,7 +110,7 @@ public class PrintService {
         List<BufferedImage> territoryImages = new ArrayList<>();
 
         for (Territory territory : territoryList) {
-            File imageFile = new File("Cartine/territory_map_" + territory.getNumber() + ".jpg");
+            File imageFile = new File("Cartine/" + territory.getNumber() + ".jpg");
             if (!imageFile.exists()) continue;
             BufferedImage bufferedImage = ImageIO.read(imageFile);
             territoryImages.add(bufferedImage);
@@ -258,7 +258,7 @@ public class PrintService {
     }
 
     public void printCongregation(Congregation congregation) throws Exception {
-        Map<Integer, String> territoryMap = readTerritoryMap(congregation);
+        Map<String, String> territoryMap = readTerritoryMap(congregation);
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yy");
         Document document = new Document(PageSize.A4, 10f, 10f, 10f, 10f);
 
@@ -271,7 +271,7 @@ public class PrintService {
         PdfWriter.getInstance(document, new FileOutputStream("target/territories.pdf"));
 
         document.open();
-        Map<Integer,List<RegistryEntry>> registryEntriesMap = new HashMap<>();
+        Map<String,List<RegistryEntry>> registryEntriesMap = new HashMap<>();
 
         for (Territory territory : congregation.getTerritoryList()) {
             if (territory.isArchive()) continue;
@@ -298,19 +298,19 @@ public class PrintService {
             }
         });
 
-        Map<Integer,Integer> countTerritoriesRegistries = new HashMap<>();
+        Map<String,Integer> countTerritoriesRegistries = new HashMap<>();
 
-        List<Integer> territoryNumbers = new ArrayList<>(registryEntriesMap.keySet());
+        List<String> territoryNumbers = new ArrayList<>(registryEntriesMap.keySet());
         Collections.sort(territoryNumbers);
 
-        List<List<Integer>> subSets = ListUtils.partition(territoryNumbers, 5);
+        List<List<String>> subSets = ListUtils.partition(territoryNumbers, 5);
 
-        for (List<Integer> subSet : subSets) {
+        for (List<String> subSet : subSets) {
 
             PdfPTable table = new PdfPTable(subSet.size());
             table.setWidthPercentage(100f);
 
-            for (Integer territoryNumber : subSet) {
+            for (String territoryNumber : subSet) {
 
                 PdfPCell header = new PdfPCell();
                 header.setBackgroundColor(new BaseColor(153, 231, 255));
@@ -324,7 +324,7 @@ public class PrintService {
 
                 boolean cellAdded = false;
 
-                for (Integer territoryNumber : subSet) {
+                for (String territoryNumber : subSet) {
 
                     System.out.println(territoryNumber + " " + territoryMap.get(territoryNumber));
 
@@ -467,9 +467,9 @@ public class PrintService {
         //setTableHeader(table, "Territori TOP 20");
         //setTableHeader(table, "Proclamatori senza un territorio");
 
-        LinkedHashMap<Integer, Integer> sortedCountTerritories = sortHashMapByValues(countTerritoriesRegistries);
+        LinkedHashMap<String, Integer> sortedCountTerritories = sortHashMapByValues(countTerritoriesRegistries);
         int y = 0;
-        for (Integer territoryNumber : sortedCountTerritories.keySet()) {
+        for (String territoryNumber : sortedCountTerritories.keySet()) {
             String territoryName = territoryNumber + " " + territoryMap.get(territoryNumber);
             setTableValue(table, territoryName + " - " + sortedCountTerritories.get(territoryNumber), new BaseColor(255, 167, 94));
 
@@ -541,7 +541,7 @@ public class PrintService {
         return newEntryList;
     }
 
-    private Territory generateTerritoryFromData(Map<Integer, String> territoryMap, RegistryEntry entry) {
+    private Territory generateTerritoryFromData(Map<String, String> territoryMap, RegistryEntry entry) {
         Territory territory = new Territory();
         territory.setNumber(entry.getTerritoryNumber());
         territory.setName(territoryMap.get(entry.getTerritoryNumber()));
@@ -549,23 +549,23 @@ public class PrintService {
         return territory;
     }
 
-    private LinkedHashMap<Integer, Integer> sortHashMapByValues(
-            Map<Integer, Integer> passedMap) {
-        List<Integer> mapKeys = new ArrayList<>(passedMap.keySet());
+    private LinkedHashMap<String, Integer> sortHashMapByValues(
+            Map<String, Integer> passedMap) {
+        List<String> mapKeys = new ArrayList<>(passedMap.keySet());
         List<Integer> mapValues = new ArrayList<>(passedMap.values());
         Collections.sort(mapValues);
         Collections.sort(mapKeys);
 
-        LinkedHashMap<Integer, Integer> sortedMap =
+        LinkedHashMap<String, Integer> sortedMap =
                 new LinkedHashMap<>();
 
         Iterator<Integer> valueIt = mapValues.iterator();
         while (valueIt.hasNext()) {
             Integer val = valueIt.next();
-            Iterator<Integer> keyIt = mapKeys.iterator();
+            Iterator<String> keyIt = mapKeys.iterator();
 
             while (keyIt.hasNext()) {
-                Integer key = keyIt.next();
+                String key = keyIt.next();
                 Integer comp1 = passedMap.get(key);
                 Integer comp2 = val;
 
@@ -616,9 +616,9 @@ public class PrintService {
         return territoryMap;
     }
 
-    private Map<Integer, String> readTerritoryMap(Congregation congregation) throws IOException {
+    private Map<String, String> readTerritoryMap(Congregation congregation) throws IOException {
 
-        Map<Integer, String> territoryMap = new HashMap<>();
+        Map<String, String> territoryMap = new HashMap<>();
 
         for (Territory territory : congregation.getTerritoryList()) {
 

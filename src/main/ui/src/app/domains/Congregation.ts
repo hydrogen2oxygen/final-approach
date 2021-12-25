@@ -6,7 +6,7 @@ export class Congregation {
 
 export class Preacher {
   name:string = '';
-  territoryListNumbers:number[] = [];
+  territoryListNumbers:string[] = [];
   group:string[] = [];
   softdelete:boolean = false;
   harddelete:boolean = false;
@@ -15,7 +15,7 @@ export class Preacher {
 }
 
 export class Territory {
-  number: number = 0;
+  number: string = '';
   name:string = '';
   date:Date = new Date();
   registryEntryList:RegistryEntry[] = [];
@@ -28,8 +28,8 @@ export class Territory {
 }
 
 export class RegistryEntry {
-  territoryNumber:number = 0;
-  territoryName:string = "";
+  territoryNumber:string = '';
+  territoryName:string = '';
   preacher:Preacher = new Preacher();
   assignDate:Date = new Date();
   returnDate:Date | null = new Date();

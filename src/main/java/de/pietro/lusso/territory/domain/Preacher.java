@@ -15,7 +15,7 @@ public class Preacher implements Serializable  {
 
     private Boolean harddelete = false;
 
-    private List<Integer> territoryListNumbers = new ArrayList<>();
+    private List<String> territoryListNumbers = new ArrayList<>();
 
     /**
      * At the moment when a preacher has one group member, he is a group leader
@@ -60,11 +60,11 @@ public class Preacher implements Serializable  {
         this.group = group;
     }
 
-    public List<Integer> getTerritoryListNumbers() {
+    public List<String> getTerritoryListNumbers() {
         return territoryListNumbers;
     }
 
-    public void setTerritoryListNumbers(List<Integer> territoryListNumbers) {
+    public void setTerritoryListNumbers(List<String> territoryListNumbers) {
         this.territoryListNumbers = territoryListNumbers;
     }
 

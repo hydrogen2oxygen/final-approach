@@ -6,16 +6,16 @@ import java.util.Date;
 
 public class RegistryEntry implements Serializable {
 
-    private int territoryNumber;
+    private String territoryNumber;
     private Preacher preacher;
     private Date assignDate;
     private Date returnDate;
 
-    public int getTerritoryNumber() {
+    public String getTerritoryNumber() {
         return territoryNumber;
     }
 
-    public void setTerritoryNumber(int territoryNumber) {
+    public void setTerritoryNumber(String territoryNumber) {
         this.territoryNumber = territoryNumber;
     }
 

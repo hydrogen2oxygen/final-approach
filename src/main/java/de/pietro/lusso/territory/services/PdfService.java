@@ -71,7 +71,7 @@ public class PdfService {
             document.add(addParagraph(territory.getNumber() + " " + territory.getName() +
                     " (" + sdf.format(date) + ")", FontFactory.HELVETICA,30f, Font.BOLD));
 
-            File imageFile = new File("Cartine/territory_map_" + territory.getNumber() + ".jpg");
+            File imageFile = new File("Cartine/" + territory.getNumber() + ".jpg");
 
             if (imageFile.exists()) {
                 Image image = Image.getInstance(imageFile.getAbsolutePath());

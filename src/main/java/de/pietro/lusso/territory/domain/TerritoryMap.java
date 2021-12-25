@@ -7,7 +7,7 @@ import java.util.List;
 public class TerritoryMap {
 
     private boolean draft = true;
-    private Integer territoryNumber;
+    private String territoryNumber;
     private String territoryName;
     private String simpleFeatureData;
     private String simpleFeatureType;
@@ -16,11 +16,11 @@ public class TerritoryMap {
     private Calendar lastUpdate;
     private List<OsmStreet> streetList = new ArrayList<>();
 
-    public Integer getTerritoryNumber() {
+    public String getTerritoryNumber() {
         return territoryNumber;
     }
 
-    public void setTerritoryNumber(Integer territoryNumber) {
+    public void setTerritoryNumber(String territoryNumber) {
         this.territoryNumber = territoryNumber;
     }
 

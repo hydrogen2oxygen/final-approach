@@ -8,6 +8,8 @@ import {ManageGroupMemberComponent} from "../manage-group-member/manage-group-me
 import {FormControl} from "@angular/forms";
 import {DatePipe} from "@angular/common";
 import {ToastrService} from "ngx-toastr";
+import {SettingsService} from "../../services/settings.service";
+import {Settings} from "../../domains/Settings";
 
 @Component({
   selector: 'app-territories-overview',
@@ -32,9 +34,11 @@ export class TerritoriesOverviewComponent implements OnInit {
   showNamesInTerritoryButton:boolean = false;
   searchText: string = '';
   searchResult:string[] = [];
+  settings:Settings|null = null;
 
   constructor(
     private congregationService: CongregationService,
+    private settingsService:SettingsService,
     private modalService: NgbModal,
     private toastr:ToastrService
   ) {
@@ -42,6 +46,10 @@ export class TerritoriesOverviewComponent implements OnInit {
 
   ngOnInit(): void {
 
+    this.settingsService.getSettings().subscribe( s => {
+      console.log(s);
+      this.settings = s;
+    });
     this.fourMonths.setMonth(this.fourMonths.getMonth() - 4);
     this.eightMonths.setMonth(this.eightMonths.getMonth() - 8);
     this.twelveMonths.setMonth(this.twelveMonths.getMonth() - 12);
@@ -91,7 +99,7 @@ export class TerritoriesOverviewComponent implements OnInit {
     console.log(this.lastRegistryEntries)
   }
 
-  openTerritoryByNumber(territoryNumber: number) {
+  openTerritoryByNumber(territoryNumber: string) {
     this.congregation.territoryList.forEach(territory => {
       if (territory.number == territoryNumber) {
         this.openTerritory(territory);
@@ -275,9 +283,10 @@ export class TerritoriesOverviewComponent implements OnInit {
 
         message += territory.number + ' - ' + territory.name + ' (' + formattedDate + ')\n';
 
-        if (territory.number >= 1000) {
-          // FIXME read HOST value from settings
-          message += 'https://HOST?id=' + territory.uuid + '\n';
+        if (this.settings != null) {
+          // @ts-ignore
+          let host = this.settings.settings['ftp.httpHost'];
+          message += host + '?id=' + territory.uuid + '\n';
         }
 
         if (territory.notes.length > 0) {
@@ -305,7 +314,7 @@ export class TerritoriesOverviewComponent implements OnInit {
     return territory.registryEntryList[territory.registryEntryList.length - 1].assignDate;
   }
 
-  getTerritoryByNumber(number: number): Territory | undefined {
+  getTerritoryByNumber(number: string): Territory | undefined {
 
     let territory: Territory | undefined = undefined;
 

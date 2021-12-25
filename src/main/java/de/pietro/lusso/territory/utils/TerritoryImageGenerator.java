@@ -63,7 +63,7 @@ public class TerritoryImageGenerator {
         List<Territory> territoryList = getTerritoryListFromPreacher(congregation,preacher);
 
         for (Territory territory : territoryList) {
-            BufferedImage bufferedImage = ImageIO.read(new File("Cartine/territory_map_" + territory.getNumber() + ".jpg"));
+            BufferedImage bufferedImage = ImageIO.read(new File("Cartine/" + territory.getNumber() + ".jpg"));
             territoryImages.add(bufferedImage);
             height += bufferedImage.getHeight() + spaceBetweenImages;
 

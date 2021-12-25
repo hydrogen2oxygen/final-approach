@@ -1,9 +1,45 @@
-<p>settings works!</p>
-<div class="form-inline">
-  <div class="form-group mb-2">
-    <label for="ftpUser" class="sr-only">FTP USER</label>
-    <input type="text" class="form-control" id="ftpUser" placeholder="ftpUser" [formControl]="ftpUser">
-  </div>
-</div>
-<hr>
+<h1>Settings</h1>
+<table>
+  <tr>
+    <td>
+      <div class="form-group">
+        <label for="ftpUser">FTP USER</label>
+        <input type="text" class="form-control" id="ftpUser" aria-describedby="ftpUser" placeholder="ftpUser"
+               [formControl]="ftpUser">
+      </div>
+      <div class="form-group">
+        <label for="ftpPassword">FTP PASSWORD</label>
+        <input type="text" class="form-control" id="ftpPassword" aria-describedby="ftpPassword"
+               placeholder="ftpPassword" [formControl]="ftpPassword">
+      </div>
+      <div class="form-group">
+        <label for="ftpHost">FTP HOST</label>
+        <input type="text" class="form-control" id="ftpHost" aria-describedby="ftpHost" placeholder="ftpHost"
+               [formControl]="ftpHost">
+      </div>
+      <div class="form-group">
+        <label for="ftpPort">FTP PORT</label>
+        <input type="text" class="form-control" id="ftpPort" aria-describedby="ftpPort" placeholder="ftpPort"
+               [formControl]="ftpPort">
+      </div>
+      <div class="form-group">
+        <label for="knownHosts">KNOWN HOSTS</label>
+        <input type="text" class="form-control" id="knownHosts" aria-describedby="knownHosts" placeholder="knownHosts"
+               [formControl]="knownHosts">
+      </div>
+      <div class="form-group">
+        <label for="rootPath">ROOT PATH</label>
+        <input type="text" class="form-control" id="rootPath" aria-describedby="rootPath" placeholder="rootPath"
+               [formControl]="rootPath">
+      </div>
+    </td>
+    <td>
+      <div class="form-group">
+        <label for="httpHost">HTTP HOST</label>
+        <input type="text" class="form-control" id="httpHost" aria-describedby="httpHost" placeholder="httpHost"
+               [formControl]="httpHost">
+      </div>
+    </td>
+  </tr>
+</table>
 <button type="submit" class="btn btn-success mb-2" style="margin-left: 0.2rem" (click)="save()">SAVE SETTINGS</button>

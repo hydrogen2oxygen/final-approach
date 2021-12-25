@@ -62,7 +62,7 @@ public class MapDesignAdapter {
     }
 
     @GetMapping("setActiveTerritory/{number}/{name}")
-    public void setActiveTerritory(@PathVariable Integer number, @PathVariable String name) throws Exception {
+    public void setActiveTerritory(@PathVariable String number, @PathVariable String name) throws Exception {
 
         databaseService.setActiveTerritory(number,name);
     }

@@ -55,7 +55,7 @@ public class ImportFromExcel {
 
     private static List<Territory> sortTerritoryData(List<RegistryEntry> registryEntryList) {
 
-        Map<Integer, List<RegistryEntry>> territoryLists = new HashMap<>();
+        Map<String, List<RegistryEntry>> territoryLists = new HashMap<>();
 
         for (RegistryEntry entry : registryEntryList) {
             if (territoryLists.get(entry.getTerritoryNumber()) == null) {
@@ -71,7 +71,7 @@ public class ImportFromExcel {
 
         List<Territory> territories = new ArrayList<>();
 
-        for (Integer territoryNumber : territoryLists.keySet()) {
+        for (String territoryNumber : territoryLists.keySet()) {
             Territory territory = new Territory();
             territory.setNumber(territoryNumber);
             territory.setName(territoryMap.get(territoryNumber));
@@ -158,7 +158,7 @@ public class ImportFromExcel {
         Sheet sheet = workbook.getSheetAt(0);
 
         List<RegistryEntry> registryEntryList = new ArrayList<>();
-        Integer territoryNumber = 0;
+        String territoryNumber = "";
 
         for (Row row : sheet) {
 
@@ -173,7 +173,7 @@ public class ImportFromExcel {
                 if (cell.getCellTypeEnum().equals(CellType.NUMERIC) && cell.getColumnIndex() == 0) {
 
                     if (cell.getNumericCellValue() > 0) {
-                        territoryNumber = (int) cell.getNumericCellValue();
+                        territoryNumber = cell.getStringCellValue();
                     }
                 } else if (cell.getCellTypeEnum().equals(CellType.STRING) && cell.getColumnIndex() == 1) {
                     Preacher preacher = new Preacher();

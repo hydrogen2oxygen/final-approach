@@ -29,7 +29,7 @@ export class CongregationService {
     return this.http.post<void>(`${CongregationService.url}exportDatabase`,null);
   }
 
-  exportTerritoryData(territoryNumber?:number|undefined):Observable<void> {
+  exportTerritoryData(territoryNumber?:string|undefined):Observable<void> {
     if (territoryNumber != undefined) {
       return this.http.post<void>(`${CongregationService.url}exportTerritoryData/${territoryNumber}`,null);
     }
