@@ -20,10 +20,15 @@
         <java.version>1.8</java.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <nitrite.version>3.2.0</nitrite.version>
-        <geotools.version>15.4</geotools.version>
+        <geotools.version>26.4</geotools.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>io.javalin</groupId>
+            <artifactId>javalin</artifactId>
+            <version>4.6.0</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
@@ -40,12 +45,12 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>3.15</version>
+            <version>3.17</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>3.15</version>
+            <version>4.1.1</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -63,12 +68,14 @@
             <version>${nitrite.version}</version>
         </dependency>
         <dependency>
-            <!-- you need to download this from git and build it locally,
-            in order to get the artifacts into your local repository
-            (if you have a better solution let me know or create a pull request-->
             <groupId>de.micromata.jak</groupId>
             <artifactId>JavaAPIforKml</artifactId>
-            <version>2.2.2-SNAPSHOT</version>
+            <version>2.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.locationtech.jts</groupId>
+            <artifactId>jts-core</artifactId>
+            <version>1.14.0</version>
         </dependency>
 
         <dependency>
@@ -116,6 +123,28 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>${maven-install-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>install-JavaAPIforKml</id>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <phase>validate</phase>
+                        <configuration>
+                            <groupId>de.micromata.jak</groupId>
+                            <artifactId>JavaAPIforKml</artifactId>
+                            <version>2.2.2</version>
+                            <packaging>jar</packaging>
+                            <file>${basedir}/libs/JavaAPIforKml.jar</file>
+                            <generatePom>true</generatePom>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
@@ -173,7 +202,18 @@
         </plugins>
     </build>
 
-    <!-- some of these dependencies require more time to download, therefore do not desperate -->
+    <!-- some of these dependencies require more time to download, therefore do not desperate
+
+    add a mirror to your settings.xml if you have maven version > 3.8.0 because of the http prevention
+    <mirrors>
+          <mirror>
+               <id>maven-default-http-blocker</id>
+               <mirrorOf>dummy</mirrorOf>
+               <name>Dummy mirror to override default blocking mirror that blocks http</name>
+               <url>http://0.0.0.0/</url>
+         </mirror>
+    </mirrors>
+    -->
     <repositories>
         <repository>
             <id>maven2-repository.dev.java.net</id>
@@ -186,7 +226,7 @@
         <repository>
             <id>osgeo</id>
             <name>Open Source Geospatial Foundation Repository</name>
-            <url>http://download.osgeo.org/webdav/geotools/</url>
+            <url>https://download.osgeo.org/webdav/geotools/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -194,36 +234,36 @@
         <repository>
             <id>boundless</id>
             <name>Boundless Maven Repository</name>
-            <url>http://repo.boundlessgeo.com/main</url>
+            <url>https://repo.boundlessgeo.com/main</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
         </repository>
         <repository>
             <id>OSGEO GeoTools repo</id>
-            <url>http://download.osgeo.org/webdav/geotools</url>
+            <url>https://repo.osgeo.org/repository/release/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-        <repository> <!--Add the snapshot repository here-->
+        <repository>
             <id>opengeo</id>
             <name>OpenGeo Maven Repository</name>
-            <url>http://repo.opengeo.org</url>
+            <url>https://repo.opengeo.org</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
         </repository>
         <repository>
             <id>Hibernate Spatial repo</id>
-            <url>http://www.hibernatespatial.org/repository</url>
+            <url>https://www.hibernatespatial.org/repository</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
         </repository>
         <repository>
             <id>icm.edu.pl</id>
-            <url>http://maven.icm.edu.pl/artifactory/repo/</url>
+            <url>https://maven.icm.edu.pl/artifactory/repo/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
