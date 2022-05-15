@@ -1,10 +1,11 @@
 package de.pietro.lusso.territory.domain;
 
+import org.dizitart.no2.objects.Id;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
-import org.dizitart.no2.objects.Id;
 
 public class Congregation {
 

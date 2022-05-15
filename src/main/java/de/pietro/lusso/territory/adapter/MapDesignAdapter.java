@@ -4,8 +4,6 @@ package de.pietro.lusso.territory.adapter;
 import de.pietro.lusso.territory.domain.MapDesign;
 import de.pietro.lusso.territory.domain.TerritoryMap;
 import de.pietro.lusso.territory.services.DatabaseService;
-import de.pietro.lusso.territory.services.KmlService;
-import de.pietro.lusso.territory.services.OsmService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +18,6 @@ public class MapDesignAdapter {
 
     @Autowired
     private DatabaseService databaseService;
-
-    @Autowired
-    private KmlService kmlService;
-
-    @Autowired
-    private OsmService osmService;
 
     @GetMapping("status")
     public String status() {
@@ -42,23 +34,6 @@ public class MapDesignAdapter {
     public MapDesign saveMapDesign(@RequestBody MapDesign mapDesign) {
 
         return databaseService.saveMapDesign(mapDesign);
-    }
-
-    @GetMapping("exportKml")
-    public void exportKML() throws Exception {
-        kmlService.exportMapDesign(databaseService.loadMapDesign());
-    }
-
-    @GetMapping("importStreetNames")
-    public void importStreetNames() throws Exception {
-
-        final MapDesign mapDesign = databaseService.loadMapDesign();
-
-        for (TerritoryMap territoryMap : mapDesign.getTerritoryMapList()) {
-            osmService.extractStreetsForTerritory(territoryMap);
-        }
-
-        databaseService.saveMapDesign(mapDesign);
     }
 
     @GetMapping("setActiveTerritory/{number}/{name}")

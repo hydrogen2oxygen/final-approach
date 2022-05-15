@@ -88,11 +88,6 @@ public class CongregationAdapter {
         databaseService.exportAllTerritoryData();
     }
 
-    @PostMapping("repairExports")
-    public void repairExports() throws Exception {
-        databaseService.repairExports();
-    }
-
     @PutMapping
     public Congregation saveCongregation(@RequestBody Congregation congregation) {
 

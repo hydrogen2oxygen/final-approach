@@ -13,7 +13,7 @@ public class MainJavalin {
             if (Location.CLASSPATH.equals(location)) {
                 config.addStaticFiles("html", Location.CLASSPATH);
             } else {
-                config.addStaticFiles("src/main/resources/html", location);
+                config.addStaticFiles("src/main/territoryMapVue", location);
             }
         }).start(7070);
     }

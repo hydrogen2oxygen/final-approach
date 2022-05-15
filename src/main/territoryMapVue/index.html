@@ -22,7 +22,29 @@
     <div id="app">{{ message }}</div>
     <div id="map" class="map"></div>
 
-    <script>
+    <script type="module">
+        import {Fill, Stroke, Style} from './ol/style';
+        const styleRedOutline = new Style({
+            fill: new Fill({
+                color: [0, 0, 0, 0.1]
+            }),
+            stroke: new Stroke({
+                color: [255, 0, 0, 0.5],
+                width: 5
+            }),
+            text: new Text({
+                text: '',
+                font: '12px Calibri,sans-serif',
+                overflow: true,
+                fill: new Fill({
+                    color: '#000',
+                }),
+                stroke: new Stroke({
+                    color: '#fff',
+                    width: 3,
+                }),
+            })
+        });
         const { createApp } = Vue
 
         createApp({

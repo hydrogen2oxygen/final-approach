@@ -11,7 +11,6 @@ import org.dizitart.no2.objects.ObjectRepository;
 import org.dizitart.no2.tool.Exporter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -25,9 +24,6 @@ import java.util.*;
 @Service
 @DependsOn("ftpService")
 public class DatabaseService {
-
-    @Autowired
-    private OsmService osmService;
 
     @Autowired
     private FtpService ftpService;
@@ -429,27 +425,6 @@ public class DatabaseService {
             if (name.equals(preacher.getName())) return  preacher;
         }
         return  null;
-    }
-
-    public void repairExports() throws Exception {
-
-        MapDesign mapDesign = loadMapDesign();
-
-        for (TerritoryMap territoryMap : mapDesign.getTerritoryMapList()) {
-            if (territoryMap.getStreetList().size() == 0) {
-                repairMap(territoryMap);
-            }
-        }
-
-        saveMapDesign(mapDesign);
-
-        for (TerritoryMap territoryMap : mapDesign.getTerritoryMapList()) {
-            exportTerritoryData(territoryMap.getTerritoryNumber(), true);
-        }
-    }
-
-    private void repairMap(TerritoryMap territoryMap) throws Exception {
-        osmService.extractStreetsForTerritory(territoryMap);
     }
 
     public void exportAllTerritoryData() throws IOException, SftpException, JSchException {

@@ -36,3 +36,5 @@ territory.db
 territory.db.*
 /src/main/territoryMap/package-lock.json
 /copyToProductiveDirectory.bat
+/src/main/territoryMapVue/data/
+/src/main/viteTest/vite-project/public/*.json
