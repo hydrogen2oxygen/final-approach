@@ -1,8 +1,6 @@
 package de.pietro.lusso.territory.adapter;
 
 
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.SftpException;
 import de.pietro.lusso.territory.domain.Congregation;
 import de.pietro.lusso.territory.services.DatabaseService;
 import de.pietro.lusso.territory.services.PrintService;
@@ -74,17 +72,17 @@ public class CongregationAdapter {
     }
 
     @PostMapping("exportTerritoryData/{number}")
-    public void exportTerritoryData(@PathVariable String number) throws IOException, JSchException, SftpException {
+    public void exportTerritoryData(@PathVariable String number) throws Exception {
         databaseService.exportTerritoryData(number);
     }
 
     @PostMapping("exportTerritoryData")
-    public void exportTerritoryData() throws IOException, SftpException, JSchException {
+    public void exportTerritoryData() throws Exception {
         databaseService.exportTerritoryData();
     }
 
     @PostMapping("exportAllTerritoryData")
-    public void exportAllTerritoryData() throws IOException, SftpException, JSchException {
+    public void exportAllTerritoryData() throws Exception {
         databaseService.exportAllTerritoryData();
     }
 

@@ -1,7 +1,5 @@
 package de.pietro.lusso.territory.services;
 
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.SftpException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,6 +37,9 @@ public class FtpServiceTest {
         ftpService.setFtpPort(fakeFtpServer.getServerControlPort());
         ftpService.setFtpUser("user");
         ftpService.setFtpPassword("password");
+        ftpService.setKnownHosts("~/.ssh/blu_hosts");
+        ftpService.setUseSftp(false);
+        ftpService.setRootPath("");
     }
 
     @After
@@ -47,7 +48,7 @@ public class FtpServiceTest {
     }
 
     @Test
-    public void testProofOfConcept() throws IOException, SftpException, JSchException {
+    public void testProofOfConcept() throws Exception {
 
         if (!new File("target").exists()) {
             new File("target").mkdir();
@@ -61,20 +62,10 @@ public class FtpServiceTest {
 
         ftpService.upload(new File("target/t.json"));
 
-        Vector vector = ftpService.list(".");
-/*
-        for (FTPFile file : files) {
-            System.out.println(">> " + file.getName());
+        Vector<String> vector = ftpService.list(".");
+
+        for (String entry : vector) {
+            System.out.println(entry);
         }
-
-        ftpService.delete("t.json");
-
-        files = ftpService.list(".");
-
-        for (FTPFile file : files) {
-            System.out.println(">>> " + file.getName());
-        }
-
- */
     }
 }

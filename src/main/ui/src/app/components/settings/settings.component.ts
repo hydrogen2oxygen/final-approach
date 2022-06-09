@@ -18,6 +18,7 @@ export class SettingsComponent implements OnInit {
   knownHosts = new FormControl('');
   rootPath = new FormControl('');
   httpHost = new FormControl('');
+  sftp = new FormControl('');
 
   constructor(private settingsService:SettingsService) { }
 
@@ -39,6 +40,8 @@ export class SettingsComponent implements OnInit {
         this.rootPath.setValue(s.settings['ftp.rootPath']);
         // @ts-ignore
         this.httpHost.setValue(s.settings['ftp.httpHost']);
+        // @ts-ignore
+        this.sftp.setValue(s.settings['ftp.sftp']);
       }
     });
   }
@@ -59,6 +62,8 @@ export class SettingsComponent implements OnInit {
       this.settings.settings['ftp.rootPath'] = this.rootPath.value;
       // @ts-ignore
       this.settings.settings['ftp.httpHost'] = this.httpHost.value;
+      // @ts-ignore
+      this.settings.settings['ftp.sftp'] = this.sftp.value;
       this.settingsService.saveSettings(this.settings).subscribe(s => this.settings = s);
     }
   }

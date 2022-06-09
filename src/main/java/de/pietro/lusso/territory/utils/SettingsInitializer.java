@@ -16,6 +16,7 @@ public class SettingsInitializer {
         addIfMissing(settings, "ftp.port");
         addIfMissing(settings, "ftp.knownHosts");
         addIfMissing(settings, "ftp.rootPath");
+        addIfMissing(settings, "ftp.sftp"); // true or false (null is false)
     }
 
     private static void addIfMissing(Settings settings, String key) {

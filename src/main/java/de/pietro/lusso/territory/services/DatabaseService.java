@@ -1,11 +1,11 @@
 package de.pietro.lusso.territory.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.SftpException;
 import de.pietro.lusso.territory.domain.*;
 import de.pietro.lusso.territory.utils.SettingsInitializer;
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dizitart.no2.Nitrite;
 import org.dizitart.no2.objects.ObjectRepository;
 import org.dizitart.no2.tool.Exporter;
@@ -24,6 +24,8 @@ import java.util.*;
 @Service
 @DependsOn("ftpService")
 public class DatabaseService {
+
+    private static final Logger logger = LogManager.getLogger(DatabaseService.class);
 
     @Autowired
     private FtpService ftpService;
@@ -87,6 +89,7 @@ public class DatabaseService {
 
     public void saveSettings(Settings settings) {
         settingsOR.update(settings);
+        ftpService.init();
     }
 
     public Congregation loadCongregation() {
@@ -318,7 +321,9 @@ public class DatabaseService {
      * <p>If something goes wrong with the upload, the local folder has a copy of all data.</p>
      * @param number
      */
-    public void exportTerritoryData(String number, boolean onlyRepair) throws IOException, SftpException, JSchException {
+    public void exportTerritoryData(String number, boolean onlyRepair) throws Exception {
+
+        logger.info("Export territory " + number + (onlyRepair?" onlyRepair":""));
         // Load the territory and the preacher assigned to it
         Map<String, UUID> linkedTerritories = new HashMap<>();
         Congregation congregation = loadCongregation();
@@ -326,28 +331,33 @@ public class DatabaseService {
         TerritoryMap territoryMap = getTerritoryMapByNumber(number);
 
         if (territory == null) {
+            logger.info("territory was null");
             return;
         }
 
         if (territory.getRegistryEntryList() == null || territory.getRegistryEntryList().size() == 0) {
+            logger.info("territory without registry entries");
             return;
         }
 
         if (territoryMap == null || territory.isArchive()) {
+            logger.info("territory with no map or archived");
             return;
         }
 
         RegistryEntry registryEntry = territory.getRegistryEntryList().get(territory.getRegistryEntryList().size() - 1);
 
         if (territory.getUuid() == null) {
-            territory.setUuid(UUID.randomUUID());
+            UUID uuid = UUID.randomUUID();
+            logger.info("territory new UUID is " + uuid.toString());
+            territory.setUuid(uuid);
         }
 
         File jsonFile = new File("src/main/territoryMap/src/assets/data/" + territory.getUuid().toString() + ".json");
 
         // Set the old JSON to inactive (with the returnDate = TODAY and maybe some text inside the note)
         if (jsonFile.exists() && !onlyRepair) {
-            // deactivate old territory
+            logger.info("jsonFile.exists, therefore deactivate first old territory (set active = false)");
             TerritoryData territoryData = objectMapper.readValue(jsonFile, TerritoryData.class);
             territoryData.setActive(false);
             territoryData.setReturnDate(Calendar.getInstance().getTime());
@@ -355,7 +365,7 @@ public class DatabaseService {
             ftpService.upload(jsonFile);
         }
 
-        // Create a new JSON (inside a local folder)
+        logger.info("Create a new JSON (inside a local folder)");
         TerritoryData territoryData = new TerritoryData();
         territoryData.setActive(true);
         territoryData.setName(territory.getName());
@@ -366,11 +376,13 @@ public class DatabaseService {
         territoryData.setReturnDate(null);
 
         if (!onlyRepair) {
-            // set a new UUID for the territory
-            territory.setUuid(UUID.randomUUID());
+            UUID uuid = UUID.randomUUID();
+            logger.info("set a new UUID for the territory: " + uuid.toString());
+            territory.setUuid(uuid);
 
             for (Territory t : congregation.getTerritoryList()) {
-                if (t.getNumber() == territory.getNumber()) {
+                if (Objects.equals(t.getNumber(), territory.getNumber())) {
+                    logger.trace("set uuid inside congregation territory");
                     t.setUuid(territory.getUuid());
                     break;
                 }
@@ -381,7 +393,7 @@ public class DatabaseService {
 
         // TODO Link the JSON to the other territories of the preacher and relink the other JSONs to this one (n to n)
 
-        // Upload the changes (including the old JSON with new status) via FTP to the online service
+        logger.info("Upload the changes (including the old JSON with new status) via FTP to the online service");
         jsonFile = new File("src/main/territoryMap/src/assets/data/" + territory.getUuid().toString() + ".json");
         objectMapper.writeValue(jsonFile, territoryData);
 
@@ -390,7 +402,7 @@ public class DatabaseService {
         // Upload via FTP
         ftpService.upload(jsonFile);
 
-        // Check the local folder for JSONs older than two years and delete them (inside the local folder and also on the remote server)
+        logger.info("Check the local folder for JSONs older than two years and delete them (inside the local folder and also on the remote server)");
         File dataFolder = new File("src/main/territoryMap/src/assets/data/");
 
         Calendar twoYearsAgo = Calendar.getInstance();
@@ -407,11 +419,11 @@ public class DatabaseService {
         }
     }
 
-    public void exportTerritoryData(String number) throws IOException, SftpException, JSchException {
+    public void exportTerritoryData(String number) throws Exception {
         exportTerritoryData(number,false);
     }
 
-    public void exportTerritoryData() throws IOException, JSchException, SftpException {
+    public void exportTerritoryData() throws Exception {
 
         MapDesign mapDesign = loadMapDesign();
 
@@ -427,7 +439,7 @@ public class DatabaseService {
         return  null;
     }
 
-    public void exportAllTerritoryData() throws IOException, SftpException, JSchException {
+    public void exportAllTerritoryData() throws Exception {
 
         TerritoryData territoryData = new TerritoryData();
         territoryData.setName("LE");
@@ -446,7 +458,7 @@ public class DatabaseService {
         ftpService.upload(jsonFile);
     }
 
-    public void exportGroupTerritoryData(String groupLeaderName) throws IOException, SftpException, JSchException {
+    public void exportGroupTerritoryData(String groupLeaderName) throws Exception {
 
         Congregation congregation = loadCongregation();
         Preacher groupLeader = getPreacherByName(groupLeaderName);
