@@ -92,5 +92,14 @@ public class CongregationAdapter {
         return databaseService.saveCongregation(congregation);
     }
 
+    @PutMapping("reset")
+    public void resetCongregation() throws Exception {
+        databaseService.resetCongregation();
+    }
+
+    @DeleteMapping("territory/{number}")
+    public void deleteTerritory(@PathVariable String number) throws Exception {
+        databaseService.deleteTerritory(number);
+    }
 
 }

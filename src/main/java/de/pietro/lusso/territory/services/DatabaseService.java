@@ -592,4 +592,52 @@ public class DatabaseService {
 
         saveCongregation(congregation);
     }
+
+    public void deleteTerritory(String number) {
+
+        Congregation congregation = loadCongregation();
+        Territory toBeRemoved = null;
+
+        for (Territory territory : congregation.getTerritoryList()) {
+            if (territory.isArchive() && number.equals(territory.getNumber())) {
+                toBeRemoved = territory;
+                break;
+            }
+        }
+
+        congregation.getTerritoryList().remove(toBeRemoved);
+        saveCongregation(congregation);
+    }
+
+    public void resetCongregation() {
+
+        Congregation congregation = loadCongregation();
+        List<RegistryEntry> registryEntries = new ArrayList<>();
+        List<Territory> archivedTerritories = new ArrayList<>();
+
+        for (Preacher preacher : congregation.getPreacherList()) {
+            preacher.getTerritoryListNumbers().clear();
+        }
+
+        for (Territory territory : congregation.getTerritoryList()) {
+            territory.getRegistryEntryList().clear();
+            if (territory.isArchive()) {
+                archivedTerritories.add(territory);
+            }
+        }
+
+        congregation.getTerritoryList().removeAll(archivedTerritories);
+
+        for (Territory territory : congregation.getTerritoryList()) {
+
+            RegistryEntry registryEntry = new RegistryEntry();
+            registryEntry.setAssignDate(Calendar.getInstance().getTime());
+            Preacher preacher = new Preacher();
+            preacher.setName("Congregazione");
+            registryEntry.setPreacher(preacher);
+            territory.getRegistryEntryList().add(registryEntry);
+        }
+
+        saveCongregation(congregation);
+    }
 }
