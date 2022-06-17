@@ -1,0 +1,44 @@
+<div class="collapseContainer collapseNoContacts">
+  <h4 class="collapseHeader" data-bs-toggle="collapse" href="#noContacts" role="button" aria-expanded="false" aria-controls="noContacts">
+    No contacts
+  </h4>
+  <div class="collapse" id="noContacts">
+    No contacts
+  </div>
+</div>
+
+<div class="collapseContainer collapse8Months">
+  <h4 class="collapseHeader" data-bs-toggle="collapse" href="#olderThan8Months" role="button" aria-expanded="false" aria-controls="olderThan8Months">
+    Older than 8 months ({{congregation.territoryList.length}})
+  </h4>
+  <div class="collapse" id="olderThan8Months">
+    <button class="btn btn-sm olderThan8MonthsButton btn-territory" *ngFor="let t of congregation.territoryList">{{t.number}} {{t.name}}</button>
+  </div>
+</div>
+
+<div class="collapseContainer collapse4Months">
+  <h4 class="collapseHeader" data-bs-toggle="collapse" href="#olderThan4Months" role="button" aria-expanded="false" aria-controls="olderThan8Months">
+    Older than 4 months
+  </h4>
+  <div class="collapse" id="olderThan4Months">
+    Older than 4 months
+  </div>
+</div>
+
+<div class="collapseContainer collapseAssigned">
+  <h4 class="collapseHeader" data-bs-toggle="collapse" href="#assigned" role="button" aria-expanded="false" aria-controls="assigned">
+    Already assigned
+  </h4>
+  <div class="collapse" id="assigned">
+    Already assigned
+  </div>
+</div>
+
+<div class="collapseContainer collapseToBeAssigned">
+  <h4 class="collapseHeader" data-bs-toggle="collapse" href="#toBeAssigned" role="button" aria-expanded="false" aria-controls="toBeAssigned">
+    To be assigned
+  </h4>
+  <div class="collapse" id="toBeAssigned">
+    To be assigned
+  </div>
+</div>

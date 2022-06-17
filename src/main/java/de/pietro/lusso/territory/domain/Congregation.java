@@ -15,6 +15,11 @@ public class Congregation {
     private Calendar lastUpdate = Calendar.getInstance();
     private List<Preacher> preacherList = new ArrayList<>();
     private List<Territory> territoryList = new ArrayList<>();
+    private List<Territory> territoriesNoContacts = new ArrayList<>();
+    private List<Territory> territoriesOlder8Months = new ArrayList<>();
+    private List<Territory> territoriesOlder4Months = new ArrayList<>();
+    private List<Territory> territoriesAssigned = new ArrayList<>();
+    private List<Territory> territoriesToBeAssigned = new ArrayList<>();
 
     public UUID getUuid() {
         return uuid;
@@ -54,5 +59,45 @@ public class Congregation {
 
     public void setTerritoryList(List<Territory> territoryList) {
         this.territoryList = territoryList;
+    }
+
+    public List<Territory> getTerritoriesNoContacts() {
+        return territoriesNoContacts;
+    }
+
+    public void setTerritoriesNoContacts(List<Territory> territoriesNoContacts) {
+        this.territoriesNoContacts = territoriesNoContacts;
+    }
+
+    public List<Territory> getTerritoriesOlder8Months() {
+        return territoriesOlder8Months;
+    }
+
+    public void setTerritoriesOlder8Months(List<Territory> territoriesOlder8Months) {
+        this.territoriesOlder8Months = territoriesOlder8Months;
+    }
+
+    public List<Territory> getTerritoriesOlder4Months() {
+        return territoriesOlder4Months;
+    }
+
+    public void setTerritoriesOlder4Months(List<Territory> territoriesOlder4Months) {
+        this.territoriesOlder4Months = territoriesOlder4Months;
+    }
+
+    public List<Territory> getTerritoriesAssigned() {
+        return territoriesAssigned;
+    }
+
+    public void setTerritoriesAssigned(List<Territory> territoriesAssigned) {
+        this.territoriesAssigned = territoriesAssigned;
+    }
+
+    public List<Territory> getTerritoriesToBeAssigned() {
+        return territoriesToBeAssigned;
+    }
+
+    public void setTerritoriesToBeAssigned(List<Territory> territoriesToBeAssigned) {
+        this.territoriesToBeAssigned = territoriesToBeAssigned;
     }
 }
