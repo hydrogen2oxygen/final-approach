@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {CongregationService} from "../../services/congregation.service";
+import {CongregationService} from "../../../../../ui/src/app/services/congregation.service";
 import {ToastrService} from "ngx-toastr";
 
 @Component({
@@ -8,7 +8,6 @@ import {ToastrService} from "ngx-toastr";
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-
   title = 'ui';
   printingInProgress = '';
   exportInProgress = '';
