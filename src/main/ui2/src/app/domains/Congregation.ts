@@ -1,6 +1,12 @@
 export class Congregation {
   lastUpdate:Date = new Date();
   territoryList:Territory[] = [];
+  territoriesNoContacts:Territory[] = [];
+  territoriesOlder8Months:Territory[] = [];
+  territoriesOlder4Months:Territory[] = [];
+  territoriesAssigned:Territory[] = [];
+  territoriesToBeAssigned:Territory[] = [];
+  territoriesArchived:Territory[] = [];
   preacherList:Preacher[] = [];
 }
 
@@ -22,7 +28,7 @@ export class Territory {
   notes:string[]=[];
   noContacts:boolean=false;
   archive:boolean=false;
-  url:string|undefined='';
+  url:string | null='';
   uuid:string|undefined;
   newPreacherAssigned:boolean=false;
 }

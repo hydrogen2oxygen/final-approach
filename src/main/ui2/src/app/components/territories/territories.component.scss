@@ -24,12 +24,36 @@
   background-color: #00ce29;
 }
 
+.collapseArchived {
+  background-color: #323232;
+}
+
 .collapseHeader {
   color: white!important;
 }
 
 button.olderThan8MonthsButton {
   background-color: #aa0000;
+  color: white;
+}
+
+button.olderThan4MonthsButton {
+  background-color: #e55100;
+  color: white;
+}
+
+button.toBeAssignedButton {
+  background-color: #2a8900;
+  color: white;
+}
+
+button.assignedButton {
+  background-color: #0071c0;
+  color: white;
+}
+
+button.archivedButton {
+  background-color: #808080;
   color: white;
 }
 

@@ -1,44 +1,53 @@
 <div class="collapseContainer collapseNoContacts">
   <h4 class="collapseHeader" data-bs-toggle="collapse" href="#noContacts" role="button" aria-expanded="false" aria-controls="noContacts">
-    No contacts
+    No contacts  ({{congregation.territoriesNoContacts.length}})
   </h4>
   <div class="collapse" id="noContacts">
-    No contacts
+    <button class="btn btn-sm olderThan8MonthsButton btn-territory" *ngFor="let t of congregation.territoriesNoContacts">{{t.number}} {{t.name}}</button>
   </div>
 </div>
 
 <div class="collapseContainer collapse8Months">
   <h4 class="collapseHeader" data-bs-toggle="collapse" href="#olderThan8Months" role="button" aria-expanded="false" aria-controls="olderThan8Months">
-    Older than 8 months ({{congregation.territoryList.length}})
+    Older than 8 months ({{congregation.territoriesOlder8Months.length}})
   </h4>
   <div class="collapse" id="olderThan8Months">
-    <button class="btn btn-sm olderThan8MonthsButton btn-territory" *ngFor="let t of congregation.territoryList">{{t.number}} {{t.name}}</button>
+    <button class="btn btn-sm olderThan8MonthsButton btn-territory" *ngFor="let t of congregation.territoriesOlder8Months">{{t.number}} {{t.name}}</button>
   </div>
 </div>
 
 <div class="collapseContainer collapse4Months">
   <h4 class="collapseHeader" data-bs-toggle="collapse" href="#olderThan4Months" role="button" aria-expanded="false" aria-controls="olderThan8Months">
-    Older than 4 months
+    Older than 4 months  ({{congregation.territoriesOlder4Months.length}})
   </h4>
   <div class="collapse" id="olderThan4Months">
-    Older than 4 months
+    <button class="btn btn-sm olderThan8MonthsButton btn-territory" *ngFor="let t of congregation.territoriesOlder8Months">{{t.number}} {{t.name}}</button>
   </div>
 </div>
 
 <div class="collapseContainer collapseAssigned">
   <h4 class="collapseHeader" data-bs-toggle="collapse" href="#assigned" role="button" aria-expanded="false" aria-controls="assigned">
-    Already assigned
+    Already assigned  ({{congregation.territoriesAssigned.length}})
   </h4>
   <div class="collapse" id="assigned">
-    Already assigned
+    <button class="btn btn-sm assignedButton btn-territory" *ngFor="let t of congregation.territoriesAssigned">{{t.number}} {{t.name}}</button>
   </div>
 </div>
 
 <div class="collapseContainer collapseToBeAssigned">
   <h4 class="collapseHeader" data-bs-toggle="collapse" href="#toBeAssigned" role="button" aria-expanded="false" aria-controls="toBeAssigned">
-    To be assigned
+    To be assigned ({{congregation.territoriesToBeAssigned.length}})
   </h4>
   <div class="collapse" id="toBeAssigned">
-    To be assigned
+    <button class="btn btn-sm toBeAssignedButton btn-territory" *ngFor="let t of congregation.territoriesToBeAssigned">{{t.number}} {{t.name}}</button>
+  </div>
+</div>
+
+<div class="collapseContainer collapseArchived">
+  <h4 class="collapseHeader" data-bs-toggle="collapse" href="#archived" role="button" aria-expanded="false" aria-controls="archived">
+    Archived ({{congregation.territoriesArchived.length}})
+  </h4>
+  <div class="collapse" id="archived">
+    <button class="btn btn-sm archivedButton btn-territory" *ngFor="let t of congregation.territoriesArchived">{{t.number}} {{t.name}}</button>
   </div>
 </div>

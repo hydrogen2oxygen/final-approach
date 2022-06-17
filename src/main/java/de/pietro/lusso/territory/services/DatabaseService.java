@@ -99,7 +99,7 @@ public class DatabaseService {
             congregationOR.insert(congregation);
         }
 
-        Congregation congregation = congregationOR.find().firstOrDefault();
+        final Congregation congregation = congregationOR.find().firstOrDefault();
 
         List<Territory> territoryList = congregation.getTerritoryList();
 
@@ -109,8 +109,67 @@ public class DatabaseService {
                 return o1.getNumber().compareTo(o2.getNumber());
             }
         });
+        enhancePreacherList(congregation);
+        splitTerritories(congregation);
 
-        return enhancePreacherList(congregation);
+        return congregation;
+    }
+
+    private void splitTerritories(Congregation congregation) {
+
+        List<Territory> toBeRemoved = new ArrayList<>();
+
+        Calendar old8Cal = Calendar.getInstance();
+        old8Cal.add(Calendar.MONTH,-8);
+
+        Calendar old4Cal = Calendar.getInstance();
+        old4Cal.add(Calendar.MONTH,-4);
+
+        for (Territory territory : congregation.getTerritoryList()) {
+
+            int registrySize = territory.getRegistryEntryList().size();
+
+            if (territory.isNoContacts() && !territory.isArchive()) {
+                congregation.getTerritoriesNoContacts().add(territory);
+                toBeRemoved.add(territory);
+                continue;
+            }
+
+            if (registrySize == 0) {
+                congregation.getTerritoriesToBeAssigned().add(territory);
+                toBeRemoved.add(territory);
+                continue;
+            }
+
+            if (territory.getRegistryEntryList().get(registrySize - 1).getPreacher().getName().equals("Congregazione")) {
+                congregation.getTerritoriesToBeAssigned().add(territory);
+                toBeRemoved.add(territory);
+                continue;
+            }
+
+            if (territory.isArchive()) {
+                congregation.getTerritoriesArchived().add(territory);
+                toBeRemoved.add(territory);
+                continue;
+            }
+
+            if (territory.getRegistryEntryList().get(registrySize - 1).getAssignDate().before(old4Cal.getTime())) {
+                congregation.getTerritoriesOlder4Months().add(territory);
+                toBeRemoved.add(territory);
+                continue;
+            }
+
+            if (territory.getRegistryEntryList().get(registrySize - 1).getAssignDate().before(old8Cal.getTime())) {
+                congregation.getTerritoriesOlder8Months().add(territory);
+                toBeRemoved.add(territory);
+                continue;
+            }
+
+            congregation.getTerritoriesAssigned().add(territory);
+            toBeRemoved.add(territory);
+        }
+
+        congregation.getTerritoryList().removeAll(toBeRemoved);
     }
 
     private Congregation enhancePreacherList(Congregation congregation) {

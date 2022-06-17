@@ -20,6 +20,7 @@ public class Congregation {
     private List<Territory> territoriesOlder4Months = new ArrayList<>();
     private List<Territory> territoriesAssigned = new ArrayList<>();
     private List<Territory> territoriesToBeAssigned = new ArrayList<>();
+    private List<Territory> territoriesArchived = new ArrayList<>();
 
     public UUID getUuid() {
         return uuid;
@@ -99,5 +100,13 @@ public class Congregation {
 
     public void setTerritoriesToBeAssigned(List<Territory> territoriesToBeAssigned) {
         this.territoriesToBeAssigned = territoriesToBeAssigned;
+    }
+
+    public List<Territory> getTerritoriesArchived() {
+        return territoriesArchived;
+    }
+
+    public void setTerritoriesArchived(List<Territory> territoriesArchived) {
+        this.territoriesArchived = territoriesArchived;
     }
 }
