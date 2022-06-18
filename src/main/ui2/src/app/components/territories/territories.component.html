@@ -1,27 +1,9 @@
-<div class="collapseContainer collapseNoContacts">
-  <h4 class="collapseHeader" data-bs-toggle="collapse" href="#noContacts" role="button" aria-expanded="false" aria-controls="noContacts">
-    No contacts  ({{congregation.territoriesNoContacts.length}})
+<div class="collapseContainer collapseToBeAssigned">
+  <h4 class="collapseHeader" data-bs-toggle="collapse" href="#toBeAssigned" role="button" aria-expanded="false" aria-controls="toBeAssigned">
+    To be assigned ({{congregation.territoriesToBeAssigned.length}})
   </h4>
-  <div class="collapse" id="noContacts">
-    <button class="btn btn-sm olderThan8MonthsButton btn-territory" *ngFor="let t of congregation.territoriesNoContacts">{{t.number}} {{t.name}}</button>
-  </div>
-</div>
-
-<div class="collapseContainer collapse8Months">
-  <h4 class="collapseHeader" data-bs-toggle="collapse" href="#olderThan8Months" role="button" aria-expanded="false" aria-controls="olderThan8Months">
-    Older than 8 months ({{congregation.territoriesOlder8Months.length}})
-  </h4>
-  <div class="collapse" id="olderThan8Months">
-    <button class="btn btn-sm olderThan8MonthsButton btn-territory" *ngFor="let t of congregation.territoriesOlder8Months">{{t.number}} {{t.name}}</button>
-  </div>
-</div>
-
-<div class="collapseContainer collapse4Months">
-  <h4 class="collapseHeader" data-bs-toggle="collapse" href="#olderThan4Months" role="button" aria-expanded="false" aria-controls="olderThan8Months">
-    Older than 4 months  ({{congregation.territoriesOlder4Months.length}})
-  </h4>
-  <div class="collapse" id="olderThan4Months">
-    <button class="btn btn-sm olderThan8MonthsButton btn-territory" *ngFor="let t of congregation.territoriesOlder8Months">{{t.number}} {{t.name}}</button>
+  <div class="collapse" id="toBeAssigned">
+    <button class="btn btn-sm toBeAssignedButton btn-territory" *ngFor="let t of congregation.territoriesToBeAssigned" (click)="showTerritoryDetails(t)">{{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}}</button>
   </div>
 </div>
 
@@ -30,16 +12,36 @@
     Already assigned  ({{congregation.territoriesAssigned.length}})
   </h4>
   <div class="collapse" id="assigned">
-    <button class="btn btn-sm assignedButton btn-territory" *ngFor="let t of congregation.territoriesAssigned">{{t.number}} {{t.name}}</button>
+    <button class="btn btn-sm assignedButton btn-territory"
+            *ngFor="let t of congregation.territoriesAssigned"
+            (click)="showTerritoryDetails(t)">{{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}} </button>
   </div>
 </div>
 
-<div class="collapseContainer collapseToBeAssigned">
-  <h4 class="collapseHeader" data-bs-toggle="collapse" href="#toBeAssigned" role="button" aria-expanded="false" aria-controls="toBeAssigned">
-    To be assigned ({{congregation.territoriesToBeAssigned.length}})
+<div class="collapseContainer collapse4Months">
+  <h4 class="collapseHeader" data-bs-toggle="collapse" href="#olderThan4Months" role="button" aria-expanded="false" aria-controls="olderThan8Months">
+    Older than 4 months  ({{congregation.territoriesOlder4Months.length}})
   </h4>
-  <div class="collapse" id="toBeAssigned">
-    <button class="btn btn-sm toBeAssignedButton btn-territory" *ngFor="let t of congregation.territoriesToBeAssigned">{{t.number}} {{t.name}}</button>
+  <div class="collapse" id="olderThan4Months">
+    <button class="btn btn-sm olderThan4MonthsButton btn-territory" *ngFor="let t of congregation.territoriesOlder4Months" (click)="showTerritoryDetails(t)">{{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}}</button>
+  </div>
+</div>
+
+<div class="collapseContainer collapse8Months">
+  <h4 class="collapseHeader" data-bs-toggle="collapse" href="#olderThan8Months" role="button" aria-expanded="false" aria-controls="olderThan8Months">
+    Older than 8 months ({{congregation.territoriesOlder8Months.length}})
+  </h4>
+  <div class="collapse" id="olderThan8Months">
+    <button class="btn btn-sm olderThan8MonthsButton btn-territory" *ngFor="let t of congregation.territoriesOlder8Months" (click)="showTerritoryDetails(t)">{{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}}</button>
+  </div>
+</div>
+
+<div class="collapseContainer collapseNoContacts">
+  <h4 class="collapseHeader" data-bs-toggle="collapse" href="#noContacts" role="button" aria-expanded="false" aria-controls="noContacts">
+    No contacts  ({{congregation.territoriesNoContacts.length}})
+  </h4>
+  <div class="collapse" id="noContacts">
+    <button class="btn btn-sm olderThan8MonthsButton btn-territory" *ngFor="let t of congregation.territoriesNoContacts" (click)="showTerritoryDetails(t)">{{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}}</button>
   </div>
 </div>
 
@@ -48,6 +50,101 @@
     Archived ({{congregation.territoriesArchived.length}})
   </h4>
   <div class="collapse" id="archived">
-    <button class="btn btn-sm archivedButton btn-territory" *ngFor="let t of congregation.territoriesArchived">{{t.number}} {{t.name}}</button>
+    <button class="btn btn-sm archivedButton btn-territory" *ngFor="let t of congregation.territoriesArchived" (click)="showTerritoryDetails(t)">{{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}}</button>
+  </div>
+</div>
+
+Territories {{
+  congregation.territoriesAssigned.length
+  + congregation.territoriesNoContacts.length
+  + congregation.territoriesOlder4Months.length
+  + congregation.territoriesOlder8Months.length
+  + congregation.territoriesToBeAssigned.length
+}}
+
+<div *ngIf="territory" style="min-height: 120px; position: fixed; top: 4rem; left: 2rem;">
+  <div class="collapse collapse-horizontal" [class.show]="territory" id="collapseWidthExample">
+    <div class="card card-body">
+      <h3 class="text-dark">{{territory.number}} {{territory.name}}</h3>
+      <table class="table table-bordered table-sm table-striped">
+        <thead>
+        <tr class="bg-primary">
+          <th>Name</th>
+          <th>Assigned</th>
+          <th>Returned</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let registryEntry of territory.registryEntryList; index as i" class="col-auto">
+          <td>{{registryEntry.preacher.name}}</td>
+          <td>{{registryEntry.assignDate | date:'dd-MM-yy'}}</td>
+          <td>{{registryEntry.returnDate | date:'dd-MM-yy'}}</td>
+        </tr>
+        </tbody>
+      </table>
+
+      <div *ngFor="let note of territory.notes"
+           style="width: 100%;  display: flex;  flex-direction: row;  justify-content: right;">
+        <pre style="color: #aa0000;">{{note}}</pre>
+        <button class="btn btn-danger btn-xs" style="margin-left: 0.3rem;" (click)="removeNote(note)">x</button>
+      </div>
+
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="" id="intoArchive" [formControl]="intoArchive">
+        <label class="form-check-label text-danger" for="intoArchive">
+          into archive
+        </label>
+      </div>
+
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" [formControl]="noContacts">
+        <label class="form-check-label text-dark" for="flexCheckDefault">
+          no contacts in this territory
+        </label>
+      </div>
+
+      <div class="input-group mb-3">
+        <input class="form-control" type="text" placeholder="note" [formControl]="note">
+        <div class="input-group-append">
+          <button style="margin-left: 0.2rem" class="btn btn-outline-secondary" (click)="addNote()">Add note</button>
+        </div>
+      </div>
+
+      <div class="ng-autocomplete">
+        <ng-autocomplete
+          [data]="preacherList"
+          [searchKeyword]="keyword"
+          placeHolder="Enter the Preacher Name"
+          (selected)='selectEvent($event)'
+          (inputChanged)='onChangeSearch($event)'
+          (inputFocused)='onFocused($event)'
+          [itemTemplate]="itemTemplate"
+          [notFoundTemplate]="notFoundTemplate">
+        </ng-autocomplete>
+
+        <ng-template #itemTemplate let-item>
+          <a [innerHTML]="item.name"></a>
+        </ng-template>
+
+        <ng-template #notFoundTemplate let-notFound>
+          <div [innerHTML]="notFound"></div>
+        </ng-template>
+      </div>
+
+      <div class="container" style="margin-top: 0.5rem">
+        <div class="row">
+          <div class="col">
+            <button type="button" class="btn btn-outline-warning" (click)="territory = null">Cancel</button>
+          </div>
+          <div class="col">
+            <button type="button" class="btn btn-outline-success" (click)="saveTerritory()">Save</button>
+          </div>
+          <div class="col" *ngIf="territory.archive">
+            <button type="button" class="btn btn-danger" (click)="deleteTerritory(territory.number)">DELETE</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>

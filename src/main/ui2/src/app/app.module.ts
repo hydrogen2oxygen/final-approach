@@ -9,13 +9,14 @@ import { DesignerComponent } from './components/designer/designer.component';
 import { UtilsComponent } from './components/utils/utils.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import {HttpClientModule} from "@angular/common/http";
-import {TerritoryDetailComponent} from "./components/territory-detail/territory-detail.component";
+import {CommonModule} from "@angular/common";
+import {ReactiveFormsModule} from "@angular/forms";
+import {AutocompleteLibModule} from "angular-ng-autocomplete";
 
 @NgModule({
   declarations: [
     AppComponent,
     TerritoriesComponent,
-    TerritoryDetailComponent,
     PreachersComponent,
     DesignerComponent,
     UtilsComponent,
@@ -24,7 +25,11 @@ import {TerritoryDetailComponent} from "./components/territory-detail/territory-
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    CommonModule,
+    CommonModule,
+    ReactiveFormsModule,
+    AutocompleteLibModule
   ],
   providers: [],
   bootstrap: [AppComponent]

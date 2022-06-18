@@ -64,4 +64,8 @@ export class CongregationService {
 
     return this.http.put<Congregation>(`${CongregationService.url}`,uncycledCongregation);
   }
+
+  deleteTerritory(territoryNumber:string):Observable<Congregation> {
+      return this.http.delete<Congregation>(`${CongregationService.url}territory/${territoryNumber}`);
+  }
 }

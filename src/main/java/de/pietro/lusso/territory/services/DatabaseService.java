@@ -101,14 +101,7 @@ public class DatabaseService {
 
         final Congregation congregation = congregationOR.find().firstOrDefault();
 
-        List<Territory> territoryList = congregation.getTerritoryList();
-
-        Collections.sort(territoryList, new Comparator<Territory>() {
-            @Override
-            public int compare(Territory o1, Territory o2) {
-                return o1.getNumber().compareTo(o2.getNumber());
-            }
-        });
+        resetTerritoryList(congregation);
         enhancePreacherList(congregation);
         splitTerritories(congregation);
 
@@ -135,26 +128,23 @@ public class DatabaseService {
                 continue;
             }
 
-            if (registrySize == 0) {
-                congregation.getTerritoriesToBeAssigned().add(territory);
-                toBeRemoved.add(territory);
-                continue;
-            }
-
-            if (territory.getRegistryEntryList().get(registrySize - 1).getPreacher().getName().equals("Congregazione")) {
-                congregation.getTerritoriesToBeAssigned().add(territory);
-                toBeRemoved.add(territory);
-                continue;
-            }
-
             if (territory.isArchive()) {
                 congregation.getTerritoriesArchived().add(territory);
                 toBeRemoved.add(territory);
                 continue;
             }
 
-            if (territory.getRegistryEntryList().get(registrySize - 1).getAssignDate().before(old4Cal.getTime())) {
-                congregation.getTerritoriesOlder4Months().add(territory);
+            if (registrySize == 0) {
+                congregation.getTerritoriesToBeAssigned().add(territory);
+                toBeRemoved.add(territory);
+                continue;
+            }
+
+            // set last assigned date from registry
+            setLastAssignedDate(territory);
+
+            if (territory.getRegistryEntryList().get(registrySize - 1).getPreacher().getName().equals("Congregazione")) {
+                congregation.getTerritoriesToBeAssigned().add(territory);
                 toBeRemoved.add(territory);
                 continue;
             }
@@ -165,11 +155,50 @@ public class DatabaseService {
                 continue;
             }
 
+            if (territory.getRegistryEntryList().get(registrySize - 1).getAssignDate().before(old4Cal.getTime())) {
+                congregation.getTerritoriesOlder4Months().add(territory);
+                toBeRemoved.add(territory);
+                continue;
+            }
+
             congregation.getTerritoriesAssigned().add(territory);
             toBeRemoved.add(territory);
         }
 
+        sortTerritoriesByDateAsc(congregation.getTerritoriesToBeAssigned());
         congregation.getTerritoryList().removeAll(toBeRemoved);
+    }
+
+    private void resetTerritoryList(Congregation congregation) {
+        congregation.getTerritoryList().addAll(congregation.getTerritoriesArchived());
+        congregation.getTerritoryList().addAll(congregation.getTerritoriesAssigned());
+        congregation.getTerritoryList().addAll(congregation.getTerritoriesToBeAssigned());
+        congregation.getTerritoryList().addAll(congregation.getTerritoriesNoContacts());
+        congregation.getTerritoryList().addAll(congregation.getTerritoriesOlder4Months());
+        congregation.getTerritoryList().addAll(congregation.getTerritoriesOlder8Months());
+
+        congregation.getTerritoriesArchived().clear();
+        congregation.getTerritoriesAssigned().clear();
+        congregation.getTerritoriesToBeAssigned().clear();
+        congregation.getTerritoriesNoContacts().clear();
+        congregation.getTerritoriesOlder4Months().clear();
+        congregation.getTerritoriesOlder8Months().clear();
+    }
+
+    private void sortTerritoriesByDateAsc(List<Territory> territories) {
+        Collections.sort(territories, new Comparator<Territory>() {
+            @Override
+            public int compare(Territory o1, Territory o2) {
+                return o1.getDate().compareTo(o2.getDate());
+            }
+        });
+    }
+
+    private void setLastAssignedDate(final Territory territory) {
+        int registrySize = territory.getRegistryEntryList().size();
+        if (registrySize == 0) return;
+        Date date = territory.getRegistryEntryList().get(registrySize - 1).getAssignDate();
+        territory.setDate(date);
     }
 
     private Congregation enhancePreacherList(Congregation congregation) {
@@ -217,6 +246,8 @@ public class DatabaseService {
             if (territory.getUuid() == null) {
                 territory.setUuid(UUID.randomUUID());
             }
+
+            setLastAssignedDate(territory);
         }
 
         if (preacherForHardDelete != null) {
@@ -326,6 +357,8 @@ public class DatabaseService {
 
     private Territory getTerritoryByNumber(final Congregation congregation, String number) {
 
+        resetTerritoryList(congregation);
+
         for (Territory territory : congregation.getTerritoryList()) {
             if (territory.getNumber().equals(number)) return territory;
         }
@@ -336,6 +369,7 @@ public class DatabaseService {
     private Territory getTerritoryByNumber(String number) {
 
         Congregation congregation = loadCongregation();
+        resetTerritoryList(congregation);
 
         for (Territory territory : congregation.getTerritoryList()) {
             if (territory.getNumber() == number) return territory;
@@ -652,20 +686,13 @@ public class DatabaseService {
         saveCongregation(congregation);
     }
 
-    public void deleteTerritory(String number) {
+    public Congregation deleteTerritory(String number) {
 
         Congregation congregation = loadCongregation();
-        Territory toBeRemoved = null;
-
-        for (Territory territory : congregation.getTerritoryList()) {
-            if (territory.isArchive() && number.equals(territory.getNumber())) {
-                toBeRemoved = territory;
-                break;
-            }
-        }
+        Territory toBeRemoved = getTerritoryByNumber(congregation, number);
 
         congregation.getTerritoryList().remove(toBeRemoved);
-        saveCongregation(congregation);
+        return saveCongregation(congregation);
     }
 
     public void resetCongregation() {
@@ -696,6 +723,21 @@ public class DatabaseService {
             registryEntry.setPreacher(preacher);
             territory.getRegistryEntryList().add(registryEntry);
         }
+
+        saveCongregation(congregation);
+    }
+
+    public void fakeMonths(String number, Integer months) {
+
+        Congregation congregation = loadCongregation();
+        Territory territory = getTerritoryByNumber(congregation, number);
+
+        if (territory == null) return;
+
+        RegistryEntry registryEntry = territory.getRegistryEntryList().get(territory.getRegistryEntryList().size() -1);
+        Calendar olderDate = Calendar.getInstance();
+        olderDate.add(Calendar.MONTH, -months);
+        registryEntry.setAssignDate(olderDate.getTime());
 
         saveCongregation(congregation);
     }

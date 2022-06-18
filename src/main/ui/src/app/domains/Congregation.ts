@@ -22,7 +22,7 @@ export class Territory {
   notes:string[]=[];
   noContacts:boolean=false;
   archive:boolean=false;
-  url:string|undefined='';
+  url:string|null='';
   uuid:string|undefined;
   newPreacherAssigned:boolean=false;
 }

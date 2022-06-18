@@ -97,9 +97,14 @@ public class CongregationAdapter {
         databaseService.resetCongregation();
     }
 
+    @PutMapping("fake8Months/{number}/{months}")
+    public void fake8Months(@PathVariable String number,@PathVariable Integer months) throws Exception {
+        databaseService.fakeMonths(number, months);
+    }
+
     @DeleteMapping("territory/{number}")
-    public void deleteTerritory(@PathVariable String number) throws Exception {
-        databaseService.deleteTerritory(number);
+    public Congregation deleteTerritory(@PathVariable String number) throws Exception {
+        return databaseService.deleteTerritory(number);
     }
 
 }
