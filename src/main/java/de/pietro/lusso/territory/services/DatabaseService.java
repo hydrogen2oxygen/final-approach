@@ -122,6 +122,12 @@ public class DatabaseService {
 
             int registrySize = territory.getRegistryEntryList().size();
 
+            if (registrySize == 0) {
+                congregation.getTerritoriesToBeAssigned().add(territory);
+                toBeRemoved.add(territory);
+                continue;
+            }
+
             if (territory.isNoContacts() && !territory.isArchive()) {
                 congregation.getTerritoriesNoContacts().add(territory);
                 toBeRemoved.add(territory);
@@ -130,12 +136,6 @@ public class DatabaseService {
 
             if (territory.isArchive()) {
                 congregation.getTerritoriesArchived().add(territory);
-                toBeRemoved.add(territory);
-                continue;
-            }
-
-            if (registrySize == 0) {
-                congregation.getTerritoriesToBeAssigned().add(territory);
                 toBeRemoved.add(territory);
                 continue;
             }
