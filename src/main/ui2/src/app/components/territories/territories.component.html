@@ -3,7 +3,11 @@
     To be assigned ({{congregation.territoriesToBeAssigned.length}})
   </h4>
   <div class="collapse" id="toBeAssigned">
-    <button class="btn btn-sm toBeAssignedButton btn-territory" *ngFor="let t of congregation.territoriesToBeAssigned" (click)="showTerritoryDetails(t)">{{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}}</button>
+    <button class="btn btn-sm toBeAssignedButton btn-territory"
+            *ngFor="let t of congregation.territoriesToBeAssigned"
+            (click)="showTerritoryDetails(t)">
+      {{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}} <i-bs *ngIf="t.notes.length > 0" name="info-circle" style="color: #ffffff"></i-bs>
+    </button>
   </div>
 </div>
 
@@ -14,7 +18,9 @@
   <div class="collapse" id="assigned">
     <button class="btn btn-sm assignedButton btn-territory"
             *ngFor="let t of congregation.territoriesAssigned"
-            (click)="showTerritoryDetails(t)">{{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}} </button>
+            (click)="showTerritoryDetails(t)">
+      {{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}} <i-bs *ngIf="t.notes.length > 0" name="info-circle" style="color: #ffca00"></i-bs>
+    </button>
   </div>
 </div>
 
@@ -23,7 +29,11 @@
     Older than 4 months  ({{congregation.territoriesOlder4Months.length}})
   </h4>
   <div class="collapse" id="olderThan4Months">
-    <button class="btn btn-sm olderThan4MonthsButton btn-territory" *ngFor="let t of congregation.territoriesOlder4Months" (click)="showTerritoryDetails(t)">{{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}}</button>
+    <button class="btn btn-sm olderThan4MonthsButton btn-territory"
+            *ngFor="let t of congregation.territoriesOlder4Months"
+            (click)="showTerritoryDetails(t)">
+      {{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}} <i-bs *ngIf="t.notes.length > 0" name="info-circle" style="color: #fff1bd"></i-bs>
+    </button>
   </div>
 </div>
 
@@ -32,7 +42,11 @@
     Older than 8 months ({{congregation.territoriesOlder8Months.length}})
   </h4>
   <div class="collapse" id="olderThan8Months">
-    <button class="btn btn-sm olderThan8MonthsButton btn-territory" *ngFor="let t of congregation.territoriesOlder8Months" (click)="showTerritoryDetails(t)">{{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}}</button>
+    <button class="btn btn-sm olderThan8MonthsButton btn-territory"
+            *ngFor="let t of congregation.territoriesOlder8Months"
+            (click)="showTerritoryDetails(t)">
+      {{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}} <i-bs *ngIf="t.notes.length > 0" name="info-circle" style="color: #ffca00"></i-bs>
+    </button>
   </div>
 </div>
 
@@ -41,7 +55,11 @@
     No contacts  ({{congregation.territoriesNoContacts.length}})
   </h4>
   <div class="collapse" id="noContacts">
-    <button class="btn btn-sm olderThan8MonthsButton btn-territory" *ngFor="let t of congregation.territoriesNoContacts" (click)="showTerritoryDetails(t)">{{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}}</button>
+    <button class="btn btn-sm olderThan8MonthsButton btn-territory"
+            *ngFor="let t of congregation.territoriesNoContacts"
+            (click)="showTerritoryDetails(t)">
+      {{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}} <i-bs *ngIf="t.notes.length > 0" name="info-circle" style="color: #ffca00"></i-bs>
+    </button>
   </div>
 </div>
 
@@ -50,7 +68,11 @@
     Archived ({{congregation.territoriesArchived.length}})
   </h4>
   <div class="collapse" id="archived">
-    <button class="btn btn-sm archivedButton btn-territory" *ngFor="let t of congregation.territoriesArchived" (click)="showTerritoryDetails(t)">{{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}}</button>
+    <button class="btn btn-sm archivedButton btn-territory"
+            *ngFor="let t of congregation.territoriesArchived"
+            (click)="showTerritoryDetails(t)">
+      {{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}} <i-bs *ngIf="t.notes.length > 0" name="info-circle" style="color: #380000"></i-bs>
+    </button>
   </div>
 </div>
 

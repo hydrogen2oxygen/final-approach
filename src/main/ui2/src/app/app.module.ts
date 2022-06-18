@@ -12,6 +12,7 @@ import {HttpClientModule} from "@angular/common/http";
 import {CommonModule} from "@angular/common";
 import {ReactiveFormsModule} from "@angular/forms";
 import {AutocompleteLibModule} from "angular-ng-autocomplete";
+import {allIcons, NgxBootstrapIconsModule} from "ngx-bootstrap-icons";
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import {AutocompleteLibModule} from "angular-ng-autocomplete";
     CommonModule,
     CommonModule,
     ReactiveFormsModule,
-    AutocompleteLibModule
+    AutocompleteLibModule,
+    NgxBootstrapIconsModule.pick(allIcons)
   ],
   providers: [],
   bootstrap: [AppComponent]
