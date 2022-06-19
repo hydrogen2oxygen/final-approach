@@ -2,6 +2,7 @@ package de.pietro.lusso.territory.adapter;
 
 
 import de.pietro.lusso.territory.domain.Congregation;
+import de.pietro.lusso.territory.domain.Message;
 import de.pietro.lusso.territory.services.DatabaseService;
 import de.pietro.lusso.territory.services.PrintService;
 import org.apache.logging.log4j.LogManager;
@@ -72,8 +73,11 @@ public class CongregationAdapter {
     }
 
     @PostMapping("exportTerritoryData/{number}")
-    public void exportTerritoryData(@PathVariable String number) throws Exception {
+    public Message exportTerritoryData(@PathVariable String number) throws Exception {
         databaseService.exportTerritoryData(number);
+        Message msg = new Message();
+        msg.setMsg("Territory " + number + " exported!");
+        return msg;
     }
 
     @PostMapping("exportTerritoryData")

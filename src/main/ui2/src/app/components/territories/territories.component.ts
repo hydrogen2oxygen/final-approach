@@ -3,6 +3,8 @@ import {CongregationService} from "../../services/congregation.service";
 import {Congregation, Territory} from "../../domains/Congregation";
 import {FormControl} from "@angular/forms";
 import {Preacher, RegistryEntry} from "../../../../../ui/src/app/domains/Congregation";
+import {ToastrService} from "ngx-toastr";
+import {Message} from "../../domains/Message";
 
 @Component({
   selector: 'app-territories',
@@ -11,17 +13,20 @@ import {Preacher, RegistryEntry} from "../../../../../ui/src/app/domains/Congreg
 })
 export class TerritoriesComponent implements OnInit {
 
-  congregation:Congregation = new Congregation();
-  territory:Territory|null = null;
-  preacherList:Preacher[] = [];
-  selectedPreacher:any = null;
+  congregation: Congregation = new Congregation();
+  territory: Territory | null = null;
+  preacherList: Preacher[] = [];
+  selectedPreacher: any = null;
   keyword: string = "name";
 
   @Input() noContacts = new FormControl(false);
   @Input() intoArchive = new FormControl(false);
   note = new FormControl('');
 
-  constructor(private congregationService:CongregationService) { }
+  constructor(
+    private congregationService: CongregationService,
+    private toastr: ToastrService) {
+  }
 
   ngOnInit(): void {
     this.reloadCongregation();
@@ -34,7 +39,7 @@ export class TerritoriesComponent implements OnInit {
     });
   }
 
-  showTerritoryDetails(territory:Territory) {
+  showTerritoryDetails(territory: Territory) {
     this.territory = territory;
     this.intoArchive.setValue(territory.archive);
     this.noContacts.setValue(territory.noContacts);
@@ -50,9 +55,9 @@ export class TerritoriesComponent implements OnInit {
   removeNote(note: string) {
     if (this.territory == null) return;
 
-    let newNotes:string[] = [];
+    let newNotes: string[] = [];
 
-    this.territory.notes.forEach( n => {
+    this.territory.notes.forEach(n => {
       if (n != note) newNotes.push(n);
     });
 
@@ -74,7 +79,7 @@ export class TerritoriesComponent implements OnInit {
     let copyOfPreacher = new Preacher();
     copyOfPreacher.name = selectedPreacher.name;
 
-    let registryEntry:RegistryEntry = new RegistryEntry();
+    let registryEntry: RegistryEntry = new RegistryEntry();
     registryEntry.territoryName = this.territory.name;
     registryEntry.territoryNumber = this.territory.number;
     registryEntry.preacher = copyOfPreacher;
@@ -106,8 +111,19 @@ export class TerritoriesComponent implements OnInit {
       if (this.territory == null) return;
 
       if (this.territory.newPreacherAssigned) {
-        this.congregationService.exportTerritoryData(this.territory.number).subscribe( () => {
-          // FIXME this.toastr.success("Territory online map exported!","Export Service");
+
+        console.log("Trying to export territory " + this.territory.number)
+        let that = this;
+
+        this.congregationService.exportTerritoryData(this.territory.number).subscribe({
+          next(m) {
+            console.log(m.msg);
+            that.toastr.success(m.msg, "Export Service");
+          },
+          error(err) {
+            console.error(err.message);
+            that.toastr.error(err.message, "Error trying to export territory")
+          }
         });
       }
 

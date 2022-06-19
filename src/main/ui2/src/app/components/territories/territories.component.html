@@ -166,7 +166,7 @@ Territories {{
       <div class="modal-footer" *ngIf="territory">
         <button type="button" class="btn btn-outline-warning" (click)="territory = null" data-bs-toggle="modal" data-bs-target="#territoryDetailsModal">Cancel</button>
         <button type="button" class="btn btn-outline-success" (click)="saveTerritory()" data-bs-toggle="modal" data-bs-target="#territoryDetailsModal">Save</button>
-        <button type="button" class="btn btn-danger" (click)="deleteTerritory(territory.number)" data-bs-toggle="modal" data-bs-target="#territoryDetailsModal">DELETE</button>
+        <button type="button" class="btn btn-danger" *ngIf="territory.archive" (click)="deleteTerritory(territory.number)" data-bs-toggle="modal" data-bs-target="#territoryDetailsModal">DELETE</button>
       </div>
     </div>
   </div>

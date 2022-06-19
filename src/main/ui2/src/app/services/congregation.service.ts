@@ -3,6 +3,7 @@ import {Observable} from "rxjs";
 import {Congregation} from "../domains/Congregation";
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
+import {Message} from "../domains/Message";
 
 @Injectable({
   providedIn: 'root'
@@ -29,11 +30,11 @@ export class CongregationService {
     return this.http.post<void>(`${CongregationService.url}exportDatabase`,null);
   }
 
-  exportTerritoryData(territoryNumber?:string|undefined):Observable<void> {
+  exportTerritoryData(territoryNumber?:string|undefined):Observable<Message> {
     if (territoryNumber != undefined) {
-      return this.http.post<void>(`${CongregationService.url}exportTerritoryData/${territoryNumber}`,null);
+      return this.http.post<Message>(`${CongregationService.url}exportTerritoryData/${territoryNumber}`,null);
     }
-    return this.http.post<void>(`${CongregationService.url}exportTerritoryData`,null);
+    return this.http.post<Message>(`${CongregationService.url}exportTerritoryData`,null);
   }
 
   exportAllTerritoryData():Observable<void> {

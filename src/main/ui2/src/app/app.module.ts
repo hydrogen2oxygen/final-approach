@@ -13,6 +13,8 @@ import {CommonModule} from "@angular/common";
 import {ReactiveFormsModule} from "@angular/forms";
 import {AutocompleteLibModule} from "angular-ng-autocomplete";
 import {allIcons, NgxBootstrapIconsModule} from "ngx-bootstrap-icons";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {ToastrModule} from "ngx-toastr";
 
 @NgModule({
   declarations: [
@@ -31,7 +33,9 @@ import {allIcons, NgxBootstrapIconsModule} from "ngx-bootstrap-icons";
     CommonModule,
     ReactiveFormsModule,
     AutocompleteLibModule,
-    NgxBootstrapIconsModule.pick(allIcons)
+    NgxBootstrapIconsModule.pick(allIcons),
+    BrowserAnimationsModule,
+    ToastrModule.forRoot()
   ],
   providers: [],
   bootstrap: [AppComponent]
