@@ -20,6 +20,8 @@ public class Territory implements Serializable  {
     private Date date;
     private boolean noContacts = false;
     private boolean archive = false;
+    private boolean ftpExported = false;
+    private boolean ftpDeactived = false;
     private String url;
 
     private List<String> notes = new ArrayList<>();
@@ -88,6 +90,22 @@ public class Territory implements Serializable  {
 
     public void setArchive(boolean archive) {
         this.archive = archive;
+    }
+
+    public boolean isFtpExported() {
+        return ftpExported;
+    }
+
+    public void setFtpExported(boolean ftpExported) {
+        this.ftpExported = ftpExported;
+    }
+
+    public boolean isFtpDeactived() {
+        return ftpDeactived;
+    }
+
+    public void setFtpDeactived(boolean ftpDeactived) {
+        this.ftpDeactived = ftpDeactived;
     }
 
     public String getUrl() {

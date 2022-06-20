@@ -35,7 +35,8 @@ import {ToastrModule} from "ngx-toastr";
     AutocompleteLibModule,
     NgxBootstrapIconsModule.pick(allIcons),
     BrowserAnimationsModule,
-    ToastrModule.forRoot()
+    ToastrModule.forRoot(),
+    CommonModule
   ],
   providers: [],
   bootstrap: [AppComponent]

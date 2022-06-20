@@ -31,6 +31,8 @@ export class Territory {
   url:string | null='';
   uuid:string|undefined;
   newPreacherAssigned:boolean=false;
+  ftpExported:boolean=false;
+  ftpDeactived:boolean=false;
 }
 
 export class RegistryEntry {

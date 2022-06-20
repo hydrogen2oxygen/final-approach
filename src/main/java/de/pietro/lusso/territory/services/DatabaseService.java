@@ -455,7 +455,12 @@ public class DatabaseService {
             territoryData.setActive(false);
             territoryData.setReturnDate(Calendar.getInstance().getTime());
             objectMapper.writeValue(jsonFile, territoryData);
-            ftpService.upload(jsonFile);
+            try {
+                ftpService.upload(jsonFile);
+                territory.setFtpDeactived(true);
+            } catch (Exception e) {
+                logger.error("FTP deactivation failed", e);
+            }
         }
 
         logger.info("Create a new JSON (inside a local folder)");
@@ -472,17 +477,7 @@ public class DatabaseService {
             UUID uuid = UUID.randomUUID();
             logger.info("set a new UUID for the territory: " + uuid.toString());
             territory.setUuid(uuid);
-
-            for (Territory t : congregation.getTerritoryList()) {
-                if (Objects.equals(t.getNumber(), territory.getNumber())) {
-                    logger.trace("set uuid inside congregation territory");
-                    t.setUuid(territory.getUuid());
-                    break;
-                }
-            }
         }
-
-        saveCongregation(congregation);
 
         // TODO Link the JSON to the other territories of the preacher and relink the other JSONs to this one (n to n)
 
@@ -493,7 +488,14 @@ public class DatabaseService {
         // here you can test it locally
         // ...
         // Upload via FTP
-        ftpService.upload(jsonFile);
+        try {
+            ftpService.upload(jsonFile);
+            territory.setFtpExported(true);
+        } catch (Exception e) {
+            logger.error("FTP Upload of new territory failed", e);
+        }
+
+        saveCongregation(congregation);
 
         logger.info("Check the local folder for JSONs older than two years and delete them (inside the local folder and also on the remote server)");
         File dataFolder = new File("src/main/territoryMap/src/assets/data/");
@@ -501,6 +503,7 @@ public class DatabaseService {
         Calendar twoYearsAgo = Calendar.getInstance();
         twoYearsAgo.add(Calendar.YEAR, -2);
 
+        // Delete older files
         for (File file : dataFolder.listFiles()) {
             if (file.isFile() && file.getName().endsWith("json")) {
                 FileTime creationTime = (FileTime) Files.getAttribute(file.toPath(), "creationTime");

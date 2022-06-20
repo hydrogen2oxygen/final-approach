@@ -1,10 +1,8 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {CongregationService} from "../../services/congregation.service";
-import {Congregation, Territory} from "../../domains/Congregation";
+import {Congregation, Territory, Preacher, RegistryEntry} from "../../domains/Congregation";
 import {FormControl} from "@angular/forms";
-import {Preacher, RegistryEntry} from "../../../../../ui/src/app/domains/Congregation";
 import {ToastrService} from "ngx-toastr";
-import {Message} from "../../domains/Message";
 
 @Component({
   selector: 'app-territories',
@@ -19,8 +17,8 @@ export class TerritoriesComponent implements OnInit {
   selectedPreacher: any = null;
   keyword: string = "name";
 
-  @Input() noContacts = new FormControl(false);
-  @Input() intoArchive = new FormControl(false);
+  noContacts = new FormControl(false);
+  intoArchive = new FormControl(false);
   note = new FormControl('');
 
   constructor(
