@@ -111,9 +111,9 @@
                 <artifactId>frontend-maven-plugin</artifactId>
                 <version>1.7.6</version>
                 <configuration>
-                    <nodeVersion>v10.16.0</nodeVersion>
-                    <npmVersion>6.10.2</npmVersion>
-                    <workingDirectory>${basedir}/src/main/ui</workingDirectory>
+                    <nodeVersion>v18.3.0</nodeVersion>
+                    <npmVersion>8.12.2</npmVersion>
+                    <workingDirectory>${basedir}/src/main/ui2</workingDirectory>
                     <installDirectory>target</installDirectory>
                     <environmentVariables>
                         <production>true</production>
