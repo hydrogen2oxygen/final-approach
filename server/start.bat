@@ -1,1 +1,1 @@
-java -jar final-approach.jar
+java -jar launcher.jar

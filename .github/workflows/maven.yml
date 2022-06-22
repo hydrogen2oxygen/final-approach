@@ -20,8 +20,9 @@ jobs:
       - name: Upload Artifact - Make Directory
         run: |
           mkdir -p finalApproach;
-          cp target/final-approach-*.jar finalApproach/final-approach.jar;
-          cp start*.bat finalApproach/;
+          cp server/target/final-approach-*.jar finalApproach/final-approach.jar;
+          cp updater/target/updater-*.jar finalApproach/launcher.jar;
+          cp server/start*.bat finalApproach/;
       - uses: actions/upload-artifact@master
         with:
           name: FinalApproach
