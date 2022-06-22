@@ -42,3 +42,4 @@ territory.db.*
 /server/src/main/ui2/.angular/
 /preachers.txt
 /versionInfo.json
+/scripts/versionInfo.json

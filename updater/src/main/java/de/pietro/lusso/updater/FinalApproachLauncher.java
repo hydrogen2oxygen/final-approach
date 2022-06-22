@@ -35,6 +35,8 @@ public class FinalApproachLauncher {
             versionInfo = objectMapper.readValue(versionInfoFile, VersionInfo.class);
         } else {
             versionInfo = new VersionInfo();
+            versionInfo.setCurrentVersion(revision);
+            versionInfo.setCurrentVersionInfo(versionInfoText);
             versionInfo.getVersionInfoDetailList().add(new VersionInfoDetail(revision, versionInfoText));
             objectMapper.writeValue(versionInfoFile, versionInfo);
         }
