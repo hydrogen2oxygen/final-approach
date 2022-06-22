@@ -38,3 +38,7 @@ territory.db.*
 /copyToProductiveDirectory.bat
 /src/main/territoryMapVue/data/
 /src/main/viteTest/vite-project/public/*.json
+/server/src/main/resources/static/
+/server/src/main/ui2/.angular/
+/preachers.txt
+/versionInfo.json
