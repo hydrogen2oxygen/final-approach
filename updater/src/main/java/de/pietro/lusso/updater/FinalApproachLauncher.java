@@ -7,6 +7,7 @@ import de.pietro.lusso.updater.domain.VersionInfoDetail;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Properties;
 
 public class FinalApproachLauncher {
@@ -39,6 +40,13 @@ public class FinalApproachLauncher {
             versionInfo.setCurrentVersionInfo(versionInfoText);
             versionInfo.getVersionInfoDetailList().add(new VersionInfoDetail(revision, versionInfoText));
             objectMapper.writeValue(versionInfoFile, versionInfo);
+        }
+
+        try {
+            VersionInfo remoteVersion = objectMapper.readValue(new URL("https://raw.githubusercontent.com/hydrogen2oxygen/final-approach/main/versionInfo.json"), VersionInfo.class);
+            System.out.println(remoteVersion);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
