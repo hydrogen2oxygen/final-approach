@@ -20,6 +20,8 @@ import java.util.Properties;
 import java.util.Scanner;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class FinalApproachLauncher extends JFrame {
 
@@ -92,14 +94,14 @@ public class FinalApproachLauncher extends JFrame {
                 sleep(2);
 
                 while (!stop) {
-                    System.out.print("checking for updates ... ");
                     sleep(60);
 
                     if (checkForUpdates()) {
                         downloadUpdate();
-                        unzipUpdate();
                         shutdownServer();
+                        unzipUpdate();
                         runServer();
+                        sleep(300); // wait longer now
                     }
                 }
 
@@ -127,16 +129,40 @@ public class FinalApproachLauncher extends JFrame {
         System.exit(0);
     }
 
-    public void run() throws IOException, InterruptedException {
-
-        if (checkForUpdates()) {
-            downloadUpdate();
-            unzipUpdate();
-        }
-        runServer();
-    }
-
     private void unzipUpdate() {
+        try {
+            String fileZip = "newVersion" + versionInfo.getCurrentVersion() + ".zip";
+            byte[] buffer = new byte[1024];
+            ZipInputStream zis = new ZipInputStream(new FileInputStream(fileZip));
+            ZipEntry zipEntry = zis.getNextEntry();
+            while (zipEntry != null) {
+                File newFile = new File(zipEntry.getName());
+                if (zipEntry.isDirectory()) {
+                    if (!newFile.isDirectory() && !newFile.mkdirs()) {
+                        throw new IOException("Failed to create directory " + newFile);
+                    }
+                } else {
+                    // fix for Windows-created archives
+                    /* File parent = newFile.getParentFile();
+                    if (!parent.isDirectory() && !parent.mkdirs()) {
+                        throw new IOException("Failed to create directory " + parent);
+                    } */
+
+                    // write file content
+                    FileOutputStream fos = new FileOutputStream(newFile);
+                    int len;
+                    while ((len = zis.read(buffer)) > 0) {
+                        fos.write(buffer, 0, len);
+                    }
+                    fos.close();
+                }
+                zipEntry = zis.getNextEntry();
+            }
+            zis.closeEntry();
+            zis.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void downloadUpdate() {
@@ -145,6 +171,8 @@ public class FinalApproachLauncher extends JFrame {
     }
 
     private boolean checkForUpdates() {
+
+        System.out.print("checking for updates ... ");
 
         try {
             readVersionInfos();
@@ -167,10 +195,10 @@ public class FinalApproachLauncher extends JFrame {
             }
 
             Version currentVersion = new Version(versionInfo.getCurrentVersion());
-            System.out.println("current version is " + currentVersion);
+            System.out.println(" current version is " + currentVersion);
             VersionInfo remoteVersion = objectMapper.readValue(new URL("https://raw.githubusercontent.com/hydrogen2oxygen/final-approach/main/versionInfo.json"), VersionInfo.class);
             Version newVersion = new Version(remoteVersion.getCurrentVersion());
-            System.out.println("new version is " + currentVersion);
+            System.out.println(" new version is " + currentVersion);
 
             if (newVersion.compareTo(currentVersion) > 0 ) {
                 System.out.println("NEW VERSION FOUND!");
@@ -195,8 +223,11 @@ public class FinalApproachLauncher extends JFrame {
             try {
                 proc = Runtime.getRuntime().exec(jarStarterCommand);
                 System.out.println("... running ...");
-                if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-                    Desktop.getDesktop().browse(new URI("http://localhost"));
+                try {
+                    Runtime rt = Runtime.getRuntime();
+                    rt.exec("rundll32 url.dll,FileProtocolHandler " + "http://localhost");
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 Thread err = consume(proc.getErrorStream(), System.err);
                 Thread std = consume(proc.getInputStream(), System.out);
