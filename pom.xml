@@ -6,8 +6,8 @@
     <packaging>pom</packaging>
 
     <properties>
-        <revision>1.0.4</revision>
-        <version.info>AutoUpdater Test 4</version.info>
+        <revision>1.0.5</revision>
+        <version.info>Unzip downloaded update</version.info>
     </properties>
 
     <version>${revision}</version>
