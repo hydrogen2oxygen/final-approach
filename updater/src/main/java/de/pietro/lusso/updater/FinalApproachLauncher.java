@@ -175,6 +175,7 @@ public class FinalApproachLauncher extends JFrame {
             if (newVersion.compareTo(currentVersion) > 0 ) {
                 System.out.println("NEW VERSION FOUND!");
                 objectMapper.writeValue(versionInfoFile, remoteVersion);
+                versionInfo = remoteVersion;
                 return true;
             } else {
                 System.out.println("same old version");
