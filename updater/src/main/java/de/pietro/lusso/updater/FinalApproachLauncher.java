@@ -23,6 +23,7 @@ public class FinalApproachLauncher extends JFrame {
 
     private String revision;
     private String versionInfoText;
+    private VersionInfo versionInfo;
     private ObjectMapper objectMapper;
     private Process proc;
     private boolean stop = false;
@@ -139,7 +140,7 @@ public class FinalApproachLauncher extends JFrame {
 
     private void downloadUpdate() {
         System.out.println("Downloading update ...");
-        Downloader.download("","");
+        Downloader.download(versionInfo.getDownloadPath(),"newVersion" + versionInfo.getCurrentVersion() + ".zip");
     }
 
     private boolean checkForUpdates() {
@@ -152,13 +153,12 @@ public class FinalApproachLauncher extends JFrame {
 
         try {
             File versionInfoFile = new File("versionInfo.json");
-            VersionInfo versionInfo = null;
 
             if (versionInfoFile.exists()) {
                 versionInfo = objectMapper.readValue(versionInfoFile, VersionInfo.class);
             } else {
                 versionInfo = new VersionInfo();
-                versionInfo.setDownloadPath("https://github.com/hydrogen2oxygen/final-approach/releases/download/v1.0.0/final-approach-1.0.0.zip");
+                versionInfo.setDownloadPath("https://github.com/hydrogen2oxygen/final-approach/releases/download/v" + revision + "/final-approach-" + revision + ".zip");
                 versionInfo.setCurrentVersion(revision);
                 versionInfo.setCurrentVersionInfo(versionInfoText);
                 versionInfo.getVersionInfoDetailList().add(new VersionInfoDetail(revision, versionInfoText));
