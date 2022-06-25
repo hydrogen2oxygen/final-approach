@@ -43,3 +43,5 @@ territory.db.*
 /preachers.txt
 /versionInfo.json
 /scripts/versionInfo.json
+/server/logs/
+/logs/

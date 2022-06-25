@@ -5,9 +5,18 @@ import java.util.List;
 
 public class VersionInfo {
 
+    private String downloadPath;
     private String currentVersion;
     private String currentVersionInfo;
     private List<VersionInfoDetail> versionInfoDetailList = new ArrayList<>();
+
+    public String getDownloadPath() {
+        return downloadPath;
+    }
+
+    public void setDownloadPath(String downloadPath) {
+        this.downloadPath = downloadPath;
+    }
 
     public String getCurrentVersion() {
         return currentVersion;
@@ -31,5 +40,14 @@ public class VersionInfo {
 
     public void setVersionInfoDetailList(List<VersionInfoDetail> versionInfoDetailList) {
         this.versionInfoDetailList = versionInfoDetailList;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "\n\tcurrentVersion=" + currentVersion +
+                "\n\tcurrentVersionInfo=" + currentVersionInfo +
+                "\n\tversionInfoDetailList=" + versionInfoDetailList +
+                "\n}";
     }
 }

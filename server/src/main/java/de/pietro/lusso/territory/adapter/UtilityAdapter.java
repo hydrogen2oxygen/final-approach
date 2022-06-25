@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 @RestController
 @RequestMapping("utility/")
@@ -20,6 +22,23 @@ public class UtilityAdapter {
 
     @Autowired
     private DatabaseService databaseService;
+
+    @GetMapping("shutdown")
+    public void shutDown() {
+
+        Executor executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            logger.info("received shutdown request");
+            databaseService.shutdown();
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            logger.info("shutting down server");
+            System.exit(0);
+        });
+    }
 
     @PostMapping("importTerritoriesFromText")
     public void importTerritoriesFromText(@RequestBody ImportData importData) throws IOException, JSchException, SftpException {

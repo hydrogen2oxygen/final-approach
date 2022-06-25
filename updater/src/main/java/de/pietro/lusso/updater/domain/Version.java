@@ -47,4 +47,8 @@ public class Version implements Comparable<Version> {
         return this.compareTo((Version) that) == 0;
     }
 
+    @Override
+    public String toString() {
+        return version;
+    }
 }

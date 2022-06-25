@@ -744,4 +744,8 @@ public class DatabaseService {
 
         saveCongregation(congregation);
     }
+
+    public void shutdown() {
+        db.close();
+    }
 }
