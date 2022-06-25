@@ -7,12 +7,14 @@ import de.pietro.lusso.updater.domain.VersionInfoDetail;
 import de.pietro.lusso.updater.utils.Downloader;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.Properties;
 import java.util.Scanner;
@@ -192,6 +194,9 @@ public class FinalApproachLauncher extends JFrame {
             try {
                 proc = Runtime.getRuntime().exec(jarStarterCommand);
                 System.out.println("... running ...");
+                if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                    Desktop.getDesktop().browse(new URI("http://localhost"));
+                }
                 Thread err = consume(proc.getErrorStream(), System.err);
                 Thread std = consume(proc.getInputStream(), System.out);
                 err.join();
