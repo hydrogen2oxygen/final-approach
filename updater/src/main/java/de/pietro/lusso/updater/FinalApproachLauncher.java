@@ -26,9 +26,16 @@ public class FinalApproachLauncher extends JFrame {
     private ObjectMapper objectMapper;
     private Process proc;
     private boolean stop = false;
+    private static String jarStarterCommand = "java -jar server.jar";;
 
     public static void main(String [] args) throws IOException, InterruptedException {
         System.out.println("FinalApproachLauncher ...");
+        if (args.length > 0) {
+            jarStarterCommand = "";
+            for (String arg : args) {
+                jarStarterCommand += arg + " ";
+            }
+        }
         new FinalApproachLauncher();
     }
 
@@ -151,6 +158,7 @@ public class FinalApproachLauncher extends JFrame {
                 versionInfo = objectMapper.readValue(versionInfoFile, VersionInfo.class);
             } else {
                 versionInfo = new VersionInfo();
+                versionInfo.setDownloadPath("https://github.com/hydrogen2oxygen/final-approach/releases/download/v1.0.0/final-approach-1.0.0.zip");
                 versionInfo.setCurrentVersion(revision);
                 versionInfo.setCurrentVersionInfo(versionInfoText);
                 versionInfo.getVersionInfoDetailList().add(new VersionInfoDetail(revision, versionInfoText));
@@ -165,6 +173,7 @@ public class FinalApproachLauncher extends JFrame {
 
             if (newVersion.compareTo(currentVersion) > 0 ) {
                 System.out.println("NEW VERSION FOUND!");
+                objectMapper.writeValue(versionInfoFile, remoteVersion);
                 return true;
             } else {
                 System.out.println("same old version");
@@ -182,7 +191,7 @@ public class FinalApproachLauncher extends JFrame {
         Executor executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             try {
-                proc = Runtime.getRuntime().exec("java -jar server/target/server-1.0.0.jar");
+                proc = Runtime.getRuntime().exec(jarStarterCommand);
                 System.out.println("... running ...");
                 Thread err = consume(proc.getErrorStream(), System.err);
                 Thread std = consume(proc.getInputStream(), System.out);
