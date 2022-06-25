@@ -91,8 +91,7 @@ public class FinalApproachLauncher extends JFrame {
 
                 while (!stop) {
                     System.out.print("checking for updates ... ");
-                    System.out.println(" ... done!");
-                    sleep(5);
+                    sleep(60);
 
                     if (checkForUpdates()) {
                         downloadUpdate();
