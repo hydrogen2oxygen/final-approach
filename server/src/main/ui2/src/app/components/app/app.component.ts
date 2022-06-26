@@ -3,6 +3,7 @@ import {Link} from "../../domains/Link";
 import {ActivatedRoute, Router} from "@angular/router";
 import {CongregationService} from "../../services/congregation.service";
 import {Revision} from "../../domains/Congregation";
+import {NavigationService} from "../../services/navigation.service";
 
 @Component({
   selector: 'app-root',
@@ -17,13 +18,17 @@ export class AppComponent {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private congregationService:CongregationService
+    private congregationService:CongregationService,
+    private navigationService:NavigationService
   ) {
     let currentUrl = window.location.href;
     currentUrl = currentUrl.substring(currentUrl.lastIndexOf("/") + 1);
     this.activateCurrentLink(currentUrl);
-
     this.checkVersion();
+
+    this.navigationService.navigate.subscribe( (url:string) => {
+      this.navigate(url);
+    });
   }
 
   checkVersion() {

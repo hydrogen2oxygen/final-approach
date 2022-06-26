@@ -50,7 +50,7 @@ export class MapDesignService {
     return this.http.get<any>(`${MapDesignService.url}importStreetNames`);
   }
 
-  setActiveTerritory(territoryNumber:number,name:string):Observable<void> {
+  setActiveTerritory(territoryNumber:string,name:string):Observable<void> {
     return this.http.get<any>(`${MapDesignService.url}setActiveTerritory/${territoryNumber}/${name}`);
   }
 }

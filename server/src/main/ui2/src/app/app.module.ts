@@ -15,6 +15,7 @@ import {AutocompleteLibModule} from "angular-ng-autocomplete";
 import {allIcons, NgxBootstrapIconsModule} from "ngx-bootstrap-icons";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {ToastrModule} from "ngx-toastr";
+import {RouterModule} from "@angular/router";
 
 @NgModule({
   declarations: [
@@ -38,7 +39,9 @@ import {ToastrModule} from "ngx-toastr";
     ToastrModule.forRoot(),
     CommonModule,
     CommonModule,
-    CommonModule
+    CommonModule,
+    RouterModule,
+    RouterModule
   ],
   providers: [],
   bootstrap: [AppComponent]

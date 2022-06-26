@@ -26,6 +26,7 @@ import java.util.*;
 public class DatabaseService {
 
     private static final Logger logger = LogManager.getLogger(DatabaseService.class);
+    private static final String TERRITORY_JSON_DATA = "data/";
 
     @Autowired
     private FtpService ftpService;
@@ -39,6 +40,9 @@ public class DatabaseService {
 
     @PostConstruct
     public void initService() throws Exception{
+
+        File territoryJsonDataFolder = new File(TERRITORY_JSON_DATA);
+        territoryJsonDataFolder.mkdirs();
 
         makeCopyOfDatabase();
 
@@ -446,7 +450,7 @@ public class DatabaseService {
             territory.setUuid(uuid);
         }
 
-        File jsonFile = new File("src/main/territoryMap/src/assets/data/" + territory.getUuid().toString() + ".json");
+        File jsonFile = new File(TERRITORY_JSON_DATA + territory.getUuid().toString() + ".json");
 
         // Set the old JSON to inactive (with the returnDate = TODAY and maybe some text inside the note)
         if (jsonFile.exists() && !onlyRepair) {
@@ -482,7 +486,7 @@ public class DatabaseService {
         // TODO Link the JSON to the other territories of the preacher and relink the other JSONs to this one (n to n)
 
         logger.info("Upload the changes (including the old JSON with new status) via FTP to the online service");
-        jsonFile = new File("src/main/territoryMap/src/assets/data/" + territory.getUuid().toString() + ".json");
+        jsonFile = new File(TERRITORY_JSON_DATA + territory.getUuid().toString() + ".json");
         objectMapper.writeValue(jsonFile, territoryData);
 
         // here you can test it locally
@@ -498,7 +502,7 @@ public class DatabaseService {
         saveCongregation(congregation);
 
         logger.info("Check the local folder for JSONs older than two years and delete them (inside the local folder and also on the remote server)");
-        File dataFolder = new File("src/main/territoryMap/src/assets/data/");
+        File dataFolder = new File(TERRITORY_JSON_DATA);
 
         Calendar twoYearsAgo = Calendar.getInstance();
         twoYearsAgo.add(Calendar.YEAR, -2);
@@ -571,7 +575,7 @@ public class DatabaseService {
             territoryData.getTerritories().add(subMap);
         }
 
-        File jsonFile = new File("src/main/territoryMap/src/assets/data/" + groupLeader.getUuid().toString() + ".json");
+        File jsonFile = new File(TERRITORY_JSON_DATA + groupLeader.getUuid().toString() + ".json");
         objectMapper.writeValue(jsonFile, territoryData);
         ftpService.upload(jsonFile);
     }

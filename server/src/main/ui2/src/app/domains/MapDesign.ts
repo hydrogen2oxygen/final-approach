@@ -12,7 +12,7 @@ export class OsmStreet {
 
 export class TerritoryMap {
   draft:boolean=true;
-  territoryNumber:number=0;
+  territoryNumber:string='';
   territoryName:string='';
   simpleFeatureData:string='';
   simpleFeatureType:string='';
