@@ -142,13 +142,10 @@ public class FinalApproachLauncher extends JFrame {
                         throw new IOException("Failed to create directory " + newFile);
                     }
                 } else {
-                    // fix for Windows-created archives
-                    /* File parent = newFile.getParentFile();
-                    if (!parent.isDirectory() && !parent.mkdirs()) {
-                        throw new IOException("Failed to create directory " + parent);
-                    } */
-
                     // write file content
+                    if ("launcher.jar".equals(newFile.getName())) {
+                        newFile = new File("newlauncher.jar");
+                    }
                     FileOutputStream fos = new FileOutputStream(newFile);
                     int len;
                     while ((len = zis.read(buffer)) > 0) {
