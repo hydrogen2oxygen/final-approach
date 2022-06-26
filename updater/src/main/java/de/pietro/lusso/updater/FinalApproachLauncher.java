@@ -134,7 +134,9 @@ public class FinalApproachLauncher extends JFrame {
             String fileZip = "newVersion" + versionInfo.getCurrentVersion() + ".zip";
             byte[] buffer = new byte[1024];
             ZipInputStream zis = new ZipInputStream(new FileInputStream(fileZip));
+
             ZipEntry zipEntry = zis.getNextEntry();
+
             while (zipEntry != null) {
                 File newFile = new File(zipEntry.getName());
                 if (zipEntry.isDirectory()) {
@@ -143,6 +145,7 @@ public class FinalApproachLauncher extends JFrame {
                     }
                 } else {
                     // write file content
+                    System.out.println(newFile.getName());
                     if ("launcher.jar".equals(newFile.getName())) {
                         newFile = new File("newlauncher.jar");
                     }
@@ -157,6 +160,8 @@ public class FinalApproachLauncher extends JFrame {
             }
             zis.closeEntry();
             zis.close();
+
+            new File(fileZip).delete();
         } catch (Exception e) {
             e.printStackTrace();
         }

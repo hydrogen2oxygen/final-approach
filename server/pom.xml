@@ -12,7 +12,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <version>1.0.6</version>
+    <version>1.0.7</version>
     <groupId>de.pietro.lusso</groupId>
     <artifactId>server</artifactId>
 
