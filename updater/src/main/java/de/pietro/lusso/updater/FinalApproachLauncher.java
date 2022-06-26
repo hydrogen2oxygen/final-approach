@@ -146,9 +146,6 @@ public class FinalApproachLauncher extends JFrame {
                 } else {
                     // write file content
                     System.out.println(newFile.getName());
-                    if ("launcher.jar".equals(newFile.getName())) {
-                        newFile = new File("newlauncher.jar");
-                    }
                     FileOutputStream fos = new FileOutputStream(newFile);
                     int len;
                     while ((len = zis.read(buffer)) > 0) {

@@ -22,6 +22,7 @@ jobs:
           mkdir -p finalApproach;
           cp server/target/server-1.0.7.jar finalApproach/server.jar;
           cp updater/target/updater-1.0.7-jar-with-dependencies.jar finalApproach/launcher.jar;
+          cp updater/target/updater-1.0.7-jar-with-dependencies.jar finalApproach/newlauncher.jar;
           cp scripts/start.bat finalApproach/;
       - uses: actions/upload-artifact@master
         with:
