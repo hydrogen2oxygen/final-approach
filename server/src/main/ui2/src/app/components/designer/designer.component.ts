@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit, Output} from '@angular/core';
+import {AfterViewInit, Component, HostListener, OnInit, Output} from '@angular/core';
 import olMap from 'ol/Map';
 import TileLayer from 'ol/layer/Tile';
 import View from 'ol/View';
@@ -36,16 +36,16 @@ export class DesignerComponent implements OnInit, AfterViewInit {
   coordinateY = new FormControl(9.1506559);
   source = new VectorSource();
   interaction: any = null;
-  lastSelectedFeature:Feature | undefined = undefined;
-  lastSelectedTerritoryMap:TerritoryMap | undefined = undefined;
-  lastSavedTerritoryName:string = '';
+  lastSelectedFeature: Feature | undefined = undefined;
+  lastSelectedTerritoryMap: TerritoryMap | undefined = undefined;
+  lastSavedTerritoryName: string = '';
 
-  styleRedOutline:Style = new Style({
+  styleRedOutline: Style = new Style({
     fill: new Fill({
-      color: [0,0,0,0.1]
+      color: [0, 0, 0, 0.1]
     }),
     stroke: new Stroke({
-      color: [255,0,0,0.5],
+      color: [255, 0, 0, 0.5],
       width: 5
     }),
     text: new Text({
@@ -62,12 +62,12 @@ export class DesignerComponent implements OnInit, AfterViewInit {
     })
   });
 
-  styleRedOutlineActive:Style = new Style({
+  styleRedOutlineActive: Style = new Style({
     fill: new Fill({
-      color: [0,255,0,0.1]
+      color: [0, 255, 0, 0.1]
     }),
     stroke: new Stroke({
-      color: [0,100,0,0.5],
+      color: [0, 100, 0, 0.5],
       width: 5
     }),
     text: new Text({
@@ -84,8 +84,8 @@ export class DesignerComponent implements OnInit, AfterViewInit {
     })
   });
 
-  mapDesign:MapDesign = new MapDesign();
-  congregation:Congregation = new Congregation();
+  mapDesign: MapDesign = new MapDesign();
+  congregation: Congregation = new Congregation();
   note = new FormControl('');
   territoryNumber = new FormControl('');
   territoryCustomNumber = new FormControl('');
@@ -96,15 +96,16 @@ export class DesignerComponent implements OnInit, AfterViewInit {
   modeSelected = '';
 
   constructor(
-    private congregationService:CongregationService,
-    private mapDesignService:MapDesignService,
+    private congregationService: CongregationService,
+    private mapDesignService: MapDesignService,
     private toastr: ToastrService,
-    private navigationService:NavigationService
-  ) { }
+    private navigationService: NavigationService
+  ) {
+  }
 
   ngOnInit(): void {
 
-    this.congregationService.getCongregation().subscribe( c => this.congregation = c );
+    this.congregationService.getCongregation().subscribe(c => this.congregation = c);
 
     const osmLayer = new TileLayer({
       source: new OSM(),
@@ -115,7 +116,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
 
     const vectorLayer = new VectorLayer({
       source: this.source,
-      style: function(feature) {
+      style: function (feature) {
         let style = that.styleRedOutline;
 
         if (feature.get('draft') == false) {
@@ -150,7 +151,6 @@ export class DesignerComponent implements OnInit, AfterViewInit {
       view: this.view,
       controls: []
     });
-
   }
 
   ngAfterViewInit(): void {
@@ -159,15 +159,20 @@ export class DesignerComponent implements OnInit, AfterViewInit {
 
     this.selectInteraction.on('select', e => {
       if (e.deselected) {
+        console.log("deselect")
         this.lastSelectedFeature = undefined;
+        this.territoryCustomNumber.setValue(null);
+        this.territoryCustomName.setValue(null);
         //return;
       }
 
       this.lastSelectedFeature = e.selected[0];
-      this.territoryCustomNumber.setValue(this.lastSelectedFeature.get('territoryNumber'));
-      this.territoryCustomName.setValue(this.lastSelectedFeature.get('territoryName'));
+      if (this.lastSelectedFeature) {
+        this.territoryCustomNumber.setValue(this.lastSelectedFeature.get('territoryNumber'));
+        this.territoryCustomName.setValue(this.lastSelectedFeature.get('territoryName'));
+      }
 
-      this.mapDesign.territoryMapList.forEach( t => {
+      this.mapDesign.territoryMapList.forEach(t => {
         if (t.territoryNumber == this.territoryCustomNumber.value) {
           this.lastSelectedTerritoryMap = t;
         }
@@ -177,41 +182,50 @@ export class DesignerComponent implements OnInit, AfterViewInit {
     this.loadMap(true);
   }
 
-  navigate(url:string) {
+  navigate(url: string) {
     this.navigationService.navigate.emit(url)
   }
 
-  loadMap(centerView?:boolean) {
+  loadMap(centerView?: boolean) {
 
     this.source.clear();
 
     this.mapDesignService.getMapDesign().subscribe(mapDesign => {
-      this.mapDesign = mapDesign;
-
-      let format = new WKT();
-
-      mapDesign.territoryMapList.forEach( territoryMap => {
-
-        let feature = format.readFeature(territoryMap.simpleFeatureData,{
-          dataProjection: 'EPSG:3857',
-          featureProjection: 'EPSG:3857'
-        });
-
-        feature.set('territoryNumber', territoryMap.territoryNumber);
-        feature.set('territoryName', territoryMap.territoryName);
-        feature.set('name', '' + territoryMap.territoryNumber);
-        feature.set('draft', territoryMap.draft);
-        feature.setId(territoryMap.territoryNumber);
-        this.source.addFeature(feature);
-      })
-
-      if (centerView) this.map?.getView().setCenter([this.mapDesign.coordinatesX,this.mapDesign.coordinatesY]);
-      this.featureModified = false;
-      this.modeSelected = '';
+      this.loadMapDesignObject(mapDesign);
+      if (centerView) this.map?.getView().setCenter([this.mapDesign.coordinatesX, this.mapDesign.coordinatesY]);
     })
   }
 
+  loadMapDesignObject(mapDesign: MapDesign) {
+    this.mapDesign = mapDesign;
+
+    let format = new WKT();
+
+    mapDesign.territoryMapList.forEach(territoryMap => {
+
+      let feature = format.readFeature(territoryMap.simpleFeatureData, {
+        dataProjection: 'EPSG:3857',
+        featureProjection: 'EPSG:3857'
+      });
+
+      feature.set('territoryNumber', territoryMap.territoryNumber);
+      feature.set('territoryName', territoryMap.territoryName);
+      feature.set('name', '' + territoryMap.territoryNumber);
+      feature.set('draft', territoryMap.draft);
+      feature.setId(territoryMap.territoryNumber);
+      this.source.addFeature(feature);
+    })
+
+    this.featureModified = false;
+    this.modeSelected = '';
+  }
+
   saveMap() {
+
+    if (!this.territoryCustomNumber.value) {
+      this.toastr.warning("Territory Number is missing!");
+      return;
+    }
 
     if (this.territoryNumber.value?.length == 0) {
       this.territoryNumber.setValue(this.territoryCustomNumber.value)
@@ -240,7 +254,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
       this.lastSelectedFeature = undefined;
     }
 
-    this.mapDesignService.saveMapDesign(this.mapDesign).subscribe( m => {
+    this.mapDesignService.saveMapDesign(this.mapDesign).subscribe(m => {
       this.territoryNumber.setValue('');
       this.loadMap();
     })
@@ -284,7 +298,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
       source: this.source
     });
 
-    let modify:Modify = this.interaction;
+    let modify: Modify = this.interaction;
 
     modify.on('modifyend', evt => {
 
@@ -293,9 +307,9 @@ export class DesignerComponent implements OnInit, AfterViewInit {
       this.territoryCustomName.setValue(modifiedFeature.get('territoryName'));
       this.lastSavedTerritoryName = this.territoryCustomNumber.value + ' ' + this.territoryCustomName.value;
 
-      this.mapDesign.territoryMapList.forEach( t => {
+      this.mapDesign.territoryMapList.forEach(t => {
         if (t.territoryNumber == this.territoryCustomNumber.value) {
-          let data = this.wktFormat.writeGeometry(<Geometry> modifiedFeature.getGeometry());
+          let data = this.wktFormat.writeGeometry(<Geometry>modifiedFeature.getGeometry());
           t.simpleFeatureData = data;
           t.draft = true; // it remains a "draft" until you activate it
           t.lastUpdate = new Date();
@@ -320,7 +334,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
       type: type,
       source: this.source
     });
-    let draw:Draw = this.interaction;
+    let draw: Draw = this.interaction;
     draw.on('drawend', evt => {
       console.log('draw ended');
       this.lastSelectedFeature = evt.feature;
@@ -342,18 +356,24 @@ export class DesignerComponent implements OnInit, AfterViewInit {
     if (center != undefined) {
       this.mapDesign.coordinatesX = center[0];
       this.mapDesign.coordinatesY = center[1];
-      this.mapDesignService.saveMapDesign(this.mapDesign).subscribe( m => {
+      this.mapDesignService.saveMapDesign(this.mapDesign).subscribe(m => {
         this.loadMap();
-        this.toastr.info("New center was set!","Map Service")
+        this.toastr.info("New center was set!", "Map Service")
       })
     }
   }
 
   deleteMap() {
-    console.log(this.lastSelectedFeature?.get('number'));
+    console.log(this.lastSelectedFeature);
     let territoryNumber = this.lastSelectedFeature?.get('number');
-    this.mapDesignService.deleteTerritoryMap(territoryNumber).subscribe( data => {});
-    this.loadMap();
+    if (!territoryNumber) {
+      territoryNumber = this.lastSelectedFeature?.get('territoryNumber');
+    }
+    console.log(territoryNumber)
+    this.mapDesignService.deleteTerritoryMap(territoryNumber).subscribe(mapDesign => {
+      if (this.lastSelectedFeature) this.source.removeFeature(this.lastSelectedFeature);
+      this.loadMapDesignObject(mapDesign)
+    });
   }
 
   setMapData(territory: Territory) {
@@ -362,8 +382,8 @@ export class DesignerComponent implements OnInit, AfterViewInit {
   }
 
   exportKml() {
-    this.mapDesignService.exportKml().subscribe( v => {
-      this.toastr.info("KML(s) exported!","Map Service")
+    this.mapDesignService.exportKml().subscribe(v => {
+      this.toastr.info("KML(s) exported!", "Map Service")
     });
   }
 
@@ -372,8 +392,8 @@ export class DesignerComponent implements OnInit, AfterViewInit {
   }
 
   importStreetNames() {
-    this.mapDesignService.importStreetNames().subscribe( v => {
-      this.toastr.info("Street data imported from OSM","Map Service")
+    this.mapDesignService.importStreetNames().subscribe(v => {
+      this.toastr.info("Street data imported from OSM", "Map Service")
     });
   }
 
@@ -383,11 +403,11 @@ export class DesignerComponent implements OnInit, AfterViewInit {
 
       console.log(this.lastSelectedTerritoryMap)
 
-      this.mapDesign.territoryMapList.forEach( t => {
+      this.mapDesign.territoryMapList.forEach(t => {
         if (t.territoryNumber == this.lastSelectedTerritoryMap?.territoryNumber) {
           t.draft = false;
 
-          this.mapDesignService.saveMapDesign(this.mapDesign).subscribe( m => {
+          this.mapDesignService.saveMapDesign(this.mapDesign).subscribe(m => {
             this.territoryNumber.setValue('');
             this.loadMap();
           });
@@ -397,8 +417,8 @@ export class DesignerComponent implements OnInit, AfterViewInit {
       let territoryNumber = this.lastSelectedTerritoryMap.territoryNumber;
       let territoryName = this.lastSelectedTerritoryMap.territoryName;
 
-      this.mapDesignService.setActiveTerritory(territoryNumber,territoryName).subscribe( e => {
-        this.toastr.success(territoryNumber + ' ' + territoryName + ' is now active!','Map Service');
+      this.mapDesignService.setActiveTerritory(territoryNumber, territoryName).subscribe(e => {
+        this.toastr.success(territoryNumber + ' ' + territoryName + ' is now active!', 'Map Service');
         this.loadMap();
       })
 
@@ -407,13 +427,22 @@ export class DesignerComponent implements OnInit, AfterViewInit {
     }
   }
 
-  navigateToTerritoryMap(number:any) {
-    let feature:Feature<Geometry>|null = this.source.getFeatureById(number);
+  navigateToTerritoryMap(number: any) {
+    let feature: Feature<Geometry> | null = this.source.getFeatureById(number);
     if (feature != undefined && feature.getGeometry() != undefined) {
       // @ts-ignore
       let extent: Extent = feature.getGeometry().getExtent();
       this.map?.getView().fit(extent);
     }
+  }
+
+  territoryNumberSet() {
+    console.log(this.territoryCustomNumber.value);
+    if (this.territoryCustomNumber.value) {
+      console.log(this.territoryCustomNumber.value?.length);
+      return this.territoryCustomNumber.value?.length > 0;
+    }
+    return false;
   }
 }
 

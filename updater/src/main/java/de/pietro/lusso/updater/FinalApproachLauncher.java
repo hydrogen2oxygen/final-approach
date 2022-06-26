@@ -7,14 +7,12 @@ import de.pietro.lusso.updater.domain.VersionInfoDetail;
 import de.pietro.lusso.updater.utils.Downloader;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URL;
 import java.util.Properties;
 import java.util.Scanner;

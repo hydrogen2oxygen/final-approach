@@ -38,8 +38,8 @@ export class MapDesignService {
     return this.http.put<MapDesign>(`${MapDesignService.url}`,uncycledMapDesign);
   }
 
-  deleteTerritoryMap(territoryNumber:number):Observable<any> {
-    return this.http.delete<any>(`${MapDesignService.url}territoryMap/${territoryNumber}`);
+  deleteTerritoryMap(territoryNumber:string):Observable<MapDesign> {
+    return this.http.delete<MapDesign>(`${MapDesignService.url}territoryMap/${territoryNumber}`);
   }
 
   exportKml():Observable<void> {

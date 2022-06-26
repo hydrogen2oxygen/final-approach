@@ -43,7 +43,7 @@ public class MapDesignAdapter {
     }
 
     @DeleteMapping("territoryMap/{number}")
-    public void deleteTerritoryMap(@PathVariable Integer number) {
+    public MapDesign deleteTerritoryMap(@PathVariable String number) {
 
         MapDesign mapDesign = databaseService.loadMapDesign();
         TerritoryMap territoryMap = null;
@@ -59,6 +59,8 @@ public class MapDesignAdapter {
             mapDesign.getTerritoryMapList().remove(territoryMap);
             databaseService.saveMapDesign(mapDesign);
         }
+
+        return mapDesign;
     }
 
 }

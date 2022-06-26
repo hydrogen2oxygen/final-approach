@@ -9,7 +9,7 @@ public class Downloader {
 
     public static void download(String url, String target) {
 
-        try (BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
+        try (BufferedInputStream in = new BufferedInputStream(new URL(url + "?t=" + System.currentTimeMillis()).openStream());
              FileOutputStream fileOutputStream = new FileOutputStream(target)) {
             byte dataBuffer[] = new byte[1024];
             int bytesRead;

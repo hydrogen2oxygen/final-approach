@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.pietro.lusso.territory.domain.*;
 import de.pietro.lusso.territory.utils.SettingsInitializer;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dizitart.no2.Nitrite;
@@ -279,18 +280,23 @@ public class DatabaseService {
 
         MapDesign mapDesign = mapDesignOR.find().firstOrDefault();
 
-        List<TerritoryMap> territoryList = mapDesign.getTerritoryMapList();
-        if (territoryList != null) {
-            Collections.sort(territoryList, new Comparator<TerritoryMap>() {
-                @Override
-                public int compare(TerritoryMap o1, TerritoryMap o2) {
+        List<TerritoryMap> toBeRemovedFaultyMaps = new ArrayList<>();
 
-                    return o1.getTerritoryNumber().compareTo(o2.getTerritoryNumber());
-                }
-            });
-        } else {
-            mapDesign.setTerritoryMapList(new ArrayList<>());
+        for (TerritoryMap territoryMap : mapDesign.getTerritoryMapList()) {
+            if (StringUtils.isEmpty(territoryMap.getTerritoryNumber())) {
+                toBeRemovedFaultyMaps.add(territoryMap);
+            }
         }
+
+        mapDesign.getTerritoryMapList().removeAll(toBeRemovedFaultyMaps);
+
+        Collections.sort(mapDesign.getTerritoryMapList(), new Comparator<TerritoryMap>() {
+            @Override
+            public int compare(TerritoryMap o1, TerritoryMap o2) {
+
+                return o1.getTerritoryNumber().compareTo(o2.getTerritoryNumber());
+            }
+        });
 
         return mapDesign;
     }
