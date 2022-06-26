@@ -280,14 +280,17 @@ public class DatabaseService {
         MapDesign mapDesign = mapDesignOR.find().firstOrDefault();
 
         List<TerritoryMap> territoryList = mapDesign.getTerritoryMapList();
+        if (territoryList != null) {
+            Collections.sort(territoryList, new Comparator<TerritoryMap>() {
+                @Override
+                public int compare(TerritoryMap o1, TerritoryMap o2) {
 
-        Collections.sort(territoryList, new Comparator<TerritoryMap>() {
-            @Override
-            public int compare(TerritoryMap o1, TerritoryMap o2) {
-
-                return o1.getTerritoryNumber().compareTo(o2.getTerritoryNumber());
-            }
-        });
+                    return o1.getTerritoryNumber().compareTo(o2.getTerritoryNumber());
+                }
+            });
+        } else {
+            mapDesign.setTerritoryMapList(new ArrayList<>());
+        }
 
         return mapDesign;
     }
