@@ -1,10 +1,10 @@
 {
-  "downloadPath": "https://github.com/hydrogen2oxygen/final-approach/releases/download/v1.0.4/final-approach-1.0.4.zip",
-  "currentVersion": "1.0.4",
-  "currentVersionInfo": "Minor bugfixes and automatic browser opening",
+  "downloadPath": "https://github.com/hydrogen2oxygen/final-approach/releases/download/v1.0.5/final-approach-1.0.5.zip",
+  "currentVersion": "1.0.5",
+  "currentVersionInfo": "Unzipping",
   "versionInfoDetailList": [
     {
-      "version": "1.0.4"
+      "version": "1.0.5"
     }
   ]
 }
