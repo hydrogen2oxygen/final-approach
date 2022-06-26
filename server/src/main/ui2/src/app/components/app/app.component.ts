@@ -1,6 +1,8 @@
 import {Component} from '@angular/core';
 import {Link} from "../../domains/Link";
 import {ActivatedRoute, Router} from "@angular/router";
+import {CongregationService} from "../../services/congregation.service";
+import {Revision} from "../../domains/Congregation";
 
 @Component({
   selector: 'app-root',
@@ -10,11 +12,27 @@ import {ActivatedRoute, Router} from "@angular/router";
 export class AppComponent {
   title = 'TERRITORIES';
   links: Link[] = this.getLinks();
+  version: Revision|null = null;
 
-  constructor(private router: Router, private route: ActivatedRoute) {
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private congregationService:CongregationService
+  ) {
     let currentUrl = window.location.href;
     currentUrl = currentUrl.substring(currentUrl.lastIndexOf("/") + 1);
     this.activateCurrentLink(currentUrl);
+
+    this.checkVersion();
+  }
+
+  checkVersion() {
+    this.congregationService.version().subscribe(
+      v => this.version = v,
+      e => this.version = null);
+    setTimeout(() => {
+      this.checkVersion();
+    }, 5000);
   }
 
   navigate(navigationPath: string) {

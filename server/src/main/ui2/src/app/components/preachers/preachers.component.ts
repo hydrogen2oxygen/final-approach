@@ -29,6 +29,7 @@ export class PreachersComponent implements OnInit {
 
   ngOnInit(): void {
     this.reloadCongregation();
+    this.settingsService.getSettings().subscribe( s => this.settings = s);
   }
 
   private reloadCongregation() {
@@ -72,7 +73,6 @@ export class PreachersComponent implements OnInit {
       let territory: Territory | undefined = this.getTerritoryByNumber(territoryNumber);
 
       if (territory != undefined && territory.uuid != undefined) {
-
         let assignDate: Date | undefined = this.getAssignDateFromTerritory(territory);
         let formattedDate = this.datepipe.transform(assignDate, 'dd.MM.yyyy')
 
@@ -112,7 +112,23 @@ export class PreachersComponent implements OnInit {
     document.body.appendChild(selBox);
     selBox.focus();
     selBox.select();
-    document.execCommand('copy');
+
+    let text_to_copy = document.getElementById("textarea")?.innerHTML;
+    let that = this;
+
+    if (!navigator.clipboard){
+      document.execCommand('copy');
+    } else {
+      navigator.clipboard.writeText(val).then(
+        function(){
+          that.toastr.success(`Territory infos from ${that.preacher?.name} copied to clipboard!`) // success
+        })
+        .catch(
+          function() {
+            that.toastr.error("Copy to clipboard failed!") // error
+          });
+    }
+
     document.body.removeChild(selBox);
   }
 
@@ -150,6 +166,7 @@ export class PreachersComponent implements OnInit {
   harddeletePreacher(preacher: Preacher) {
     preacher.harddelete = true;
     this.deletePreacher(preacher);
+    this.preacher = null;
   }
 
   openPreacher(preacher: Preacher) {
@@ -185,7 +202,8 @@ export class PreachersComponent implements OnInit {
     let territory = this.getTerritoryByNumber(territoryNumber);
 
     if (territory) {
-
+      let lastRegistry = territory.registryEntryList[territory.registryEntryList.length - 1];
+      console.log(lastRegistry)
     }
 
     return ""

@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg bg-light">
   <div class="container-fluid">
-    <a class="navbar-brand">Final-Approach</a>
+    <a class="navbar-brand">Final-Approach <span *ngIf="version" class="badge text-bg-info">{{version.revision}}</span> <span *ngIf="version == null" class="badge text-bg-danger">OFFLINE</span> </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -14,9 +14,14 @@
   </div>
 </nav>
 
-<div class="content" role="main">
+<div class="content" role="main" *ngIf="version">
   <!-- The dynamic content -->
   <router-outlet></router-outlet>
   <!-- Footer -->
   <footer></footer>
+</div>
+<div class="content" role="main" *ngIf="version == null">
+  <h1 class="badge bg-danger">Server is offline!</h1>
+  <p>You need to restart your server application. Click on start.bat</p>
+  <img src="assets/startServer.png">
 </div>

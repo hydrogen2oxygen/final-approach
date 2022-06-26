@@ -43,3 +43,7 @@ export class RegistryEntry {
   returnDate:Date | null = new Date();
   territory:Territory = new Territory();
 }
+
+export class Revision {
+  revision:string = '';
+}

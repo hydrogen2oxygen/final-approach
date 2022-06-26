@@ -36,6 +36,8 @@ import {ToastrModule} from "ngx-toastr";
     NgxBootstrapIconsModule.pick(allIcons),
     BrowserAnimationsModule,
     ToastrModule.forRoot(),
+    CommonModule,
+    CommonModule,
     CommonModule
   ],
   providers: [],

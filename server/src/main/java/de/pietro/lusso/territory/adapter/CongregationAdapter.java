@@ -16,7 +16,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
+import java.util.Properties;
 
 @RestController
 @RequestMapping("congregation/")
@@ -35,6 +37,11 @@ public class CongregationAdapter {
     public String status() {
         logger.info("status ok");
         return "ok";
+    }
+
+    @GetMapping("version")
+    public String version() throws IOException {
+        return "{\"revision\":\"" + readVersionInfos() + "\"}";
     }
 
     @GetMapping
@@ -111,4 +118,12 @@ public class CongregationAdapter {
         return databaseService.deleteTerritory(number);
     }
 
+    private String readVersionInfos() throws IOException {
+        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+        InputStream is = classloader.getResourceAsStream("info.properties");
+        if (is == null) throw new IOException("info.properties not found inside classpath");
+        Properties p = new Properties();
+        p.load(is);
+        return p.getProperty("revision");
+    }
 }

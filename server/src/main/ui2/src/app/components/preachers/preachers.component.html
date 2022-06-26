@@ -32,11 +32,11 @@
 
       </div>
       <div class="modal-footer" *ngIf="preacher">
-        <button class="btn btn-primary btn-sm" (click)="getWhatsAppMessage(preacher)" value="click to copy" >Copy WhatsAppMessage</button>
+        <button class="btn btn-primary btn-sm" (click)="getWhatsAppMessage(preacher)" data-bs-toggle="modal" data-bs-target="#preacherDetailsModal">Copy WhatsAppMessage</button>
         <!--<button class="btn btn-success btn-sm" style="margin-left: 0.1rem" (click)="addGroupMember(p)">Add Group Member</button>-->
-        <button class="btn btn-danger btn-sm" style="margin-left: 0.1rem" (click)="deletePreacher(preacher)">Delete</button>
+        <button class="btn btn-danger btn-sm" style="margin-left: 0.1rem" (click)="deletePreacher(preacher)">Delete {{preacher.name}}</button>
         <button *ngIf="preacher.softdelete" class="btn btn-danger btn-sm" style="margin-left: 0.1rem"
-                (click)="harddeletePreacher(preacher)">Delete for real!!!
+                (click)="harddeletePreacher(preacher)" data-bs-toggle="modal" data-bs-target="#preacherDetailsModal">Delete {{preacher.name}} for real!!!
         </button>
       </div>
     </div>

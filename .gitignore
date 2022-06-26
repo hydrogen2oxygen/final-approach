@@ -45,3 +45,4 @@ territory.db.*
 /scripts/versionInfo.json
 /server/logs/
 /logs/
+/server/src/main/resources/info.properties
