@@ -328,14 +328,13 @@ public class DatabaseService {
         exporter.exportTo(schemaFile);
     }
 
-    public void setActiveTerritory(String number, String name) {
+    public MapDesign setActiveTerritory(String number, String name) {
 
         Congregation congregation = loadCongregation();
-        Territory territory = getTerritoryByNumber(number);
+        Territory territory = getTerritoryByNumber(congregation, number);
 
         if (territory != null) {
-            setTerritoryMapActive(number);
-            return;
+            return setTerritoryMapActive(number);
         }
 
         territory = new Territory();
@@ -353,9 +352,11 @@ public class DatabaseService {
 
         congregation.getTerritoryList().add(territory);
         saveCongregation(congregation);
+
+        return loadMapDesign();
     }
 
-    private void setTerritoryMapActive(String number) {
+    private MapDesign setTerritoryMapActive(String number) {
 
         MapDesign mapDesign = loadMapDesign();
 
@@ -365,7 +366,7 @@ public class DatabaseService {
             }
         }
 
-        saveMapDesign(mapDesign);
+        return saveMapDesign(mapDesign);
     }
 
     private Territory getTerritoryByNumber(final Congregation congregation, String number) {
