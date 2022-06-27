@@ -1,10 +1,10 @@
 {
-  "downloadPath": "https://github.com/hydrogen2oxygen/final-approach/releases/download/v1.0.11/final-approach-1.0.11.zip",
-  "currentVersion": "1.0.11",
-  "currentVersionInfo": "Bugfixes mapDesign persistence",
+  "downloadPath": "https://github.com/hydrogen2oxygen/final-approach/releases/download/v1.0.12/final-approach-1.0.12.zip",
+  "currentVersion": "1.0.12",
+  "currentVersionInfo": "Bugfix MapDesign persistence",
   "versionInfoDetailList": [
     {
-      "version": "1.0.11"
+      "version": "1.0.12"
     }
   ]
 }
