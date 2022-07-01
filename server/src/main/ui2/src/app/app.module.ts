@@ -9,7 +9,7 @@ import { DesignerComponent } from './components/designer/designer.component';
 import { UtilsComponent } from './components/utils/utils.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import {HttpClientModule} from "@angular/common/http";
-import {CommonModule} from "@angular/common";
+import {CommonModule, HashLocationStrategy, LocationStrategy} from "@angular/common";
 import {ReactiveFormsModule} from "@angular/forms";
 import {AutocompleteLibModule} from "angular-ng-autocomplete";
 import {allIcons, NgxBootstrapIconsModule} from "ngx-bootstrap-icons";
@@ -43,7 +43,7 @@ import {RouterModule} from "@angular/router";
     RouterModule,
     RouterModule
   ],
-  providers: [],
+  providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

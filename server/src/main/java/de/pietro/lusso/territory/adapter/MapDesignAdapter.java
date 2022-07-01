@@ -37,9 +37,9 @@ public class MapDesignAdapter {
     }
 
     @GetMapping("setActiveTerritory/{number}/{name}")
-    public void setActiveTerritory(@PathVariable String number, @PathVariable String name) throws Exception {
+    public MapDesign setActiveTerritory(@PathVariable String number, @PathVariable String name) throws Exception {
 
-        databaseService.setActiveTerritory(number,name);
+        return databaseService.setActiveTerritory(number,name);
     }
 
     @DeleteMapping("territoryMap/{number}")

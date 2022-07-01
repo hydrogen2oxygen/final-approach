@@ -402,6 +402,8 @@ export class DesignerComponent implements OnInit, AfterViewInit {
     if (this.lastSelectedTerritoryMap != undefined) {
 
       console.log(this.lastSelectedTerritoryMap)
+      this.lastSelectedTerritoryMap.draft = false;
+      this.lastSelectedFeature?.set('draft', false);
 
       this.mapDesign.territoryMapList.forEach(t => {
         if (t.territoryNumber == this.lastSelectedTerritoryMap?.territoryNumber) {
@@ -409,7 +411,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
 
           this.mapDesignService.saveMapDesign(this.mapDesign).subscribe(m => {
             this.territoryNumber.setValue('');
-            this.loadMap();
+            this.loadMapDesignObject(m);
           });
         }
       });
@@ -417,9 +419,10 @@ export class DesignerComponent implements OnInit, AfterViewInit {
       let territoryNumber = this.lastSelectedTerritoryMap.territoryNumber;
       let territoryName = this.lastSelectedTerritoryMap.territoryName;
 
-      this.mapDesignService.setActiveTerritory(territoryNumber, territoryName).subscribe(e => {
+      this.mapDesignService.setActiveTerritory(territoryNumber, territoryName).subscribe(mapDesign => {
         this.toastr.success(territoryNumber + ' ' + territoryName + ' is now active!', 'Map Service');
-        this.loadMap();
+        this.loadMapDesignObject(mapDesign);
+
       })
 
       this.lastSelectedFeature = undefined;
