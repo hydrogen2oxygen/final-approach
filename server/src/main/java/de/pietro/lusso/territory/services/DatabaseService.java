@@ -237,10 +237,25 @@ public class DatabaseService {
 
         Map<String,Preacher> preacherMap = new HashMap<>();
 
+        boolean congregationExist = false;
+
         for (Preacher preacher : congregation.getPreacherList()) {
+
+            if (Congregation.CONGREGATION.equals(preacher.getName())) {
+                congregationExist = true;
+            }
+
             preacher.getTerritoryListNumbers().clear();
             if (preacher.getName() == null || preacher.getName().trim().length() == 0 ) continue;
             preacherMap.put(preacher.getName(),preacher);
+        }
+
+        if (!congregationExist) {
+            Preacher congregationPool = new Preacher();
+            congregationPool.setName(Congregation.CONGREGATION);
+            congregationPool.setUuid(UUID.randomUUID());
+            congregation.getPreacherList().add(congregationPool);
+            preacherMap.put(congregationPool.getName(),congregationPool);
         }
 
         for (Territory territory : congregation.getTerritoryList()) {

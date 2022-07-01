@@ -47,4 +47,4 @@ territory.db.*
 /logs/
 /server/src/main/resources/info.properties
 /data/
-/territory_backup.db
+/territory*.db
