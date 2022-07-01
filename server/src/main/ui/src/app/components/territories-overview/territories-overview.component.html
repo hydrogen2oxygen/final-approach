@@ -10,13 +10,13 @@
   <div class="container-fluid" *ngIf="lastRegistryEntries">
     <div class="row">
       <div *ngFor="let registryEntry of lastRegistryEntries; index as i" class="col-3">
-        <button *ngIf="registryEntry.preacher.name == 'Congregazione'"
+        <button *ngIf="registryEntry.preacher.name == 'Congregation'"
                 class="{{cssAccordingRegistryEntry(registryEntry)}}"
                 (click)="openTerritory(registryEntry.territory)">{{ registryEntry.territoryNumber }} {{ registryEntry.territoryName }} {{registryEntry.assignDate | date:'dd-MM-yy'}}
           <i-bs *ngIf="registryEntry.territory.noContacts" name="droplet"></i-bs>
           <i-bs *ngIf="registryEntry.territory.notes.length > 0" name="info-circle" style="color: red"></i-bs>
         </button>
-        <button *ngIf="registryEntry.preacher.name != 'Congregazione'" class="{{cssAccordingRegistryEntry(registryEntry)}} {{cssAccordingDate(registryEntry.assignDate)}}"
+        <button *ngIf="registryEntry.preacher.name != 'Congregation'" class="{{cssAccordingRegistryEntry(registryEntry)}} {{cssAccordingDate(registryEntry.assignDate)}}"
                 (click)="openTerritory(registryEntry.territory)">{{ registryEntry.territoryNumber }} {{ registryEntry.territoryName }} {{registryEntry.assignDate | date:'dd-MM-yy'}}
           <i-bs *ngIf="registryEntry.territory.noContacts" name="droplet"></i-bs>
           <i-bs *ngIf="registryEntry.territory.notes.length > 0" name="info-circle" style="color: red"></i-bs>

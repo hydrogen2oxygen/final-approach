@@ -56,6 +56,33 @@ public class DatabaseService {
         mapDesignOR = db.getRepository(MapDesign.class);
         settingsOR = db.getRepository(Settings.class);
         objectMapper = new ObjectMapper();
+
+        databaseCorrection001_translateCongregationName();
+    }
+
+    private void databaseCorrection001_translateCongregationName() {
+        try {
+            Congregation congregation = loadCongregation();
+            resetTerritoryList(congregation);
+
+            for (Territory territory : congregation.getTerritoryList()) {
+                for (RegistryEntry registryEntry : territory.getRegistryEntryList()) {
+                    if ("Congregazione".equals(registryEntry.getPreacher().getName())) {
+                        registryEntry.getPreacher().setName(Congregation.CONGREGATION);
+                    }
+                }
+            }
+
+            for (Preacher preacher : congregation.getPreacherList()) {
+                if ("Congregazione".equals(preacher.getName())) {
+                    preacher.setName(Congregation.CONGREGATION);
+                }
+            }
+
+            saveCongregation(congregation);
+        } catch (Exception e) {
+            logger.error(e);
+        }
     }
 
     private void makeCopyOfDatabase() {
@@ -148,7 +175,7 @@ public class DatabaseService {
             // set last assigned date from registry
             setLastAssignedDate(territory);
 
-            if (territory.getRegistryEntryList().get(registrySize - 1).getPreacher().getName().equals("Congregazione")) {
+            if (territory.getRegistryEntryList().get(registrySize - 1).getPreacher().getName().equals(Congregation.CONGREGATION)) {
                 congregation.getTerritoriesToBeAssigned().add(territory);
                 toBeRemoved.add(territory);
                 continue;
@@ -348,7 +375,7 @@ public class DatabaseService {
         RegistryEntry registryEntry = new RegistryEntry();
         registryEntry.setTerritoryNumber(number);
         registryEntry.setAssignDate(Calendar.getInstance().getTime());
-        registryEntry.setPreacher(new Preacher("Congregazione"));
+        registryEntry.setPreacher(new Preacher(Congregation.CONGREGATION));
         territory.getRegistryEntryList().add(registryEntry);
 
         congregation.getTerritoryList().add(territory);
@@ -692,7 +719,7 @@ public class DatabaseService {
             RegistryEntry registryEntry = new RegistryEntry();
             registryEntry.setAssignDate(Calendar.getInstance().getTime());
             Preacher preacher = new Preacher();
-            preacher.setName("Congregazione");
+            preacher.setName(Congregation.CONGREGATION);
             registryEntry.setPreacher(preacher);
             territory.getRegistryEntryList().add(registryEntry);
 
@@ -735,7 +762,7 @@ public class DatabaseService {
             RegistryEntry registryEntry = new RegistryEntry();
             registryEntry.setAssignDate(Calendar.getInstance().getTime());
             Preacher preacher = new Preacher();
-            preacher.setName("Congregazione");
+            preacher.setName(Congregation.CONGREGATION);
             registryEntry.setPreacher(preacher);
             territory.getRegistryEntryList().add(registryEntry);
         }

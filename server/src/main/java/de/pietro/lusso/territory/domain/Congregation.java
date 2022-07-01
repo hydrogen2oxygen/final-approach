@@ -9,6 +9,8 @@ import java.util.UUID;
 
 public class Congregation {
 
+    public static final String CONGREGATION = "Congregation";
+
     @Id
     private UUID uuid = UUID.randomUUID();
     private String name;

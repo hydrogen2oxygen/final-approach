@@ -397,7 +397,7 @@ public class PrintService {
 
             String territoryName = entry.getTerritoryNumber() + " " + territoryMap.get(entry.getTerritoryNumber());
 
-            if (entry.getReturnDate() != null || entry.getPreacher().getName().toLowerCase().trim().equals("congregazione")) {
+            if (entry.getReturnDate() != null || entry.getPreacher().getName().toLowerCase().trim().equals(Congregation.CONGREGATION.toLowerCase())) {
                 setTableValue(table,territoryName, new BaseColor(167, 255, 94));
                 countInCongregation++;
             } else if (entryDate != null && entryDate.toInstant().compareTo(oneYearAgo.toInstant()) < 0) {

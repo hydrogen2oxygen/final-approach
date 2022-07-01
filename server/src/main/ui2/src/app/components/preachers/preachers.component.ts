@@ -141,7 +141,7 @@ export class PreachersComponent implements OnInit {
 
   deletePreacher(preacher: Preacher) {
 
-    if (preacher.name === "Congregazione") return;
+    if (preacher.name === "Congregation") return;
 
     if (!preacher.harddelete) {
       preacher.softdelete = !preacher.softdelete;

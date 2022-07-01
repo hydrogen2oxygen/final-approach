@@ -236,9 +236,9 @@ export class TerritoriesOverviewComponent implements OnInit {
   cssAccordingRegistryEntry(registryEntry: RegistryEntry) {
     let css = 'btn btn-primary btn-sm buttonTerritory';
 
-    if (registryEntry.preacher.name == 'Congregazione' && registryEntry.territory.noContacts) {
+    if (registryEntry.preacher.name == 'Congregation' && registryEntry.territory.noContacts) {
       css += ' inCongregationEmpty';
-    } else if (registryEntry.preacher.name == 'Congregazione' && !registryEntry.territory.noContacts) {
+    } else if (registryEntry.preacher.name == 'Congregation' && !registryEntry.territory.noContacts) {
       css += ' inCongregation';
     } else if (registryEntry.territory.noContacts) {
       css += ' buttonTerritoryEmpty';
