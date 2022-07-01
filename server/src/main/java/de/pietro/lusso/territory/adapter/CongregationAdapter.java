@@ -3,6 +3,7 @@ package de.pietro.lusso.territory.adapter;
 
 import de.pietro.lusso.territory.domain.Congregation;
 import de.pietro.lusso.territory.domain.Message;
+import de.pietro.lusso.territory.domain.Version;
 import de.pietro.lusso.territory.services.DatabaseService;
 import de.pietro.lusso.territory.services.PrintService;
 import org.apache.logging.log4j.LogManager;
@@ -40,8 +41,8 @@ public class CongregationAdapter {
     }
 
     @GetMapping("version")
-    public String version() throws IOException {
-        return "{\"revision\":\"" + readVersionInfos() + "\"}";
+    public Version version() throws IOException {
+        return databaseService.readVersionInfos();
     }
 
     @GetMapping
@@ -116,14 +117,5 @@ public class CongregationAdapter {
     @DeleteMapping("territory/{number}")
     public Congregation deleteTerritory(@PathVariable String number) throws Exception {
         return databaseService.deleteTerritory(number);
-    }
-
-    private String readVersionInfos() throws IOException {
-        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-        InputStream is = classloader.getResourceAsStream("info.properties");
-        if (is == null) throw new IOException("info.properties not found inside classpath");
-        Properties p = new Properties();
-        p.load(is);
-        return p.getProperty("revision");
     }
 }

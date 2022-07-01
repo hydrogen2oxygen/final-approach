@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {Observable} from "rxjs";
-import {Congregation, Revision} from "../domains/Congregation";
+import {Congregation, Version} from "../domains/Congregation";
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Message} from "../domains/Message";
@@ -18,8 +18,8 @@ export class CongregationService {
     return this.http.get<Congregation>(`${CongregationService.url}`);
   }
 
-  version():Observable<Revision> {
-    return this.http.get<Revision>(`${CongregationService.url}version`);
+  version():Observable<Version> {
+    return this.http.get<Version>(`${CongregationService.url}version`);
   }
 
   search(text:string):Observable<string[]> {

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.attribute.FileTime;
 import java.text.SimpleDateFormat;
@@ -38,6 +39,7 @@ public class DatabaseService {
     private ObjectRepository<Settings> settingsOR;
     private ObjectMapper objectMapper;
     private String databaseName = "territory.db";
+    private Version version = new Version();
 
     @PostConstruct
     public void initService() throws Exception{
@@ -134,6 +136,10 @@ public class DatabaseService {
         final Congregation congregation = congregationOR.find().firstOrDefault();
 
         resetTerritoryList(congregation);
+
+        version.setCounterTerritories(congregation.getTerritoryList().size());
+        version.setCounterPreachers(congregation.getPreacherList().size());
+
         enhancePreacherList(congregation);
         splitTerritories(congregation);
 
@@ -803,5 +809,17 @@ public class DatabaseService {
 
     public void shutdown() {
         db.close();
+    }
+
+    public Version readVersionInfos() throws IOException {
+        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+        InputStream is = classloader.getResourceAsStream("info.properties");
+        if (is == null) throw new IOException("info.properties not found inside classpath");
+        Properties p = new Properties();
+        p.load(is);
+
+        version.setRevision(p.getProperty("revision"));
+
+        return version;
     }
 }

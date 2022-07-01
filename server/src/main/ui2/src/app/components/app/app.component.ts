@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {Link} from "../../domains/Link";
 import {ActivatedRoute, Router} from "@angular/router";
 import {CongregationService} from "../../services/congregation.service";
-import {Revision} from "../../domains/Congregation";
+import {Version} from "../../domains/Congregation";
 import {NavigationService} from "../../services/navigation.service";
 
 @Component({
@@ -13,7 +13,7 @@ import {NavigationService} from "../../services/navigation.service";
 export class AppComponent {
   title = 'TERRITORIES';
   links: Link[] = this.getLinks();
-  version: Revision|null = null;
+  version: Version|null = null;
 
   constructor(
     private router: Router,

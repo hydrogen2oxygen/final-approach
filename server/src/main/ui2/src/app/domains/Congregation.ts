@@ -44,6 +44,9 @@ export class RegistryEntry {
   territory:Territory = new Territory();
 }
 
-export class Revision {
+export class Version {
   revision:string = '';
+  counterTerritories:number = 0;
+  counterPreachers:number = 0;
+  counterPreacherWithTerritories:number = 0;
 }
