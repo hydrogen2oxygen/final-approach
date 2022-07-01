@@ -23,6 +23,7 @@ export class AppComponent {
   ) {
     let currentUrl = window.location.href;
     currentUrl = currentUrl.substring(currentUrl.lastIndexOf("/") + 1);
+    console.log(currentUrl)
     this.activateCurrentLink(currentUrl);
     this.checkVersion();
 
@@ -56,6 +57,11 @@ export class AppComponent {
   }
 
   private activateCurrentLink(navigationPath?: string) {
+
+    if (navigationPath?.length === 0) {
+      navigationPath = 'TERRITORIES';
+    }
+
     this.links.forEach(link => {
       link.active = false;
 
