@@ -105,7 +105,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
 
-    this.congregationService.getCongregation().subscribe(c => this.congregation = c);
+    this.congregationService.getCongregation().subscribe((c: Congregation) => this.congregation = c);
 
     const osmLayer = new TileLayer({
       source: new OSM(),
@@ -190,7 +190,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
 
     this.source.clear();
 
-    this.mapDesignService.getMapDesign().subscribe(mapDesign => {
+    this.mapDesignService.getMapDesign().subscribe((mapDesign: MapDesign) => {
       this.loadMapDesignObject(mapDesign);
       if (centerView) this.map?.getView().setCenter([this.mapDesign.coordinatesX, this.mapDesign.coordinatesY]);
     })
@@ -254,7 +254,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
       this.lastSelectedFeature = undefined;
     }
 
-    this.mapDesignService.saveMapDesign(this.mapDesign).subscribe(m => {
+    this.mapDesignService.saveMapDesign(this.mapDesign).subscribe(() => {
       this.territoryNumber.setValue('');
       this.loadMap();
     })
@@ -356,7 +356,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
     if (center != undefined) {
       this.mapDesign.coordinatesX = center[0];
       this.mapDesign.coordinatesY = center[1];
-      this.mapDesignService.saveMapDesign(this.mapDesign).subscribe(m => {
+      this.mapDesignService.saveMapDesign(this.mapDesign).subscribe(() => {
         this.loadMap();
         this.toastr.info("New center was set!", "Map Service")
       })
@@ -370,7 +370,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
       territoryNumber = this.lastSelectedFeature?.get('territoryNumber');
     }
     console.log(territoryNumber)
-    this.mapDesignService.deleteTerritoryMap(territoryNumber).subscribe(mapDesign => {
+    this.mapDesignService.deleteTerritoryMap(territoryNumber).subscribe((mapDesign: MapDesign) => {
       if (this.lastSelectedFeature) this.source.removeFeature(this.lastSelectedFeature);
       this.loadMapDesignObject(mapDesign)
     });
@@ -382,7 +382,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
   }
 
   exportKml() {
-    this.mapDesignService.exportKml().subscribe(v => {
+    this.mapDesignService.exportKml().subscribe(() => {
       this.toastr.info("KML(s) exported!", "Map Service")
     });
   }
@@ -392,7 +392,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
   }
 
   importStreetNames() {
-    this.mapDesignService.importStreetNames().subscribe(v => {
+    this.mapDesignService.importStreetNames().subscribe(() => {
       this.toastr.info("Street data imported from OSM", "Map Service")
     });
   }
@@ -409,7 +409,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
         if (t.territoryNumber == this.lastSelectedTerritoryMap?.territoryNumber) {
           t.draft = false;
 
-          this.mapDesignService.saveMapDesign(this.mapDesign).subscribe(m => {
+          this.mapDesignService.saveMapDesign(this.mapDesign).subscribe((m: MapDesign) => {
             this.territoryNumber.setValue('');
             this.loadMapDesignObject(m);
           });
@@ -419,7 +419,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
       let territoryNumber = this.lastSelectedTerritoryMap.territoryNumber;
       let territoryName = this.lastSelectedTerritoryMap.territoryName;
 
-      this.mapDesignService.setActiveTerritory(territoryNumber, territoryName).subscribe(mapDesign => {
+      this.mapDesignService.setActiveTerritory(territoryNumber, territoryName).subscribe((mapDesign: MapDesign) => {
         this.toastr.success(territoryNumber + ' ' + territoryName + ' is now active!', 'Map Service');
         this.loadMapDesignObject(mapDesign);
 

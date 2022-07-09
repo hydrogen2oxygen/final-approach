@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg bg-light">
   <div class="container-fluid">
     <a class="navbar-brand">Final-Approach
-      <span *ngIf="version" class="badge text-bg-info">{{version.revision}}</span>
+      <span *ngIf="version" class="badge text-bg-info" title="Final-Approach Version">{{version.revision}}</span>
       <span *ngIf="version && version.counterTerritories > 0" class="badge text-bg-primary" style="margin-left: 0.2rem" title="Territories">{{version.counterTerritories}}</span>
       <span *ngIf="version && version.counterPreachers > 0" class="badge text-bg-success" style="margin-left: 0.2rem" title="Preachers">{{version.counterPreachers}}</span>
       <span *ngIf="version == null" class="badge text-bg-danger">OFFLINE</span>

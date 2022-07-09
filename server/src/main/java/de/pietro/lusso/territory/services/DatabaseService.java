@@ -140,7 +140,7 @@ public class DatabaseService {
         version.setCounterTerritories(congregation.getTerritoryList().size());
         version.setCounterPreachers(congregation.getPreacherList().size());
 
-        enhancePreacherList(congregation);
+        enhanceCongregationData(congregation);
         splitTerritories(congregation);
 
         return congregation;
@@ -239,7 +239,7 @@ public class DatabaseService {
         territory.setDate(date);
     }
 
-    private Congregation enhancePreacherList(Congregation congregation) {
+    private Congregation enhanceCongregationData(Congregation congregation) {
 
         Map<String,Preacher> preacherMap = new HashMap<>();
 
@@ -264,7 +264,22 @@ public class DatabaseService {
             preacherMap.put(congregationPool.getName(),congregationPool);
         }
 
+        MapDesign mapDesign = loadMapDesign();
+        Set<String> mapsActive = new HashSet<>();
+
+        for (TerritoryMap territoryMap : mapDesign.getTerritoryMapList()) {
+            if (! territoryMap.isDraft()) {
+                mapsActive.add(territoryMap.getTerritoryNumber());
+            }
+        }
+
         for (Territory territory : congregation.getTerritoryList()) {
+
+            if (mapsActive.contains(territory.getNumber())) {
+                territory.setMapExist(true);
+            } else {
+                territory.setMapExist(false);
+            }
 
             if (territory.getRegistryEntryList() == null || territory.getRegistryEntryList().size() == 0) continue;
 
@@ -315,7 +330,7 @@ public class DatabaseService {
         });
 
         congregationOR.update(congregation);
-        return enhancePreacherList(loadCongregation());
+        return enhanceCongregationData(loadCongregation());
     }
 
     public MapDesign loadMapDesign() {

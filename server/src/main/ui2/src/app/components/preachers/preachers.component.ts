@@ -19,6 +19,8 @@ export class PreachersComponent implements OnInit {
   settings: Settings | null = null;
   newPreacherName = new FormControl('');
   datepipe: DatePipe = new DatePipe('en-US');
+  monthsBefore4:Date = new Date();
+  monthsBefore8:Date = new Date();
 
   constructor(
     private congregationService: CongregationService,
@@ -29,7 +31,9 @@ export class PreachersComponent implements OnInit {
 
   ngOnInit(): void {
     this.reloadCongregation();
-    this.settingsService.getSettings().subscribe( s => this.settings = s);
+    this.settingsService.getSettings().subscribe( (s: Settings | null) => this.settings = s);
+    this.monthsBefore4.setMonth(this.monthsBefore4.getMonth()-4);
+    this.monthsBefore8.setMonth(this.monthsBefore8.getMonth()-8);
   }
 
   private reloadCongregation() {
@@ -160,7 +164,7 @@ export class PreachersComponent implements OnInit {
     });
 
     console.log(this.congregation.preacherList);
-    this.congregationService.saveCongregation(this.congregation).subscribe(c => this.congregation = c)
+    this.congregationService.saveCongregation(this.congregation).subscribe((c: Congregation) => this.congregation = c)
   }
 
   harddeletePreacher(preacher: Preacher) {
@@ -200,12 +204,16 @@ export class PreachersComponent implements OnInit {
 
   cssAccordingToTerritory(territoryNumber:string):string {
     let territory = this.getTerritoryByNumber(territoryNumber);
+    let css = "";
 
     if (territory) {
       let lastRegistry = territory.registryEntryList[territory.registryEntryList.length - 1];
-      console.log(lastRegistry)
+      if (lastRegistry.assignDate > this.monthsBefore8) {
+        css = "btn-danger";
+        // TODO finish this
+      }
     }
 
-    return ""
+    return css;
   }
 }

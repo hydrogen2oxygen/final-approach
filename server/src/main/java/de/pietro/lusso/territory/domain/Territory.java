@@ -22,6 +22,7 @@ public class Territory implements Serializable  {
     private boolean archive = false;
     private boolean ftpExported = false;
     private boolean ftpDeactived = false;
+    private boolean mapExist = false;
     private String url;
 
     private List<String> notes = new ArrayList<>();
@@ -122,6 +123,14 @@ public class Territory implements Serializable  {
 
     public void setUuid(UUID uuid) {
         this.uuid = uuid;
+    }
+
+    public boolean isMapExist() {
+        return mapExist;
+    }
+
+    public void setMapExist(boolean mapExist) {
+        this.mapExist = mapExist;
     }
 
     @Override

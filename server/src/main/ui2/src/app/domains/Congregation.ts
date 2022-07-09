@@ -33,6 +33,7 @@ export class Territory {
   newPreacherAssigned:boolean=false;
   ftpExported:boolean=false;
   ftpDeactived:boolean=false;
+  mapExist:boolean=false;
 }
 
 export class RegistryEntry {

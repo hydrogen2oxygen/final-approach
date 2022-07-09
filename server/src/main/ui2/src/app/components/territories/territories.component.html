@@ -8,6 +8,7 @@
             (click)="showTerritoryDetails(t)"
             data-bs-toggle="modal" data-bs-target="#territoryDetailsModal">
       {{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}} <i-bs *ngIf="t.notes.length > 0" name="info-circle" style="color: #ffffff"></i-bs>
+      <i *ngIf="t.mapExist" class="bi bi-map-fill"></i>
     </button>
   </div>
 </div>
@@ -22,6 +23,7 @@
             (click)="showTerritoryDetails(t)"
             data-bs-toggle="modal" data-bs-target="#territoryDetailsModal">
       {{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}} <i-bs *ngIf="t.notes.length > 0" name="info-circle" style="color: #ffca00"></i-bs>
+      <i *ngIf="t.mapExist" class="bi bi-map-fill"></i>
     </button>
   </div>
 </div>
@@ -36,6 +38,7 @@
             (click)="showTerritoryDetails(t)"
             data-bs-toggle="modal" data-bs-target="#territoryDetailsModal">
       {{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}} <i-bs *ngIf="t.notes.length > 0" name="info-circle" style="color: #fff1bd"></i-bs>
+      <i *ngIf="t.mapExist" class="bi bi-map-fill"></i>
     </button>
   </div>
 </div>
@@ -50,6 +53,7 @@
             (click)="showTerritoryDetails(t)"
             data-bs-toggle="modal" data-bs-target="#territoryDetailsModal">
       {{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}} <i-bs *ngIf="t.notes.length > 0" name="info-circle" style="color: #ffca00"></i-bs>
+      <i *ngIf="t.mapExist" class="bi bi-map-fill"></i>
     </button>
   </div>
 </div>
@@ -64,6 +68,7 @@
             (click)="showTerritoryDetails(t)"
             data-bs-toggle="modal" data-bs-target="#territoryDetailsModal">
       {{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}} <i-bs *ngIf="t.notes.length > 0" name="info-circle" style="color: #ffca00"></i-bs>
+      <i *ngIf="t.mapExist" class="bi bi-map-fill"></i>
     </button>
   </div>
 </div>
@@ -78,6 +83,7 @@
             (click)="showTerritoryDetails(t)"
             data-bs-toggle="modal" data-bs-target="#territoryDetailsModal">
       {{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}} <i-bs *ngIf="t.notes.length > 0" name="info-circle" style="color: #380000"></i-bs>
+      <i *ngIf="t.mapExist" class="bi bi-map-fill"></i>
     </button>
   </div>
 </div>

@@ -23,7 +23,6 @@ export class AppComponent {
   ) {
     let currentUrl = window.location.href;
     currentUrl = currentUrl.substring(currentUrl.lastIndexOf("/") + 1);
-    console.log(currentUrl)
     this.activateCurrentLink(currentUrl);
     this.checkVersion();
 
@@ -34,8 +33,8 @@ export class AppComponent {
 
   checkVersion() {
     this.congregationService.version().subscribe(
-      v => this.version = v,
-      e => this.version = null);
+        (v: Version | null) => this.version = v,
+      () => this.version = null);
     setTimeout(() => {
       this.checkVersion();
     }, 5000);
