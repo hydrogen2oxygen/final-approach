@@ -266,6 +266,7 @@ public class DatabaseService {
 
         MapDesign mapDesign = loadMapDesign();
         Set<String> mapsActive = new HashSet<>();
+        Settings settings = loadSettings();
 
         for (TerritoryMap territoryMap : mapDesign.getTerritoryMapList()) {
             if (! territoryMap.isDraft()) {
@@ -277,6 +278,7 @@ public class DatabaseService {
 
             if (mapsActive.contains(territory.getNumber())) {
                 territory.setMapExist(true);
+               // territory.setUrl(settings.getSettings().get());
             } else {
                 territory.setMapExist(false);
             }
