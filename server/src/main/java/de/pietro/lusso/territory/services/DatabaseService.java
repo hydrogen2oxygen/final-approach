@@ -278,7 +278,7 @@ public class DatabaseService {
 
             if (mapsActive.contains(territory.getNumber())) {
                 territory.setMapExist(true);
-               // territory.setUrl(settings.getSettings().get());
+                territory.setUrl(settings.getSettings().get("ftp.httpHost") + "?id=" + territory.getUuid());
             } else {
                 territory.setMapExist(false);
             }

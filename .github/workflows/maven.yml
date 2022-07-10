@@ -20,11 +20,11 @@ jobs:
       - name: Upload Artifact - Make Directory
         run: |
           mkdir -p finalApproach;
-          cp server/target/server-1.0.15.jar finalApproach/server.jar;
-          cp updater/target/updater-1.0.15-jar-with-dependencies.jar finalApproach/launcher.jar;
-          cp updater/target/updater-1.0.15-jar-with-dependencies.jar finalApproach/newlauncher.jar;
+          cp server/target/server-1.0.16.jar finalApproach/server.jar;
+          cp updater/target/updater-1.0.16-jar-with-dependencies.jar finalApproach/launcher.jar;
+          cp updater/target/updater-1.0.16-jar-with-dependencies.jar finalApproach/newlauncher.jar;
           cp scripts/start.bat finalApproach/;
       - uses: actions/upload-artifact@master
         with:
-          name: final-approach-1.0.15
+          name: final-approach-1.0.16
           path: finalApproach

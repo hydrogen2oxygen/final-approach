@@ -19,8 +19,9 @@ export class PreachersComponent implements OnInit {
   settings: Settings | null = null;
   newPreacherName = new FormControl('');
   datepipe: DatePipe = new DatePipe('en-US');
-  monthsBefore4:Date = new Date();
-  monthsBefore8:Date = new Date();
+  monthsBefore4: Date = new Date();
+  monthsBefore8: Date = new Date();
+  territories: Territory[] = [];
 
   constructor(
     private congregationService: CongregationService,
@@ -31,9 +32,9 @@ export class PreachersComponent implements OnInit {
 
   ngOnInit(): void {
     this.reloadCongregation();
-    this.settingsService.getSettings().subscribe( (s: Settings | null) => this.settings = s);
-    this.monthsBefore4.setMonth(this.monthsBefore4.getMonth()-4);
-    this.monthsBefore8.setMonth(this.monthsBefore8.getMonth()-8);
+    this.settingsService.getSettings().subscribe((s: Settings | null) => this.settings = s);
+    this.monthsBefore4.setMonth(this.monthsBefore4.getMonth() - 4);
+    this.monthsBefore8.setMonth(this.monthsBefore8.getMonth() - 8);
   }
 
   private reloadCongregation() {
@@ -120,15 +121,15 @@ export class PreachersComponent implements OnInit {
     let text_to_copy = document.getElementById("textarea")?.innerHTML;
     let that = this;
 
-    if (!navigator.clipboard){
+    if (!navigator.clipboard) {
       document.execCommand('copy');
     } else {
       navigator.clipboard.writeText(val).then(
-        function(){
+        function () {
           that.toastr.success(`Territory infos from ${that.preacher?.name} copied to clipboard!`) // success
         })
         .catch(
-          function() {
+          function () {
             that.toastr.error("Copy to clipboard failed!") // error
           });
     }
@@ -175,21 +176,18 @@ export class PreachersComponent implements OnInit {
 
   openPreacher(preacher: Preacher) {
     this.preacher = preacher;
+    preacher.territoryListNumbers.forEach(n => {
+      let territory = this.getTerritoryByNumber(n);
+      if (territory) {
+        this.territories.push(territory);
+      }
+    })
   }
 
-  returnTerritoryByNumber(territoryNumber: string) {
+  getTerritoryNameAndDetails(territory: Territory): string {
 
-  }
-
-  getTerritoryNameAndDetails(territoryNumber:string):string {
-
-    let territory = this.getTerritoryByNumber(territoryNumber);
-
-    if (territory) {
-      let date = formatDate(Date.now(),'dd-MM-yy',this.locale);
-      return `${territory.name} (${date})`;
-    }
-    return "nee";
+    let date = formatDate(Date.now(), 'dd-MM-yy', this.locale);
+    return `${territory.name} (${date})`;
   }
 
   getTerritoryByNumber(territoryNumber: string): Territory | undefined {
@@ -202,8 +200,7 @@ export class PreachersComponent implements OnInit {
     return territoryList.find(t => t.number === territoryNumber);
   }
 
-  cssAccordingToTerritory(territoryNumber:string):string {
-    let territory = this.getTerritoryByNumber(territoryNumber);
+  cssAccordingToTerritory(territory: Territory): string {
     let css = "";
 
     if (territory) {
@@ -215,5 +212,14 @@ export class PreachersComponent implements OnInit {
     }
 
     return css;
+  }
+
+  urlFromTerritory(territoryNumber: string) {
+    let territory = this.getTerritoryByNumber(territoryNumber);
+    return territory?.url;
+  }
+
+  returnTerritoryByNumber(territory:Territory) {
+
   }
 }
