@@ -6,8 +6,8 @@
     <packaging>pom</packaging>
 
     <properties>
-        <revision>1.0.17</revision>
-        <version.info>Unzip downloaded update</version.info>
+        <revision>1.0.18</revision>
+        <version.info>Refresh Utils</version.info>
     </properties>
 
     <version>${revision}</version>

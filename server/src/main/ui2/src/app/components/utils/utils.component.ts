@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {environment} from "../../../environments/environment";
 
 @Component({
   selector: 'app-utils',
@@ -12,4 +13,15 @@ export class UtilsComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  refresh() {
+    if(environment.production) {
+      const form = document.createElement('form');
+      form.method = "GET";
+      form.action = location.href;
+      document.body.appendChild(form);
+      form.submit();
+    } else {
+      window.location.reload();
+    }
+  }
 }
