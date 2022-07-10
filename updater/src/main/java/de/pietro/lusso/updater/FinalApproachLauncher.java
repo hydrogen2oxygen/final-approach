@@ -14,6 +14,7 @@ import java.awt.event.WindowEvent;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Calendar;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.concurrent.Executor;
@@ -222,7 +223,7 @@ public class FinalApproachLauncher extends JFrame {
                 System.out.println("... running ...");
                 try {
                     Runtime rt = Runtime.getRuntime();
-                    rt.exec("rundll32 url.dll,FileProtocolHandler " + "http://localhost");
+                    rt.exec("rundll32 url.dll,FileProtocolHandler " + "http://localhost?avoidCache=" + Calendar.getInstance().getTimeInMillis());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

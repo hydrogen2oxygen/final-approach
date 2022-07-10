@@ -176,6 +176,7 @@ export class PreachersComponent implements OnInit {
 
   openPreacher(preacher: Preacher) {
     this.preacher = preacher;
+    this.territories = [];
     preacher.territoryListNumbers.forEach(n => {
       let territory = this.getTerritoryByNumber(n);
       if (territory) {
