@@ -4,6 +4,7 @@ import {Congregation, Version} from "../domains/Congregation";
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Message} from "../domains/Message";
+import {BackupFile} from "../domains/BackupFile";
 
 @Injectable({
   providedIn: 'root'
@@ -72,5 +73,17 @@ export class CongregationService {
 
   deleteTerritory(territoryNumber:string):Observable<Congregation> {
       return this.http.delete<Congregation>(`${CongregationService.url}territory/${territoryNumber}`);
+  }
+
+  getBackupFiles():Observable<BackupFile[]> {
+    return this.http.get<BackupFile[]>(`${CongregationService.url}backup`);
+  }
+
+  restoreBackup(backupFile:BackupFile):Observable<void> {
+    return this.http.put<void>(`${CongregationService.url}backup`,backupFile);
+  }
+
+  deleteBackup(backupFile:BackupFile):Observable<void> {
+    return this.http.put<void>(`${CongregationService.url}backup/delete`,backupFile);
   }
 }

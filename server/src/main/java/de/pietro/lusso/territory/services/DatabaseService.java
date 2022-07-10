@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dizitart.no2.Nitrite;
+import org.dizitart.no2.exceptions.NitriteIOException;
 import org.dizitart.no2.objects.ObjectRepository;
 import org.dizitart.no2.tool.Exporter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.attribute.FileTime;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -40,6 +42,7 @@ public class DatabaseService {
     private ObjectMapper objectMapper;
     private String databaseName = "territory.db";
     private Version version = new Version();
+    private boolean updated = false;
 
     @PostConstruct
     public void initService() throws Exception{
@@ -47,8 +50,12 @@ public class DatabaseService {
         File territoryJsonDataFolder = new File(TERRITORY_JSON_DATA);
         territoryJsonDataFolder.mkdirs();
 
-        makeCopyOfDatabase();
+        makeCopyOfDatabase(databaseName);
+        openDatabase(databaseName);
+        databaseCorrection001_translateCongregationName();
+    }
 
+    private void openDatabase(String databaseName) {
         db = Nitrite.builder()
                 .compressed()
                 .filePath(databaseName)
@@ -58,8 +65,6 @@ public class DatabaseService {
         mapDesignOR = db.getRepository(MapDesign.class);
         settingsOR = db.getRepository(Settings.class);
         objectMapper = new ObjectMapper();
-
-        databaseCorrection001_translateCongregationName();
     }
 
     private void databaseCorrection001_translateCongregationName() {
@@ -87,7 +92,7 @@ public class DatabaseService {
         }
     }
 
-    private void makeCopyOfDatabase() {
+    private void makeCopyOfDatabase(String databaseName) {
 
         File dbFile = new File(databaseName);
 
@@ -331,7 +336,9 @@ public class DatabaseService {
             }
         });
 
+        congregation.setLastUpdate(Calendar.getInstance());
         congregationOR.update(congregation);
+        updated = true;
         return enhanceCongregationData(loadCongregation());
     }
 
@@ -838,5 +845,102 @@ public class DatabaseService {
         version.setRevision(p.getProperty("revision"));
 
         return version;
+    }
+
+    public List<BackupFile> getBackupsOverview() {
+
+        List<BackupFile> backupFiles = new ArrayList<>();
+
+        File backupFolder = new File("backup");
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss");
+
+        int count = 0;
+
+        for (File file : backupFolder.listFiles()) {
+
+            if (count >= 20) break;
+
+            if (file.isFile() && file.getName().startsWith("territory")) {
+
+                Calendar cal2022 = Calendar.getInstance();
+                cal2022.set(Calendar.YEAR, 2022);
+                cal2022.set(Calendar.MONTH, 7);
+                cal2022.set(Calendar.DAY_OF_MONTH, 10);
+
+                BackupFile backupFile = new BackupFile();
+                backupFile.setFilePath(file.getAbsolutePath());
+
+                String fileName = file.getName();
+                String datePart = fileName.substring(file.getName().lastIndexOf(".") + 1);
+                Calendar newDate = Calendar.getInstance();
+                try {
+                    newDate.setTime(sdf.parse(datePart));
+                    backupFile.setLastUpdate(newDate);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    Nitrite dbBackup = Nitrite.builder()
+                            .compressed()
+                            .filePath(file.getAbsolutePath())
+                            .openOrCreate("user", "password");
+
+                    ObjectRepository<Congregation> backupCongregationOR = dbBackup.getRepository(Congregation.class);
+                    final Congregation congregation = backupCongregationOR.find().firstOrDefault();
+
+                    if (cal2022.before(congregation.getLastUpdate())) {
+                        backupFile.setLastUpdate(congregation.getLastUpdate());
+                    }
+
+                    backupFile.setPreacherCount(congregation.getPreacherList().size()
+                    + congregation.getTerritoriesToBeAssigned().size()
+                    + congregation.getTerritoriesAssigned().size()
+                    + congregation.getTerritoriesOlder4Months().size()
+                    + congregation.getTerritoriesOlder8Months().size()
+                    + congregation.getTerritoriesNoContacts().size()
+                    + congregation.getTerritoriesArchived().size());
+                    backupFile.setTerritoryCount(congregation.getTerritoryList().size());
+                    dbBackup.close();
+                } catch (NitriteIOException e) {
+                    backupFile.setAlreadyOpen(true);
+                }
+                backupFiles.add(backupFile);
+                count++;
+            }
+        }
+
+        backupFiles.sort(new Comparator<BackupFile>() {
+            @Override
+            public int compare(BackupFile o1, BackupFile o2) {
+                return o2.getLastUpdate().compareTo(o1.getLastUpdate());
+            }
+        });
+
+        return backupFiles;
+    }
+
+    public void deleteBackupFile(BackupFile backupFile) {
+
+        File file = new File(backupFile.getFilePath());
+
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
+    public void restoreBackup(BackupFile backupFile) throws IOException {
+        shutdown();
+        if (updated) {
+            makeCopyOfDatabase(databaseName);
+
+            File existingDB = new File(databaseName);
+            existingDB.delete();
+            File backupDB = new File(backupFile.getFilePath());
+            FileUtils.copyFile(backupDB, existingDB);
+        }
+        openDatabase(databaseName);
+        databaseCorrection001_translateCongregationName();
     }
 }

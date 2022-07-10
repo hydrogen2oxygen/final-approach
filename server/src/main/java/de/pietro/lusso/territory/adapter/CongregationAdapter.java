@@ -1,6 +1,7 @@
 package de.pietro.lusso.territory.adapter;
 
 
+import de.pietro.lusso.territory.domain.BackupFile;
 import de.pietro.lusso.territory.domain.Congregation;
 import de.pietro.lusso.territory.domain.Message;
 import de.pietro.lusso.territory.domain.Version;
@@ -117,5 +118,20 @@ public class CongregationAdapter {
     @DeleteMapping("territory/{number}")
     public Congregation deleteTerritory(@PathVariable String number) throws Exception {
         return databaseService.deleteTerritory(number);
+    }
+
+    @GetMapping("backup")
+    public List<BackupFile> getBackupsOverview() {
+        return databaseService.getBackupsOverview();
+    }
+
+    @PutMapping("backup")
+    public void restoreBackup(@RequestBody BackupFile backupFile) throws IOException {
+        databaseService.restoreBackup(backupFile);
+    }
+
+    @PutMapping("backup/delete")
+    public void deleteBackupFile(@RequestBody BackupFile backupFile) throws IOException {
+        databaseService.deleteBackupFile(backupFile);
     }
 }

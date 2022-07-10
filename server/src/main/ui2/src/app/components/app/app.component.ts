@@ -51,7 +51,8 @@ export class AppComponent {
       new Link("PREACHERS"),
       new Link("DESIGNER"),
       new Link("UTILS"),
-      new Link("SETTINGS")
+      new Link("SETTINGS"),
+      new Link("BACKUPS")
     ]
   }
 

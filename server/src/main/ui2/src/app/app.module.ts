@@ -16,6 +16,7 @@ import {allIcons, NgxBootstrapIconsModule} from "ngx-bootstrap-icons";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {ToastrModule} from "ngx-toastr";
 import {RouterModule} from "@angular/router";
+import { BackupComponent } from './components/backup/backup.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import {RouterModule} from "@angular/router";
     PreachersComponent,
     DesignerComponent,
     UtilsComponent,
-    SettingsComponent
+    SettingsComponent,
+    BackupComponent
   ],
   imports: [
     BrowserModule,
@@ -41,7 +43,10 @@ import {RouterModule} from "@angular/router";
     CommonModule,
     CommonModule,
     RouterModule,
-    RouterModule
+    RouterModule,
+    CommonModule,
+    CommonModule,
+    CommonModule
   ],
   providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}],
   bootstrap: [AppComponent]
