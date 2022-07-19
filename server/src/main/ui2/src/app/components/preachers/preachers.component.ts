@@ -44,12 +44,12 @@ export class PreachersComponent implements OnInit {
   }
 
   saveNewPreacher() {
-    let preacherName = this.newPreacherName.value;
+    let preacherName = this.newPreacherName.value?.trim();
     this.newPreacherName.setValue('');
 
     if (preacherName == null || preacherName.length == 0) return;
 
-    if (this.congregation.preacherList.find(p => p.name === preacherName)) {
+    if (this.congregation.preacherList.find(p => p.name.toLowerCase() === preacherName?.toLowerCase())) {
       this.toastr.warning(preacherName + " already exists!", "Data Service");
       return;
     }
