@@ -96,7 +96,6 @@ public class FinalApproachLauncher extends JFrame {
                     sleep(60);
 
                     if (checkForUpdates()) {
-                        downloadUpdate();
                         shutdownServer();
                         unzipUpdate();
                         runServer();
@@ -163,9 +162,9 @@ public class FinalApproachLauncher extends JFrame {
         }
     }
 
-    private void downloadUpdate() {
+    private void downloadUpdate(VersionInfo remoteVersion) {
         System.out.println("Downloading update ...");
-        Downloader.download(versionInfo.getDownloadPath(),"newVersion" + versionInfo.getCurrentVersion() + ".zip");
+        Downloader.download(remoteVersion.getDownloadPath(),"newVersion" + remoteVersion.getCurrentVersion() + ".zip");
     }
 
     private boolean checkForUpdates() {
@@ -200,6 +199,7 @@ public class FinalApproachLauncher extends JFrame {
 
             if (newVersion.compareTo(currentVersion) > 0 ) {
                 System.out.println("NEW VERSION FOUND!");
+                downloadUpdate(remoteVersion);
                 objectMapper.writeValue(versionInfoFile, remoteVersion);
                 versionInfo = remoteVersion;
                 return true;
