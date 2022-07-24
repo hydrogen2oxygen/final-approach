@@ -64,7 +64,6 @@ public class DatabaseService {
 
     private void openDatabase(String databaseName) {
         db = Nitrite.builder()
-                .compressed()
                 .filePath(databaseName)
                 .openOrCreate("user", "password");
 
