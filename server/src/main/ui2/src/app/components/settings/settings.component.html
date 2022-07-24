@@ -40,5 +40,15 @@
   <input type="text" class="form-control" id="sftp" aria-describedby="sftp" placeholder="sftp"
          [formControl]="sftp">
 </div>
+<div class="form-group">
+  <label for="sync">SYNCHRONIZATION (true or false)</label>
+  <input type="text" class="form-control" id="sync" aria-describedby="sync" placeholder="sync"
+         [formControl]="sync">
+</div>
+<div class="form-group">
+  <label for="syncPassword">SYNCHRONIZATION PASSWORD</label>
+  <input type="text" class="form-control" id="syncPassword" aria-describedby="syncPassword" placeholder="syncPassword"
+         [formControl]="syncPassword">
+</div>
 
 <button type="submit" class="btn btn-success mb-2" style="margin-top: 1rem; margin-left: 0.2rem" (click)="save()">SAVE SETTINGS</button>

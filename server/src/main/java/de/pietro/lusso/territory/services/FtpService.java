@@ -84,6 +84,11 @@ public class FtpService {
 
     public void upload(File file) throws Exception {
 
+        upload(file, "");
+    }
+
+    public void upload(File file, String path) throws Exception {
+
         if (!file.exists()) {
             logger.info("File " + file.getAbsolutePath() + " does not exist!");
             return;
@@ -91,11 +96,11 @@ public class FtpService {
 
         if (useSftp) {
             ChannelSftp sftp = getSftpClient();
-            sftp.put(file.getAbsolutePath(), rootPath + "/" + file.getName());
+            sftp.put(file.getAbsolutePath(), rootPath + "/" + path + file.getName());
             sftp.disconnect();
         } else {
             FTPClient ftp = getFtpClient();
-            ftp.storeFile(rootPath + "/" + file.getName(), new FileInputStream(file));
+            ftp.storeFile(rootPath + "/" + path + file.getName(), new FileInputStream(file));
             ftp.disconnect();
         }
     }

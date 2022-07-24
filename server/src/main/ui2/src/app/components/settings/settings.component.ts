@@ -19,6 +19,8 @@ export class SettingsComponent implements OnInit {
   rootPath = new FormControl('');
   httpHost = new FormControl('');
   sftp = new FormControl('');
+  sync = new FormControl('');
+  syncPassword = new FormControl('');
 
   constructor(private settingsService:SettingsService) { }
 
@@ -42,6 +44,10 @@ export class SettingsComponent implements OnInit {
         this.httpHost.setValue(s.settings['ftp.httpHost']);
         // @ts-ignore
         this.sftp.setValue(s.settings['ftp.sftp']);
+        // @ts-ignore
+        this.sync.setValue(s.settings['ftp.sync']);
+        // @ts-ignore
+        this.syncPassword.setValue(s.settings['ftp.syncPassword']);
       }
     });
   }
@@ -64,6 +70,10 @@ export class SettingsComponent implements OnInit {
       this.settings.settings['ftp.httpHost'] = this.httpHost.value;
       // @ts-ignore
       this.settings.settings['ftp.sftp'] = this.sftp.value;
+      // @ts-ignore
+      this.settings.settings['ftp.sync'] = this.sync.value;
+      // @ts-ignore
+      this.settings.settings['ftp.syncPassword'] = this.syncPassword.value;
       this.settingsService.saveSettings(this.settings).subscribe((s: Settings | null) => this.settings = s);
     }
   }

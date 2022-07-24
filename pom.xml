@@ -6,8 +6,8 @@
     <packaging>pom</packaging>
 
     <properties>
-        <revision>1.0.19</revision>
-        <version.info>Preacher Name Duplicates Bug fixed</version.info>
+        <revision>1.0.20</revision>
+        <version.info>Sync WIP</version.info>
     </properties>
 
     <version>${revision}</version>

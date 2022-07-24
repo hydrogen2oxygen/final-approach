@@ -18,6 +18,8 @@ public class SettingsInitializer {
         addIfMissing(settings, "ftp.rootPath");
         addIfMissing(settings, "ftp.httpHost");
         addIfMissing(settings, "ftp.sftp"); // true or false (null is false)
+        addIfMissing(settings, "ftp.sync"); // true or false (null is false)
+        addIfMissing(settings, "ftp.syncPassword");
     }
 
     private static void addIfMissing(Settings settings, String key) {

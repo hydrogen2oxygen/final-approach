@@ -2,9 +2,11 @@ package de.pietro.lusso.territory.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.pietro.lusso.territory.domain.*;
+import de.pietro.lusso.territory.utils.EncryptionTool;
 import de.pietro.lusso.territory.utils.SettingsInitializer;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dizitart.no2.Nitrite;
@@ -24,6 +26,7 @@ import java.nio.file.attribute.FileTime;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.spi.CalendarNameProvider;
 
 @Service
 @DependsOn("ftpService")
@@ -40,15 +43,19 @@ public class DatabaseService {
     private ObjectRepository<MapDesign> mapDesignOR;
     private ObjectRepository<Settings> settingsOR;
     private ObjectMapper objectMapper;
+    private EncryptionTool encryptionTool;
     private String databaseName = "territory.db";
     private Version version = new Version();
     private boolean updated = false;
+    private boolean uploading = false;
+    private boolean downloading = false;
 
     @PostConstruct
     public void initService() throws Exception{
 
         File territoryJsonDataFolder = new File(TERRITORY_JSON_DATA);
         territoryJsonDataFolder.mkdirs();
+        encryptionTool = new EncryptionTool();
 
         makeCopyOfDatabase(databaseName);
         openDatabase(databaseName);
@@ -339,7 +346,34 @@ public class DatabaseService {
         congregation.setLastUpdate(Calendar.getInstance());
         congregationOR.update(congregation);
         updated = true;
+        uploadCongregation(congregation);
+
         return enhanceCongregationData(loadCongregation());
+    }
+
+    private void uploadCongregation(Congregation congregation) {
+
+        if (uploading) return;
+
+        uploading = true;
+
+        (new Thread() {
+            public void run() {
+                try {
+                    String json = objectMapper.writeValueAsString(congregation);
+                    File localUploadFolder = new File("uploads");
+                    localUploadFolder.mkdirs();
+                    String encryptedJSON = encryptionTool.encrypt("871a5c07-5c2d-41bd-98af-bb8cbdb06519cd185d47-bd50-4325-a599-a1a80d91924a", json);
+                    String date = DateFormatUtils.format(Calendar.getInstance().getTime(), "yyyyMMddHHmmSS");
+                    File uploadFile = new File("uploads/congregation_" + date + ".db");
+                    FileUtils.writeStringToFile(uploadFile, encryptedJSON, "UTF-8");
+                    ftpService.upload(uploadFile, "uploads/");
+                    uploading = false;
+                } catch (Exception e) {
+                    logger.error("Uploading congregation data failed", e);
+                }
+            }
+        }).start();
     }
 
     public MapDesign loadMapDesign() {
@@ -843,6 +877,8 @@ public class DatabaseService {
         p.load(is);
 
         version.setRevision(p.getProperty("revision"));
+        version.setUploading(uploading);
+        version.setDownloading(downloading);
 
         return version;
     }

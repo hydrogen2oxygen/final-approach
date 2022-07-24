@@ -50,4 +50,6 @@ export class Version {
   counterTerritories:number = 0;
   counterPreachers:number = 0;
   counterPreacherWithTerritories:number = 0;
+  uploading:boolean = false;
+  downloading:boolean = false;
 }

@@ -48,3 +48,4 @@ territory.db.*
 /server/src/main/resources/info.properties
 /data/
 /territory*.db
+/uploads/

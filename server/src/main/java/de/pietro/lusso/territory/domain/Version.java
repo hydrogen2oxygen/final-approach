@@ -6,6 +6,8 @@ public class Version {
     private int counterTerritories = 0;
     private int counterPreachers = 0;
     private int counterPreacherWithTerritories = 0;
+    private boolean uploading = false;
+    private boolean downloading = false;
 
     public String getRevision() {
         return revision;
@@ -37,5 +39,21 @@ public class Version {
 
     public void setCounterPreacherWithTerritories(int counterPreacherWithTerritories) {
         this.counterPreacherWithTerritories = counterPreacherWithTerritories;
+    }
+
+    public boolean isUploading() {
+        return uploading;
+    }
+
+    public void setUploading(boolean uploading) {
+        this.uploading = uploading;
+    }
+
+    public boolean isDownloading() {
+        return downloading;
+    }
+
+    public void setDownloading(boolean downloading) {
+        this.downloading = downloading;
     }
 }

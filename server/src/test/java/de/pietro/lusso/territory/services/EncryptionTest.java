@@ -5,8 +5,6 @@ import de.pietro.lusso.territory.utils.EncryptionTool;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
-import java.util.UUID;
-
 public class EncryptionTest {
 
     private String input = "JSON bla bla 123 abc";
