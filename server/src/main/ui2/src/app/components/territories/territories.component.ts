@@ -114,11 +114,11 @@ export class TerritoriesComponent implements OnInit {
         let that = this;
 
         this.congregationService.exportTerritoryData(this.territory.number).subscribe({
-          next(m) {
+          next(m: { msg: string | undefined; }) {
             console.log(m.msg);
             that.toastr.success(m.msg, "Export Service");
           },
-          error(err) {
+          error(err: { message: string | undefined; }) {
             console.error(err.message);
             that.toastr.error(err.message, "Error trying to export territory")
           }

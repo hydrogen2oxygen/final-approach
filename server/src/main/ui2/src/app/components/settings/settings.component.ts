@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {FormControl} from "@angular/forms";
 import {Settings} from "../../domains/Settings";
 import {SettingsService} from "../../services/settings.service";
+import { v4 as uuid } from 'uuid';
 
 @Component({
   selector: 'app-settings',
@@ -11,6 +12,7 @@ import {SettingsService} from "../../services/settings.service";
 export class SettingsComponent implements OnInit {
 
   settings:Settings|null = null;
+  userName = new FormControl('');
   ftpUser = new FormControl('');
   ftpPassword = new FormControl('');
   ftpHost = new FormControl('');
@@ -18,8 +20,8 @@ export class SettingsComponent implements OnInit {
   knownHosts = new FormControl('');
   rootPath = new FormControl('');
   httpHost = new FormControl('');
-  sftp = new FormControl('');
-  sync = new FormControl('');
+  sftp = new FormControl(false);
+  sync = new FormControl(false);
   syncPassword = new FormControl('');
 
   constructor(private settingsService:SettingsService) { }
@@ -28,6 +30,8 @@ export class SettingsComponent implements OnInit {
     this.settingsService.getSettings().subscribe( (s: Settings | null) => {
       this.settings = s;
       if (this.settings != null) {
+        // @ts-ignore
+        this.ftpUser.setValue(s.settings['userName']);
         // @ts-ignore
         this.ftpUser.setValue(s.settings['ftp.user']);
         // @ts-ignore
@@ -43,9 +47,15 @@ export class SettingsComponent implements OnInit {
         // @ts-ignore
         this.httpHost.setValue(s.settings['ftp.httpHost']);
         // @ts-ignore
-        this.sftp.setValue(s.settings['ftp.sftp']);
+        if ('true' == s.settings['ftp.sftp'])
+          this.sftp.setValue(true);
+        else
+          this.sftp.setValue(false);
         // @ts-ignore
-        this.sync.setValue(s.settings['ftp.sync']);
+        if ('true' == s.settings['ftp.sync'])
+          this.sync.setValue(true);
+        else
+          this.sync.setValue(false);
         // @ts-ignore
         this.syncPassword.setValue(s.settings['ftp.syncPassword']);
       }
@@ -54,6 +64,8 @@ export class SettingsComponent implements OnInit {
 
   public save():void {
     if (this.settings != null) {
+      // @ts-ignore
+      this.settings.settings['userName'] = this.userName.value;
       // @ts-ignore
       this.settings.settings['ftp.user'] = this.ftpUser.value;
       // @ts-ignore
@@ -68,13 +80,30 @@ export class SettingsComponent implements OnInit {
       this.settings.settings['ftp.rootPath'] = this.rootPath.value;
       // @ts-ignore
       this.settings.settings['ftp.httpHost'] = this.httpHost.value;
+
+      if (this.sftp.value)
+        // @ts-ignore
+        this.settings.settings['ftp.sftp'] = 'true';
+      else
+        // @ts-ignore
+        this.settings.settings['ftp.sftp'] = 'false';
+
+      if (this.sync.value)
+        // @ts-ignore
+        this.settings.settings['ftp.sync'] = 'true';
+      else
+        // @ts-ignore
+        this.settings.settings['ftp.sync'] = 'false';
+
       // @ts-ignore
-      this.settings.settings['ftp.sftp'] = this.sftp.value;
-      // @ts-ignore
-      this.settings.settings['ftp.sync'] = this.sync.value;
-      // @ts-ignore
-      this.settings.settings['ftp.syncPassword'] = this.syncPassword.value;
+      this.settings.settings['ftp.syncPassword'] = value;
       this.settingsService.saveSettings(this.settings).subscribe((s: Settings | null) => this.settings = s);
     }
+  }
+
+  createUniquePassword() {
+    let password = uuid() + uuid();
+    if (password.length == 72)
+      this.syncPassword.setValue(password);
   }
 }

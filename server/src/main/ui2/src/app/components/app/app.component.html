@@ -14,6 +14,12 @@
         <li class="nav-item" *ngFor="let link of links">
           <a class="nav-link pointer" [class.activeLink]="link.active" (click)="navigate(link.title)">{{link.title}}</a>
         </li>
+        <li class="nav-item>" *ngIf="version?.uploading">
+          <i class="nav-link bi bi-cloud-upload-fill"></i>
+        </li>
+        <li class="nav-item>" *ngIf="version?.downloading">
+          <i class="bi bi-cloud-download-fill"></i>
+        </li>
       </ul>
     </div>
   </div>
