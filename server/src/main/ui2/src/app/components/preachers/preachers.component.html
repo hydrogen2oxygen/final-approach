@@ -27,9 +27,13 @@
         <div class="input-group input-group-sm mb-3" *ngFor="let territory of territories" style="margin-top: 0.1rem;margin-bottom: 0.1rem!important;">
           <span class="form-control {{cssAccordingToTerritory(territory)}}">{{territory.number}} {{getTerritoryNameAndDetails(territory)}}</span>
           <button class="btn btn-warning btn-sm" id="button-ReturnTerritory" (click)="returnTerritoryByNumber(territory)">RETURN</button>
-          <a *ngIf="territory.mapExist" class="btn btn-success btn-sm" id="button-OpenTerritory" href="{{territory.url}}" target="{{territory.number}}">OPEN</a>
+          <button *ngIf="territory.mapExist" class="btn btn-success btn-sm" id="button-OpenTerritory" (click)="openTerritoryByNumber(territory)">OPEN</button>
         </div>
-
+        <div *ngIf="territoryUrl">
+          <hr>
+          <iframe class="e2e-iframe-trusted-src" [src]="territoryUrl" style="width: 90%"></iframe>
+          <a class="btn btn-success btn-sm e2e-trusted-url" id="button-GoToBigMap" [href]="territoryUrl" target="new">GO TO BIG MAP</a>
+        </div>
       </div>
       <div class="modal-footer" *ngIf="preacher">
         <button class="btn btn-primary btn-sm" (click)="getWhatsAppMessage(preacher)" data-bs-toggle="modal" data-bs-target="#preacherDetailsModal">Copy WhatsAppMessage</button>

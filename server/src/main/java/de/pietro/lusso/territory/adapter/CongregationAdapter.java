@@ -89,6 +89,14 @@ public class CongregationAdapter {
         return msg;
     }
 
+    @PostMapping("reexportTerritoryData/{number}")
+    public Message reexportTerritoryData(@PathVariable String number) throws Exception {
+        databaseService.exportTerritoryData(number, true);
+        Message msg = new Message();
+        msg.setMsg("Territory " + number + " reexported!");
+        return msg;
+    }
+
     @PostMapping("exportTerritoryData")
     public void exportTerritoryData() throws Exception {
         databaseService.exportTerritoryData();

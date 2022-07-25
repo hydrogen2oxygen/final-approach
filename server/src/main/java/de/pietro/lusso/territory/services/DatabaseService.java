@@ -26,7 +26,6 @@ import java.nio.file.attribute.FileTime;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.spi.CalendarNameProvider;
 
 @Service
 @DependsOn("ftpService")
@@ -309,7 +308,7 @@ public class DatabaseService {
     public Congregation saveCongregation(Congregation congregation) {
 
         Preacher preacherForHardDelete = null;
-
+        resetTerritoryList(congregation);
         for (Preacher preacher : congregation.getPreacherList()) {
 
             if (preacher.getUuid() == null) {
@@ -345,7 +344,17 @@ public class DatabaseService {
         congregation.setLastUpdate(Calendar.getInstance());
         congregationOR.update(congregation);
         updated = true;
-        uploadCongregation(congregation);
+
+        // Export all territories assigned to a new preacher
+        for (Territory territory : congregation.getTerritoryList()) {
+            if (territory.isNewPreacherAssigned()) {
+                try {
+                    exportTerritoryData(territory.getNumber());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
         return enhanceCongregationData(loadCongregation());
     }
@@ -370,6 +379,32 @@ public class DatabaseService {
                     uploading = false;
                 } catch (Exception e) {
                     logger.error("Uploading congregation data failed", e);
+                }
+            }
+        }).start();
+    }
+
+    private void uploadMapDesign(MapDesign mapDesign) {
+
+        if (uploading) return;
+
+        uploading = true;
+
+        (new Thread() {
+            public void run() {
+                try {
+                    String json = objectMapper.writeValueAsString(mapDesign);
+                    File localUploadFolder = new File("uploads");
+                    localUploadFolder.mkdirs();
+                    String encryptedJSON = encryptionTool.encrypt("871a5c07-5c2d-41bd-98af-bb8cbdb06519cd185d47-bd50-4325-a599-a1a80d91924a", json);
+                    String date = DateFormatUtils.format(Calendar.getInstance().getTime(), "yyyyMMddHHmmSS");
+                    File uploadFile = new File("uploads/mapDesign_" + date + ".db");
+                    FileUtils.writeStringToFile(uploadFile, encryptedJSON, "UTF-8");
+                    ftpService.upload(uploadFile, "uploads/");
+                    uploading = false;
+                    logger.info("Uploading mapDesign success!");
+                } catch (Exception e) {
+                    logger.error("Uploading mapDesign data failed", e);
                 }
             }
         }).start();
@@ -420,6 +455,7 @@ public class DatabaseService {
         mapDesign.getTerritoryMapList().removeAll(territoryMapsToRemove);
 
         mapDesignOR.update(mapDesign);
+        uploadMapDesign(loadMapDesign());
         return loadMapDesign();
     }
 
@@ -565,9 +601,11 @@ public class DatabaseService {
             territory.setUuid(uuid);
         }
 
+        territory.setNewPreacherAssigned(false);
         File jsonFile = new File(TERRITORY_JSON_DATA + territory.getUuid().toString() + ".json");
 
         // Set the old JSON to inactive (with the returnDate = TODAY and maybe some text inside the note)
+        // this happens only if "onlyRepair" mode is not active
         if (jsonFile.exists() && !onlyRepair) {
             logger.info("jsonFile.exists, therefore deactivate first old territory (set active = false)");
             TerritoryData territoryData = objectMapper.readValue(jsonFile, TerritoryData.class);
@@ -592,6 +630,7 @@ public class DatabaseService {
         territoryData.setAssignDate(registryEntry.getAssignDate());
         territoryData.setReturnDate(null);
 
+        // if onlyRepair mode, the territory does not receive a new UUID
         if (!onlyRepair) {
             UUID uuid = UUID.randomUUID();
             logger.info("set a new UUID for the territory: " + uuid.toString());
@@ -820,7 +859,13 @@ public class DatabaseService {
     public void resetCongregation() {
 
         Congregation congregation = loadCongregation();
-        List<RegistryEntry> registryEntries = new ArrayList<>();
+        resetCongregation(congregation);
+
+        saveCongregation(congregation);
+    }
+
+    private void resetCongregation(Congregation congregation) {
+
         List<Territory> archivedTerritories = new ArrayList<>();
 
         for (Preacher preacher : congregation.getPreacherList()) {
@@ -845,8 +890,6 @@ public class DatabaseService {
             registryEntry.setPreacher(preacher);
             territory.getRegistryEntryList().add(registryEntry);
         }
-
-        saveCongregation(congregation);
     }
 
     public void fakeMonths(String number, Integer months) {

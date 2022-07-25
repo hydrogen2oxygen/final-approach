@@ -35,9 +35,14 @@ export class CongregationService {
     return this.http.post<void>(`${CongregationService.url}exportDatabase`,null);
   }
 
-  exportTerritoryData(territoryNumber?:string|undefined):Observable<Message> {
+  exportTerritoryData(territoryNumber?:string|undefined, onlyRepair:boolean=false):Observable<Message> {
+
+    let exportUrl = 'exportTerritoryData';
+
+    if (onlyRepair) exportUrl = 'reexportTerritoryData';
+
     if (territoryNumber != undefined) {
-      return this.http.post<Message>(`${CongregationService.url}exportTerritoryData/${territoryNumber}`,null);
+      return this.http.post<Message>(`${CongregationService.url}${exportUrl}/${territoryNumber}`,null);
     }
     return this.http.post<Message>(`${CongregationService.url}exportTerritoryData`,null);
   }

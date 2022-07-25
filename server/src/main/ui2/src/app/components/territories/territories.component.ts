@@ -1,6 +1,6 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {CongregationService} from "../../services/congregation.service";
-import {Congregation, Territory, Preacher, RegistryEntry} from "../../domains/Congregation";
+import {Congregation, Preacher, RegistryEntry, Territory} from "../../domains/Congregation";
 import {FormControl} from "@angular/forms";
 import {ToastrService} from "ngx-toastr";
 
@@ -84,6 +84,7 @@ export class TerritoriesComponent implements OnInit {
     registryEntry.returnDate = null;
     this.territory.registryEntryList.push(registryEntry);
     this.territory.newPreacherAssigned = true;
+    console.log("New preacher assigned to territory " + this.territory.number + " " + copyOfPreacher.name)
   }
 
   onChangeSearch($event: any) {
@@ -109,20 +110,9 @@ export class TerritoriesComponent implements OnInit {
       if (this.territory == null) return;
 
       if (this.territory.newPreacherAssigned) {
-
-        console.log("Trying to export territory " + this.territory.number)
-        let that = this;
-
-        this.congregationService.exportTerritoryData(this.territory.number).subscribe({
-          next(m: { msg: string | undefined; }) {
-            console.log(m.msg);
-            that.toastr.success(m.msg, "Export Service");
-          },
-          error(err: { message: string | undefined; }) {
-            console.error(err.message);
-            that.toastr.error(err.message, "Error trying to export territory")
-          }
-        });
+        this.toastr.success('Territory ' + this.territory.number + " " + this.territory.name
+          + " exported successfully for "
+          + this.territory.registryEntryList[this.territory.registryEntryList.length -1].preacher.name, "Export Service");
       }
 
       this.territory = null;
@@ -134,6 +124,12 @@ export class TerritoriesComponent implements OnInit {
       this.congregation = c;
       this.preacherList = c.preacherList;
       this.territory = null;
+    });
+  }
+
+  repairTerritory(territory: Territory) {
+    this.congregationService.exportTerritoryData(territory.number,true).subscribe( () => {
+      this.toastr.info('Territory repaired','Export Service')
     });
   }
 }

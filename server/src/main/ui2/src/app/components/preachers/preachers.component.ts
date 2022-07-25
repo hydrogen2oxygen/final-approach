@@ -6,6 +6,7 @@ import {FormControl} from "@angular/forms";
 import {DatePipe, formatDate} from "@angular/common";
 import {Settings} from "../../domains/Settings";
 import {SettingsService} from "../../services/settings.service";
+import {DomSanitizer} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-preachers',
@@ -22,11 +23,13 @@ export class PreachersComponent implements OnInit {
   monthsBefore4: Date = new Date();
   monthsBefore8: Date = new Date();
   territories: Territory[] = [];
+  territoryUrl: any | null = null;
 
   constructor(
     private congregationService: CongregationService,
     private settingsService: SettingsService,
     private toastr: ToastrService,
+    private sanitizer : DomSanitizer,
     @Inject(LOCALE_ID) private locale: string) {
   }
 
@@ -63,8 +66,12 @@ export class PreachersComponent implements OnInit {
     });
   }
 
-  openTerritoryByNumber(territoryNumber: string) {
-
+  openTerritoryByNumber(territory:Territory) {
+    if (this.settings != null) {
+      // @ts-ignore
+      let host = this.settings.settings['ftp.httpHost'];
+      this.territoryUrl = this.sanitizer.bypassSecurityTrustResourceUrl( host + "?id=" + territory.uuid);
+    }
   }
 
   getWhatsAppMessage(preacher: Preacher) {
@@ -175,6 +182,7 @@ export class PreachersComponent implements OnInit {
   }
 
   openPreacher(preacher: Preacher) {
+    this.territoryUrl = null;
     this.preacher = preacher;
     this.territories = [];
     preacher.territoryListNumbers.forEach(n => {

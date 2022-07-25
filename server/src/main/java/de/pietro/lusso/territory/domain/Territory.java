@@ -23,6 +23,7 @@ public class Territory implements Serializable  {
     private boolean ftpExported = false;
     private boolean ftpDeactived = false;
     private boolean mapExist = false;
+    private boolean newPreacherAssigned = false;
     private String url;
 
     private List<String> notes = new ArrayList<>();
@@ -123,6 +124,14 @@ public class Territory implements Serializable  {
 
     public void setUuid(UUID uuid) {
         this.uuid = uuid;
+    }
+
+    public boolean isNewPreacherAssigned() {
+        return newPreacherAssigned;
+    }
+
+    public void setNewPreacherAssigned(boolean newPreacherAssigned) {
+        this.newPreacherAssigned = newPreacherAssigned;
     }
 
     public boolean isMapExist() {

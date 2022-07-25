@@ -38,7 +38,6 @@ import { BackupComponent } from './components/backup/backup.component';
     BrowserAnimationsModule,
     ToastrModule.forRoot(),
     RouterModule,
-    CommonModule,
     CommonModule
   ],
   providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}],
