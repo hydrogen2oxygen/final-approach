@@ -6,7 +6,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <revision>1.0.23</revision>
+        <revision>1.0.24</revision>
         <version.info>Sync WIP</version.info>
     </properties>
 

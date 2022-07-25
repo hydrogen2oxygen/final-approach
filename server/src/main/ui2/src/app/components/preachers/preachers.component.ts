@@ -24,6 +24,7 @@ export class PreachersComponent implements OnInit {
   monthsBefore8: Date = new Date();
   territories: Territory[] = [];
   territoryUrl: any | null = null;
+  selectedTerritoryNumber: string | null = null;
 
   constructor(
     private congregationService: CongregationService,
@@ -68,6 +69,7 @@ export class PreachersComponent implements OnInit {
 
   openTerritoryByNumber(territory:Territory) {
     if (this.settings != null) {
+      this.selectedTerritoryNumber = territory.number;
       // @ts-ignore
       let host = this.settings.settings['ftp.httpHost'];
       this.territoryUrl = this.sanitizer.bypassSecurityTrustResourceUrl( host + "?id=" + territory.uuid);
@@ -183,6 +185,7 @@ export class PreachersComponent implements OnInit {
 
   openPreacher(preacher: Preacher) {
     this.territoryUrl = null;
+    this.selectedTerritoryNumber = null;
     this.preacher = preacher;
     this.territories = [];
     preacher.territoryListNumbers.forEach(n => {

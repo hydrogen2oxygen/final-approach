@@ -25,7 +25,7 @@
         <h3 class="text-dark">{{preacher.name}}</h3>
 
         <div class="input-group input-group-sm mb-3" *ngFor="let territory of territories" style="margin-top: 0.1rem;margin-bottom: 0.1rem!important;">
-          <span class="form-control {{cssAccordingToTerritory(territory)}}">{{territory.number}} {{getTerritoryNameAndDetails(territory)}}</span>
+          <span class="form-control {{cssAccordingToTerritory(territory)}}" [class.selectedTerritory]="selectedTerritoryNumber === territory.number">{{territory.number}} {{getTerritoryNameAndDetails(territory)}}</span>
           <button class="btn btn-warning btn-sm" id="button-ReturnTerritory" (click)="returnTerritoryByNumber(territory)">RETURN</button>
           <button *ngIf="territory.mapExist" class="btn btn-success btn-sm" id="button-OpenTerritory" (click)="openTerritoryByNumber(territory)">OPEN</button>
         </div>
