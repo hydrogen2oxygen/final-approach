@@ -336,8 +336,24 @@ export class DesignerComponent implements OnInit, AfterViewInit {
     });
     let draw: Draw = this.interaction;
     draw.on('drawend', evt => {
-      console.log('draw ended');
+      console.log('draw ended!');
       this.lastSelectedFeature = evt.feature;
+
+      let territoryMap = new TerritoryMap();
+      territoryMap.draft = true;
+      territoryMap.lastUpdate = new Date();
+      let data = this.wktFormat.writeGeometry(<Geometry>this.lastSelectedFeature?.getGeometry());
+
+      if (data == null || data == undefined) {
+        data = '';
+      }
+
+      territoryMap.simpleFeatureData = data;
+
+      this.mapDesignService.saveTerritoryMap(territoryMap).subscribe( (t:TerritoryMap) => {
+        this.mapDesign.territoryMapList.push(t);
+      });
+
     });
 
     this.map?.addInteraction(this.interaction);

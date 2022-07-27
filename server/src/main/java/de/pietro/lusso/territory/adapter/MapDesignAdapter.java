@@ -36,6 +36,12 @@ public class MapDesignAdapter {
         return databaseService.saveMapDesign(mapDesign);
     }
 
+    @PutMapping("territoryMap")
+    public TerritoryMap saveTerritoryMap(@RequestBody TerritoryMap territoryMap) {
+
+        return databaseService.saveTerritoryMap(territoryMap);
+    }
+
     @GetMapping("setActiveTerritory/{number}/{name}")
     public MapDesign setActiveTerritory(@PathVariable String number, @PathVariable String name) throws Exception {
 

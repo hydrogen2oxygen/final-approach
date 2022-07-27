@@ -459,6 +459,24 @@ public class DatabaseService {
         return loadMapDesign();
     }
 
+    /**
+     * A method to save fast one single TerritoryMap
+     * @param territoryMap
+     * @return
+     */
+    public TerritoryMap saveTerritoryMap(TerritoryMap territoryMap) {
+
+        MapDesign mapDesign = loadMapDesign();
+
+        if (StringUtils.isEmpty(territoryMap.getTerritoryNumber())) {
+            territoryMap.setTerritoryNumber(String.valueOf(Calendar.getInstance().getTimeInMillis()));
+            mapDesign.getTerritoryMapList().add(territoryMap);
+            saveMapDesign(mapDesign);
+        }
+
+        return territoryMap;
+    }
+
     public void setDatabaseName(String databaseName) {
         this.databaseName = databaseName;
     }
@@ -1021,4 +1039,6 @@ public class DatabaseService {
         openDatabase(databaseName);
         databaseCorrection001_translateCongregationName();
     }
+
+
 }
