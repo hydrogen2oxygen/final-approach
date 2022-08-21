@@ -215,6 +215,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
 
       feature.set('territoryNumber', territoryMap.territoryNumber);
       feature.set('territoryName', territoryMap.territoryName);
+      feature.set('note', territoryMap.note);
       feature.set('name', '' + territoryMap.territoryNumber);
       feature.set('draft', territoryMap.draft);
       feature.setId(territoryMap.territoryNumber);
