@@ -64,6 +64,7 @@ public class DatabaseService {
     private void openDatabase(String databaseName) {
         db = Nitrite.builder()
                 .filePath(databaseName)
+                .autoCommitBufferSize(1)
                 .openOrCreate("user", "password");
 
         congregationOR = db.getRepository(Congregation.class);
@@ -420,12 +421,17 @@ public class DatabaseService {
 
         MapDesign mapDesign = mapDesignOR.find().firstOrDefault();
 
+        if (mapDesign.getZoom() == null) {
+            mapDesign.setZoom(12);
+        }
+
         List<TerritoryMap> toBeRemovedFaultyMaps = new ArrayList<>();
 
         for (TerritoryMap territoryMap : mapDesign.getTerritoryMapList()) {
             if (StringUtils.isEmpty(territoryMap.getTerritoryNumber())) {
                 toBeRemovedFaultyMaps.add(territoryMap);
             }
+            territoryMap.setFormerTerritoryNumber(null);
         }
 
         mapDesign.getTerritoryMapList().removeAll(toBeRemovedFaultyMaps);
@@ -443,10 +449,24 @@ public class DatabaseService {
 
     public MapDesign saveMapDesign(MapDesign mapDesign) {
 
-        // Clean Map from territories without feature data
         List<TerritoryMap> territoryMapsToRemove = new ArrayList<>();
+        TerritoryMap newMap = null;
 
         for (TerritoryMap t : mapDesign.getTerritoryMapList()) {
+            if (StringUtils.isNotEmpty(t.getFormerTerritoryNumber())) {
+                newMap = t;
+                break;
+            }
+        }
+
+
+        for (TerritoryMap t : mapDesign.getTerritoryMapList()) {
+            if (newMap != null && t.getTerritoryNumber().equals(newMap.getFormerTerritoryNumber())) {
+                territoryMapsToRemove.add(t);
+                newMap.setFormerTerritoryNumber(null);
+            }
+
+            // Clean Map from territories without feature data
             if (!t.getSimpleFeatureData().startsWith("POLYGON")) {
                 territoryMapsToRemove.add(t);
             }
@@ -455,7 +475,7 @@ public class DatabaseService {
         mapDesign.getTerritoryMapList().removeAll(territoryMapsToRemove);
 
         mapDesignOR.update(mapDesign);
-        uploadMapDesign(loadMapDesign());
+        uploadMapDesign(mapDesign);
         return loadMapDesign();
     }
 

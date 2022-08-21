@@ -62,7 +62,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
     })
   });
 
-  styleRedOutlineActive: Style = new Style({
+  styleGreenOutlineActive: Style = new Style({
     fill: new Fill({
       color: [0, 255, 0, 0.1]
     }),
@@ -120,7 +120,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
         let style = that.styleRedOutline;
 
         if (feature.get('draft') == false) {
-          style = that.styleRedOutlineActive;
+          style = that.styleGreenOutlineActive;
         }
 
         // @ts-ignore
@@ -163,6 +163,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
         this.lastSelectedFeature = undefined;
         this.territoryCustomNumber.setValue(null);
         this.territoryCustomName.setValue(null);
+        this.note.setValue(null);
         //return;
       }
 
@@ -170,6 +171,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
       if (this.lastSelectedFeature) {
         this.territoryCustomNumber.setValue(this.lastSelectedFeature.get('territoryNumber'));
         this.territoryCustomName.setValue(this.lastSelectedFeature.get('territoryName'));
+        this.note.setValue(this.lastSelectedFeature.get('note'));
       }
 
       this.mapDesign.territoryMapList.forEach(t => {
@@ -192,7 +194,10 @@ export class DesignerComponent implements OnInit, AfterViewInit {
 
     this.mapDesignService.getMapDesign().subscribe((mapDesign: MapDesign) => {
       this.loadMapDesignObject(mapDesign);
-      if (centerView) this.map?.getView().setCenter([this.mapDesign.coordinatesX, this.mapDesign.coordinatesY]);
+      if (centerView) {
+        this.map?.getView().setCenter([this.mapDesign.coordinatesX, this.mapDesign.coordinatesY]);
+        this.map?.getView().setZoom(this.mapDesign.zoom);
+      }
     })
   }
 
@@ -232,13 +237,21 @@ export class DesignerComponent implements OnInit, AfterViewInit {
     }
 
     if (this.lastSelectedFeature != undefined) {
-      this.lastSelectedFeature?.setProperties([{'territoryNumber': this.territoryNumber.value}]);
 
       let territoryMap = new TerritoryMap();
+
+      if (this.lastSelectedFeature.get('territoryNumber') != null) {
+        console.log("Former territoryNumber = " + this.lastSelectedFeature.get('territoryNumber'))
+        territoryMap.formerTerritoryNumber = this.lastSelectedFeature.get('territoryNumber');
+      }
+
+      this.lastSelectedFeature.setProperties([{'territoryNumber': this.territoryNumber.value}]);
+
       territoryMap.draft = true;
       territoryMap.lastUpdate = new Date();
       if (this.territoryNumber.value) territoryMap.territoryNumber = this.territoryNumber.value;
       if (this.territoryCustomName.value) territoryMap.territoryName = this.territoryCustomName.value;
+      if (this.note.value) territoryMap.note = this.note.value;
       this.lastSavedTerritoryName = territoryMap.territoryNumber + ' ' + territoryMap.territoryName;
       let data = this.wktFormat.writeGeometry(<Geometry>this.lastSelectedFeature?.getGeometry());
 
@@ -305,6 +318,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
       let modifiedFeature = evt.features.getArray()[0];
       this.territoryCustomNumber.setValue(modifiedFeature.get('territoryNumber'));
       this.territoryCustomName.setValue(modifiedFeature.get('territoryName'));
+      this.note.setValue(modifiedFeature.get('note'));
       this.lastSavedTerritoryName = this.territoryCustomNumber.value + ' ' + this.territoryCustomName.value;
 
       this.mapDesign.territoryMapList.forEach(t => {
@@ -350,8 +364,22 @@ export class DesignerComponent implements OnInit, AfterViewInit {
 
       territoryMap.simpleFeatureData = data;
 
-      this.mapDesignService.saveTerritoryMap(territoryMap).subscribe( (t:TerritoryMap) => {
-        this.mapDesign.territoryMapList.push(t);
+      this.mapDesignService.saveTerritoryMap(territoryMap).subscribe((t: TerritoryMap) => {
+
+        console.log(t)
+        //this.lastSelectedFeature = undefined;
+
+        if (this.lastSelectedFeature) {
+          this.lastSelectedFeature.set('territoryNumber', t.territoryNumber);
+          this.lastSelectedFeature.set('territoryName', t.territoryName);
+          this.lastSelectedFeature.set('name', '' + t.territoryNumber);
+          this.lastSelectedFeature.set('note', t.note);
+          this.lastSelectedFeature.set('draft', t.draft);
+          this.lastSelectedFeature.setId(territoryMap.territoryNumber);
+          //this.source.addFeature(feature);
+          console.log(this.lastSelectedFeature)
+          this.mapDesign.territoryMapList.push(t);
+        }
       });
 
     });
@@ -368,8 +396,13 @@ export class DesignerComponent implements OnInit, AfterViewInit {
   setHomeCoordinates() {
     // @ts-ignore
     let center = this.map?.getView().getCenter();
+    let zoom = this.map?.getView().getZoom();
 
-    if (center != undefined) {
+    if (zoom) {
+      this.mapDesign.zoom = zoom;
+    }
+
+    if (center) {
       this.mapDesign.coordinatesX = center[0];
       this.mapDesign.coordinatesY = center[1];
       this.mapDesignService.saveMapDesign(this.mapDesign).subscribe(() => {

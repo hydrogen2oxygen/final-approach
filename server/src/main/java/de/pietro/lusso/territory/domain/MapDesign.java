@@ -15,6 +15,7 @@ public class MapDesign {
     private UUID uuid;
     private String coordinatesX;
     private String coordinatesY;
+    private Integer zoom;
 
     private List<TerritoryMap> territoryMapList = new ArrayList<>();
 
@@ -48,5 +49,13 @@ public class MapDesign {
 
     public void setUuid(UUID uuid) {
         this.uuid = uuid;
+    }
+
+    public Integer getZoom() {
+        return zoom;
+    }
+
+    public void setZoom(Integer zoom) {
+        this.zoom = zoom;
     }
 }

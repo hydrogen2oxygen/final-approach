@@ -9,6 +9,7 @@ public class TerritoryMap {
     private boolean draft = true;
     private String territoryNumber;
     private String territoryName;
+    private String formerTerritoryNumber;
     private String simpleFeatureData;
     private String simpleFeatureType;
     private String note;
@@ -30,6 +31,14 @@ public class TerritoryMap {
 
     public void setTerritoryName(String territoryName) {
         this.territoryName = territoryName;
+    }
+
+    public String getFormerTerritoryNumber() {
+        return formerTerritoryNumber;
+    }
+
+    public void setFormerTerritoryNumber(String formerTerritoryNumber) {
+        this.formerTerritoryNumber = formerTerritoryNumber;
     }
 
     public String getNote() {
