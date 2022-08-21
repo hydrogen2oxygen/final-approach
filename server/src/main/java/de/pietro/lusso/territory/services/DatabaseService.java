@@ -459,17 +459,18 @@ public class DatabaseService {
             }
         }
 
-
         for (TerritoryMap t : mapDesign.getTerritoryMapList()) {
             if (newMap != null && t.getTerritoryNumber().equals(newMap.getFormerTerritoryNumber())) {
                 territoryMapsToRemove.add(t);
-                newMap.setFormerTerritoryNumber(null);
+                newMap = null;
             }
 
             // Clean Map from territories without feature data
             if (!t.getSimpleFeatureData().startsWith("POLYGON")) {
                 territoryMapsToRemove.add(t);
             }
+
+            t.setFormerTerritoryNumber(null);
         }
 
         mapDesign.getTerritoryMapList().removeAll(territoryMapsToRemove);
