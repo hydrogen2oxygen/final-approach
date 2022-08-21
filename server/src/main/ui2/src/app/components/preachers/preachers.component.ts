@@ -232,6 +232,14 @@ export class PreachersComponent implements OnInit {
   }
 
   returnTerritoryByNumber(territory:Territory) {
-
+    this.congregationService.returnTerritory(territory).subscribe( (c: Congregation) => {
+      if (c == null) {
+        console.error("Returned congregation is null!");
+        return;
+      }
+      this.reloadCongregation();
+      this.preacher = null;
+      this.territories = [];
+    })
   }
 }

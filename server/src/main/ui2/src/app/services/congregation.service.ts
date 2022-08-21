@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {Observable} from "rxjs";
-import {Congregation, Version} from "../domains/Congregation";
+import {Congregation, Territory, Version} from "../domains/Congregation";
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Message} from "../domains/Message";
@@ -90,5 +90,9 @@ export class CongregationService {
 
   deleteBackup(backupFile:BackupFile):Observable<void> {
     return this.http.put<void>(`${CongregationService.url}backup/delete`,backupFile);
+  }
+
+  returnTerritory(territory: Territory):Observable<Congregation> {
+    return this.http.put<Congregation>(`${CongregationService.url}returnTerritory/${territory.number}`,null);
   }
 }

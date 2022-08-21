@@ -1062,4 +1062,29 @@ public class DatabaseService {
     }
 
 
+    public Congregation returnTerritory(String number) {
+
+        Congregation congregation = loadCongregation();
+
+        if (StringUtils.isEmpty(number)) return congregation;
+
+        Territory territory = getTerritoryByNumber(congregation, number);
+
+        if (territory == null) return congregation;
+
+        RegistryEntry registryEntry = new RegistryEntry();
+        registryEntry.setAssignDate(Calendar.getInstance().getTime());
+        Preacher preacher = new Preacher();
+        preacher.setName(Congregation.CONGREGATION);
+        registryEntry.setPreacher(preacher);
+
+        if (territory.getRegistryEntryList().size() > 0) {
+            RegistryEntry lastEntry = territory.getRegistryEntryList().get(territory.getRegistryEntryList().size() -1);
+            lastEntry.setReturnDate(Calendar.getInstance().getTime());
+        }
+
+        territory.getRegistryEntryList().add(registryEntry);
+
+        return saveCongregation(congregation);
+    }
 }
