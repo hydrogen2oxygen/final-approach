@@ -22,6 +22,7 @@ import {WKT} from "ol/format";
 import {ToastrService} from "ngx-toastr";
 import {Extent} from "ol/extent";
 import {NavigationService} from "../../services/navigation.service";
+import KML from "ol/format/KML";
 
 @Component({
   selector: 'app-designer',
@@ -432,9 +433,47 @@ export class DesignerComponent implements OnInit, AfterViewInit {
   }
 
   exportKml() {
-    this.mapDesignService.exportKml().subscribe(() => {
-      this.toastr.info("KML(s) exported!", "Map Service")
+
+    let format = new KML({
+      'extractStyles':false
     });
+    let kmlStyle = "<Document><Style id=\"failed\"><LineStyle><color>bfff55aa</color>" +
+      "\t\t\t<width>2</width>\n" +
+      "\t\t</LineStyle>\n" +
+      "\t\t<PolyStyle>\n" +
+      "\t\t\t<color>800055ff</color>\n" +
+      "\t\t</PolyStyle>\n" +
+      "\t</Style>\n" +
+      "\t<Style id=\"failed0\">\n" +
+      "\t\t<LineStyle>\n" +
+      "\t\t\t<color>bfff55aa</color>\n" +
+      "\t\t\t<width>2</width>\n" +
+      "\t\t</LineStyle>\n" +
+      "\t\t<PolyStyle>\n" +
+      "\t\t\t<color>800055ff</color>\n" +
+      "\t\t</PolyStyle>\n" +
+      "\t</Style>\n" +
+      "\t<StyleMap id=\"failed1\">\n" +
+      "\t\t<Pair>\n" +
+      "\t\t\t<key>normal</key>\n" +
+      "\t\t\t<styleUrl>#failed</styleUrl>\n" +
+      "\t\t</Pair>\n" +
+      "\t\t<Pair>\n" +
+      "\t\t\t<key>highlight</key>\n" +
+      "\t\t\t<styleUrl>#failed0</styleUrl>\n" +
+      "\t\t</Pair>\n" +
+      "\t</StyleMap>";
+    let kml = format.writeFeatures(this.source.getFeatures(), {featureProjection: 'EPSG:3857'});
+    kml = kml.replace("<Document>", kmlStyle);
+    kml = kml.replaceAll("<name>","<styleUrl>#failed1</styleUrl><name>");
+
+    let binaryData = [];
+    binaryData.push(kml);
+    let downloadLink = document.createElement('a');
+    downloadLink.href = window.URL.createObjectURL(new Blob(binaryData));
+    downloadLink.setAttribute('download', 'export.kml');
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
   }
 
   importKml() {
