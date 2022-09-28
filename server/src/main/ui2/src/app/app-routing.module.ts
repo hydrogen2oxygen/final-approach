@@ -6,6 +6,7 @@ import {DesignerComponent} from "./components/designer/designer.component";
 import {SettingsComponent} from "./components/settings/settings.component";
 import {UtilsComponent} from "./components/utils/utils.component";
 import {BackupComponent} from "./components/backup/backup.component";
+import {VideosComponent} from "./components/videos/videos.component";
 
 const routes: Routes = [
   {path: '', redirectTo: 'TERRITORIES', pathMatch: 'full'},
@@ -14,7 +15,8 @@ const routes: Routes = [
   {path: 'DESIGNER', component:DesignerComponent},
   {path: 'UTILS', component:UtilsComponent},
   {path: 'SETTINGS', component:SettingsComponent},
-  {path: 'BACKUPS', component:BackupComponent}
+  {path: 'BACKUPS', component:BackupComponent},
+  {path: 'VIDEOS', component:VideosComponent}
 ];
 
 @NgModule({

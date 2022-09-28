@@ -6,8 +6,8 @@
     <packaging>pom</packaging>
 
     <properties>
-        <revision>1.0.26</revision>
-        <version.info>Sync WIP</version.info>
+        <revision>1.0.27</revision>
+        <version.info>Video help component and new settings</version.info>
     </properties>
 
     <version>${revision}</version>

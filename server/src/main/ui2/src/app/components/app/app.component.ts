@@ -52,7 +52,8 @@ export class AppComponent {
       new Link("DESIGNER"),
       new Link("UTILS"),
       new Link("SETTINGS"),
-      new Link("BACKUPS")
+      new Link("BACKUPS"),
+      new Link("VIDEOS")
     ]
   }
 
