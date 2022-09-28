@@ -20,6 +20,14 @@ public class SettingsInitializer {
         addIfMissing(settings, "ftp.sftp"); // true or false (null is false)
         addIfMissing(settings, "ftp.sync"); // true or false (null is false)
         addIfMissing(settings, "ftp.syncPassword");
+        addIfMissing(settings, "text.whatsApp");
+        addIfMissing(settings, "text.whatsApp.note");
+
+        if (NOT_SET.equals(settings.getSettings().get("text.whatsApp"))) {
+            // Italian text is default
+            settings.getSettings().put("text.whatsApp","una lista dei tuoi territori online:");
+            settings.getSettings().put("text.whatsApp.note","NOTE:");
+        }
     }
 
     private static void addIfMissing(Settings settings, String key) {

@@ -77,10 +77,16 @@ export class PreachersComponent implements OnInit {
   }
 
   getWhatsAppMessage(preacher: Preacher) {
+
+    // @ts-ignore
+    let whatsAppMessage = this.settings?.settings['text.whatsApp'];
+    // @ts-ignore
+    let whatsAppMessageNote = this.settings?.settings['text.whatsApp.note'];
+
     let message = '=============================\n'
       + preacher.name
       + ' ( ' + this.datepipe.transform(new Date(), 'dd.MM.yyyy')
-      + ' ),\nuna lista dei tuoi territori online:\n\n';
+      + ' ),\n' + whatsAppMessage + '\n\n';
 
     preacher.territoryListNumbers.forEach(territoryNumber => {
 
@@ -99,7 +105,7 @@ export class PreachersComponent implements OnInit {
         }
 
         if (territory.notes.length > 0) {
-          message += 'NOTE:\n'
+          message += whatsAppMessageNote + '\n'
         }
 
         territory.notes.forEach(note => {

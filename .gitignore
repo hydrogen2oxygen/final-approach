@@ -46,6 +46,7 @@ territory.db.*
 /server/logs/
 /logs/
 /server/src/main/resources/info.properties
+/updater/src/main/resources/info.properties
 /data/
 /territory*.db
 /uploads/

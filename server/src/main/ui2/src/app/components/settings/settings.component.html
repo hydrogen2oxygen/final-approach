@@ -58,4 +58,15 @@
   <button class="btn btn-danger mb-2" style="margin-top: 1rem; margin-left: 0.2rem" (click)="createUniquePassword()">CREATE UNIQUE PASSWORD</button>
 </div>
 <hr>
+<div class="form-group">
+  <label for="whatsApp">WHATSAPP TEXT</label>
+  <input type="text" class="form-control" id="whatsApp" aria-describedby="whatsApp" placeholder="whatsApp Text"
+         [formControl]="whatsApp">
+</div>
+<div class="form-group">
+  <label for="whatsAppNote">WHATSAPP NOTE TEXT</label>
+  <input type="text" class="form-control" id="whatsAppNote" aria-describedby="whatsAppNote" placeholder="whatsApp Note Text"
+         [formControl]="whatsAppNote">
+</div>
+<hr>
 <button type="submit" class="btn btn-success mb-2" style="margin-top: 1rem; margin-left: 0.2rem" (click)="save()">SAVE SETTINGS</button>
