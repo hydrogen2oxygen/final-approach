@@ -13,7 +13,6 @@ import { v4 as uuid } from 'uuid';
 export class SettingsComponent implements OnInit {
 
   settings:Settings|null = null;
-  userName = new FormControl('');
   ftpUser = new FormControl('');
   ftpPassword = new FormControl('');
   ftpHost = new FormControl('');
@@ -33,7 +32,6 @@ export class SettingsComponent implements OnInit {
     this.settingsService.getSettings().subscribe( (s: Settings | null) => {
       this.settings = s;
       if (this.settings != null) {
-        this.ftpUser.setValue(s.settings['userName']);
         this.ftpUser.setValue(s.settings['ftp.user']);
         this.ftpPassword.setValue(s.settings['ftp.password']);
         this.ftpHost.setValue(s.settings['ftp.host']);
@@ -61,7 +59,6 @@ export class SettingsComponent implements OnInit {
 
   public save():void {
     if (this.settings != null) {
-      this.settings.settings['userName'] = this.userName.value;
       this.settings.settings['ftp.user'] = this.ftpUser.value;
       this.settings.settings['ftp.password'] = this.ftpPassword.value;
       this.settings.settings['ftp.host'] = this.ftpHost.value;

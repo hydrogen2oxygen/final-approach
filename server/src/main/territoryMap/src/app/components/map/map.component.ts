@@ -81,6 +81,7 @@ export class MapComponent implements OnInit {
     this.osmLayer = new TileLayer({
       source: new OSM(),
     });
+    // @ts-ignore
     this.osmLayer.getSource().setAttributions([]);
 
     let that = this;
@@ -215,7 +216,7 @@ export class MapComponent implements OnInit {
     modalRef.componentInstance.territoryData = this.territoryData;
     modalRef.componentInstance.calculateDate();
 
-    modalRef.closed.subscribe(e => {
+    modalRef.closed.subscribe((e: string) => {
       if (e != 'Close click') return;
 
       //territory.noContacts = modalRef.componentInstance.noContacts.value;
