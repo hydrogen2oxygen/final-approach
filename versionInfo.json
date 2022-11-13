@@ -1,10 +1,10 @@
 {
-  "downloadPath": "https://github.com/hydrogen2oxygen/final-approach/releases/download/v1.0.27/final-approach-1.0.27.zip",
-  "currentVersion": "1.0.27",
-  "currentVersionInfo": "Video tutorials",
+  "downloadPath": "https://github.com/hydrogen2oxygen/final-approach/releases/download/v1.0.28/final-approach-1.0.28.zip",
+  "currentVersion": "1.0.28",
+  "currentVersionInfo": "Bugfix RETURN territory",
   "versionInfoDetailList": [
     {
-      "version": "1.0.27"
+      "version": "1.0.28"
     }
   ]
 }
