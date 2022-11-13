@@ -1083,6 +1083,7 @@ public class DatabaseService {
             lastEntry.setReturnDate(Calendar.getInstance().getTime());
         }
 
+        territory.setNewPreacherAssigned(true);
         territory.getRegistryEntryList().add(registryEntry);
 
         return saveCongregation(congregation);

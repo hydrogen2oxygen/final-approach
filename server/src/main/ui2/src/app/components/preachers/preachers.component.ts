@@ -243,6 +243,11 @@ export class PreachersComponent implements OnInit {
         console.error("Returned congregation is null!");
         return;
       }
+
+      this.toastr.success('Territory ' + territory.number + " " + territory.name
+        + " exported successfully for "
+        + territory.registryEntryList[territory.registryEntryList.length -1].preacher.name, "Export Service");
+
       this.reloadCongregation();
       this.preacher = null;
       this.territories = [];

@@ -144,7 +144,7 @@ public class CongregationAdapter {
     }
 
     @PutMapping("returnTerritory/{number}")
-    public Congregation deleteBackupFile(@PathVariable String number) throws IOException {
+    public Congregation returnTerritory(@PathVariable String number) throws IOException {
         return databaseService.returnTerritory(number);
     }
 }
