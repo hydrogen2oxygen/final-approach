@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
           java-version: 1.8
       - name: Install Libs and Build with Maven
@@ -24,7 +24,7 @@ jobs:
           cp updater/target/updater-1.0.28-jar-with-dependencies.jar finalApproach/launcher.jar;
           cp updater/target/updater-1.0.28-jar-with-dependencies.jar finalApproach/newlauncher.jar;
           cp scripts/start.bat finalApproach/;
-      - uses: actions/upload-artifact@master
+      - uses: actions/upload-artifact@v3
         with:
           name: final-approach-1.0.28
           path: finalApproach
