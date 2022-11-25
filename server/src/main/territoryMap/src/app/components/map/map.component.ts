@@ -17,9 +17,11 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {StreetsOverviewComponent} from "../streets-overview/streets-overview.component";
 import {Title} from "@angular/platform-browser";
 import {LocalStorageService} from "angular-web-storage";
-import {Feature} from "ol";
+import {Feature, Geolocation} from "ol";
 import {Coordinate} from "ol/coordinate";
 import {toLonLat} from "ol/proj";
+import CircleStyle from "ol/style/Circle";
+import {Point} from "ol/geom";
 
 @Component({
   selector: 'app-map',
@@ -29,7 +31,7 @@ import {toLonLat} from "ol/proj";
 export class MapComponent implements OnInit {
 
   id: string = '';
-  extent: Extent|undefined=undefined;
+  extent: Extent | undefined = undefined;
   map: olMap | null = null;
   view: View = new View();
   source = new VectorSource();
@@ -45,6 +47,10 @@ export class MapComponent implements OnInit {
   textMessage = new FormControl('');
   dynamicUrl: string = '';
   currentLayer: string = 'OSM';
+  geoLocation: Geolocation | undefined;
+  positionFeature = new Feature();
+  accuracyFeature = new Feature();
+  tracking:boolean = false;
 
   styleRedOutline: Style = new Style({
     fill: new Fill({
@@ -68,22 +74,40 @@ export class MapComponent implements OnInit {
     })
   });
 
+
   constructor(
     private dataService: DataService,
     private route: ActivatedRoute,
     private modalService: NgbModal,
-    private title:Title,
+    private title: Title,
     private local: LocalStorageService
   ) {
   }
 
   ngOnInit(): void {
+
+    this.positionFeature.setStyle(
+      new Style({
+        image: new CircleStyle({
+          radius: 6,
+          fill: new Fill({
+            color: '#3399CC',
+          }),
+          stroke: new Stroke({
+            color: '#fff',
+            width: 2,
+          }),
+        }),
+      })
+    );
+
     this.osmLayer = new TileLayer({
       source: new OSM(),
     });
     // @ts-ignore
     this.osmLayer.getSource().setAttributions([]);
-
+    this.source.addFeature(this.positionFeature);
+    this.source.addFeature(this.accuracyFeature);
     let that = this;
 
     this.vectorLayer = new VectorLayer({
@@ -130,9 +154,7 @@ export class MapComponent implements OnInit {
       if (params['message']) {
         this.message = params['message'];
       }
-
       // TODO check more params as streets, message and coordinate xy
-
     });
   }
 
@@ -164,8 +186,8 @@ export class MapComponent implements OnInit {
 
         this.title.setTitle(territoryData.number + ' ' + territoryData.name);
 
-        this.territoryData.streetList.forEach( street => {
-          let value:boolean = this.local.get(this.territoryData.number + ' ' + street.streetName);
+        this.territoryData.streetList.forEach(street => {
+          let value: boolean = this.local.get(this.territoryData.number + ' ' + street.streetName);
           if (value == null) value = false;
           street.checked = value;
         });
@@ -173,7 +195,7 @@ export class MapComponent implements OnInit {
       } else if (territoryData.territories.length > 0) {
         this.title.setTitle(territoryData.name);
 
-        territoryData.territories.forEach( t => {
+        territoryData.territories.forEach(t => {
           let feature = this.wktFormat.readFeature(t.simpleFeatureData, {
             dataProjection: 'EPSG:3857',
             featureProjection: 'EPSG:3857'
@@ -221,10 +243,10 @@ export class MapComponent implements OnInit {
 
       //territory.noContacts = modalRef.componentInstance.noContacts.value;
 
-     /* this.congregationService.saveCongregation(this.congregation).subscribe(c => {
-        this.congregation = c;
-        this.collectLastRegistryEntries();
-      })*/
+      /* this.congregationService.saveCongregation(this.congregation).subscribe(c => {
+         this.congregation = c;
+         this.collectLastRegistryEntries();
+       })*/
     });
   }
 
@@ -268,5 +290,62 @@ export class MapComponent implements OnInit {
   getCoordinates(coordinates: number[] | undefined): Coordinate {
     if (coordinates == undefined) return [0, 0];
     return toLonLat(coordinates)
+  }
+
+  centerGeoLocation() {
+    if (!this.geoLocation && this.map) {
+
+      console.log("init geolocation ...")
+
+      this.geoLocation = new Geolocation({
+        // enableHighAccuracy must be set to true to have the heading value.
+        trackingOptions: {
+          enableHighAccuracy: true,
+        },
+        projection: this.map.getView().getProjection(),
+      });
+
+      this.geoLocation.setTracking(true);
+
+      this.geoLocation.on('change:position', () => {
+        if (this.geoLocation) {
+          this.setCurrentPositionPoint(this.geoLocation.getPosition())
+          this.setCurrentAccuracyGeometry(this.geoLocation.getAccuracyGeometry());
+        }
+      });
+
+      this.tracking = true;
+    }
+
+    if (this.tracking) {
+      this.getCenterAndPosition()
+    }
+  }
+
+  getCenterAndPosition() {
+    if (this.geoLocation) {
+      this.setCurrentPositionPoint(this.geoLocation.getPosition())
+      this.setCurrentAccuracyGeometry(this.geoLocation.getAccuracyGeometry());
+    }
+  }
+
+  setCurrentPositionPoint(currentPos:any) {
+    if (currentPos) {
+      this.positionFeature.setGeometry(new Point(currentPos));
+      this.map?.getView().setCenter(currentPos);
+    }
+  }
+
+  setCurrentAccuracyGeometry(accuracy:any) {
+    if (accuracy) {
+      this.accuracyFeature.setGeometry(accuracy);
+    }
+  }
+
+  stopTracking() {
+    this.tracking = false;
+    if (this.geoLocation) {
+      this.geoLocation.setTracking(false);
+    }
   }
 }

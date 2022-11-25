@@ -35,6 +35,18 @@
   {{currentLayer}}
 </button>
 
+<button  style="bottom: 7.5rem; right:1rem; position:fixed;"
+        class="btn btn-sm btn-primary" type="button"
+        (click)="centerGeoLocation()">
+  TRACK
+</button>
+
+<button *ngIf="tracking" style="bottom: 9.5rem; right:1rem; position:fixed;"
+         class="btn btn-sm btn-warning" type="button"
+         (click)="stopTracking()">
+  STOP
+</button>
+
 <a *ngIf="map"
    style="bottom: 5.5rem; right:1rem; position:fixed;"
    class="btn btn-sm btn-primary"
