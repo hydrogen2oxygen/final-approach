@@ -305,8 +305,6 @@ export class MapComponent implements OnInit {
         projection: this.map.getView().getProjection(),
       });
 
-      this.geoLocation.setTracking(true);
-
       this.geoLocation.on('change:position', () => {
         if (this.geoLocation) {
           this.setCurrentPositionPoint(this.geoLocation.getPosition())
@@ -314,11 +312,12 @@ export class MapComponent implements OnInit {
         }
       });
 
-      this.tracking = true;
     }
 
-    if (this.tracking) {
-      this.getCenterAndPosition()
+    if (this.geoLocation) {
+      this.getCenterAndPosition();
+      this.geoLocation.setTracking(true);
+      this.tracking = true;
     }
   }
 
@@ -346,6 +345,10 @@ export class MapComponent implements OnInit {
     this.tracking = false;
     if (this.geoLocation) {
       this.geoLocation.setTracking(false);
+    }
+
+    if (this.extent) {
+      this.map?.getView().fit(this.extent);
     }
   }
 }
