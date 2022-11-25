@@ -19,6 +19,7 @@ export class PreachersComponent implements OnInit {
   preacher: Preacher | null = null;
   settings: Settings | null = null;
   newPreacherName = new FormControl('');
+  notes = new FormControl('');
   datepipe: DatePipe = new DatePipe('en-US');
   monthsBefore4: Date = new Date();
   monthsBefore8: Date = new Date();
@@ -44,6 +45,9 @@ export class PreachersComponent implements OnInit {
   private reloadCongregation() {
     this.congregationService.getCongregation().subscribe((c: Congregation) => {
       this.congregation = c;
+      if (this.congregation.notes) {
+        this.notes.setValue(this.congregation.notes);
+      }
     });
   }
 
@@ -64,6 +68,13 @@ export class PreachersComponent implements OnInit {
 
     this.congregationService.saveCongregation(this.congregation).subscribe((c: Congregation) => {
       this.toastr.success(preacherName + " saved as a new preacher", "Data Service")
+    });
+  }
+
+  saveNotes() {
+    this.congregation.notes = this.notes.value;
+    this.congregationService.saveCongregation(this.congregation).subscribe((c: Congregation) => {
+      this.toastr.success("Notes saved!", "Data Service")
     });
   }
 
@@ -253,4 +264,6 @@ export class PreachersComponent implements OnInit {
       this.territories = [];
     })
   }
+
+
 }

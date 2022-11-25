@@ -14,6 +14,7 @@ public class Congregation {
     @Id
     private UUID uuid = UUID.randomUUID();
     private String name;
+    private String notes;
     private Calendar lastUpdate = Calendar.getInstance();
     private List<Preacher> preacherList = new ArrayList<>();
     private List<Territory> territoryList = new ArrayList<>();
@@ -110,5 +111,13 @@ public class Congregation {
 
     public void setTerritoriesArchived(List<Territory> territoriesArchived) {
         this.territoriesArchived = territoriesArchived;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 }

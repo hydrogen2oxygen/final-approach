@@ -50,3 +50,4 @@ territory.db.*
 /data/
 /territory*.db
 /uploads/
+/server/src/main/resources/territoryMap/

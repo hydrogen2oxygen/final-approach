@@ -10,3 +10,4 @@ The application is intended to be run *"offline"*, not as a server, because it l
 - Send a Whatsapp message with a list of assigned territories to a preacher
 - Download maps as KML file
 - Print statistics and tables (PDF)
+

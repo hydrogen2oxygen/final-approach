@@ -1,6 +1,11 @@
 <div class="input-group mb-3" style="width: 30%">
   <input type="text" class="form-control" placeholder="New Preacher Full Name" aria-label="New Preacher Full Name" aria-describedby="button-Preacher" [formControl]="newPreacherName">
-  <button class="btn btn-success btn-sm" type="button" id="button-Preacher" (click)="saveNewPreacher()">SAVE</button>
+  <button class="btn btn-success btn-sm" type="button" id="button-Preacher" (click)="saveNewPreacher()">SAVE NEW PREACHER</button>
+</div>
+
+<div class="input-group mb-3" style="width: 70%">
+  <textarea type="text" class="form-control" placeholder="Notes" aria-label="Notes" aria-describedby="button-Notes" [formControl]="notes"></textarea>
+  <button class="btn btn-success btn-sm" type="button" id="button-Notes" (click)="saveNotes()">SAVE NOTES</button>
 </div>
 
 <div>
