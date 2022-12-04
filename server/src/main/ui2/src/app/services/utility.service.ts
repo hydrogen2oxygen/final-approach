@@ -18,4 +18,8 @@ export class UtilityService {
     importPath.importPath = filePath;
     return this.http.post<void>(`${UtilityService.url}importTerritoriesFromText`, importPath);
   }
+
+  uploadTerritoryMapApplication():Observable<string> {
+    return this.http.put<string>(`${UtilityService.url}uploadTerritoryMapApplication`, null);
+  }
 }

@@ -1,5 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {environment} from "../../../environments/environment";
+import {UtilityService} from "../../services/utility.service";
 
 @Component({
   selector: 'app-utils',
@@ -8,7 +9,7 @@ import {environment} from "../../../environments/environment";
 })
 export class UtilsComponent implements OnInit {
 
-  constructor() { }
+  constructor(private utilityService:UtilityService) { }
 
   ngOnInit(): void {
   }
@@ -23,5 +24,11 @@ export class UtilsComponent implements OnInit {
     } else {
       window.location.reload();
     }
+  }
+
+  uploadTerritoryMapUI() {
+    this.utilityService.uploadTerritoryMapApplication().subscribe( result => {
+      console.log(result);
+    })
   }
 }

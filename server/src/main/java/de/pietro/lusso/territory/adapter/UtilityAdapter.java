@@ -28,13 +28,21 @@ public class UtilityAdapter {
 
         Executor executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
+
             logger.info("received shutdown request");
             databaseService.shutdown();
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            int seconds = 1;
+
+            while (databaseService.isClosed()) {
+                try {
+                    Thread.sleep(1000);
+                    logger.info("wait " + seconds + " second");
+                    seconds++;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
+
             logger.info("shutting down server");
             System.exit(0);
         });
@@ -43,5 +51,10 @@ public class UtilityAdapter {
     @PostMapping("importTerritoriesFromText")
     public void importTerritoriesFromText(@RequestBody ImportData importData) throws IOException, JSchException, SftpException {
         databaseService.importTerritoriesFromText(importData.getImportPath());
+    }
+
+    @PutMapping("uploadTerritoryMapApplication")
+    public void uploadTerritoryMapApplication() throws Exception {
+        databaseService.uploadTerritoryMapApplication();
     }
 }

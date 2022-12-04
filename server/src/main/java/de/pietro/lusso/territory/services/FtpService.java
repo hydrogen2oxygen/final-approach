@@ -86,8 +86,10 @@ public class FtpService {
 
         upload(file, "");
     }
-
     public void upload(File file, String path) throws Exception {
+        uploadWithRootPath(file, rootPath, path);
+    }
+    public void uploadWithRootPath(File file, String rootPath, String path) throws Exception {
 
         if (!file.exists()) {
             logger.info("File " + file.getAbsolutePath() + " does not exist!");

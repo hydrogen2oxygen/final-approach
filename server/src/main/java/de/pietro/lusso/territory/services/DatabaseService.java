@@ -15,6 +15,7 @@ import org.dizitart.no2.objects.ObjectRepository;
 import org.dizitart.no2.tool.Exporter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -950,6 +951,10 @@ public class DatabaseService {
         db.close();
     }
 
+    public boolean isClosed() {
+        return db.isClosed();
+    }
+
     public Version readVersionInfos() throws IOException {
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         InputStream is = classloader.getResourceAsStream("info.properties");
@@ -1087,5 +1092,28 @@ public class DatabaseService {
         territory.getRegistryEntryList().add(registryEntry);
 
         return saveCongregation(congregation);
+    }
+
+    public void uploadTerritoryMapApplication() throws Exception {
+        File territoryMapFolder = new ClassPathResource("territoryMap").getFile();// new File("./src/main/resources/territoryMap");
+        System.out.println(territoryMapFolder.getAbsolutePath());
+        Map<String, String> s = loadSettings().getSettings();
+        String httpHost = s.get("ftp.httpHost");
+
+        for (File file : territoryMapFolder.listFiles()) {
+            if (file.isFile()) {
+                System.out.println(file.getAbsolutePath());
+
+                if ("index.html".equals(file.getName())) {
+                    new File("data/tmp/").mkdirs();
+                    File index = new File("data/tmp/index.html");
+                    String indexStr = FileUtils.readFileToString(file, "UTF-8");
+                    FileUtils.writeStringToFile(index, indexStr.replace("/baseHrefPlaceHolder/", httpHost));
+                    ftpService.uploadWithRootPath(index, "","");
+                } else {
+                    ftpService.uploadWithRootPath(file, "", "");
+                }
+            }
+        }
     }
 }
