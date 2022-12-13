@@ -43,6 +43,8 @@ export class MapComponent implements OnInit {
   territoryData: TerritoryData = new TerritoryData(undefined);
   message: string | undefined;
   showMenu: boolean = false;
+
+  showButtons: boolean = false;
   showMessageDialog: boolean = false;
   textMessage = new FormControl('');
   dynamicUrl: string = '';
@@ -350,5 +352,9 @@ export class MapComponent implements OnInit {
     if (this.extent) {
       this.map?.getView().fit(this.extent);
     }
+  }
+
+  switchButtons() {
+    this.showButtons = !this.showButtons;
   }
 }

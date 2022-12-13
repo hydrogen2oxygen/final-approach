@@ -15,6 +15,7 @@ public class Congregation {
     private UUID uuid = UUID.randomUUID();
     private String name;
     private String notes;
+    private String simpleFeatureData;
     private Calendar lastUpdate = Calendar.getInstance();
     private List<Preacher> preacherList = new ArrayList<>();
     private List<Territory> territoryList = new ArrayList<>();
@@ -119,5 +120,13 @@ public class Congregation {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public String getSimpleFeatureData() {
+        return simpleFeatureData;
+    }
+
+    public void setSimpleFeatureData(String simpleFeatureData) {
+        this.simpleFeatureData = simpleFeatureData;
     }
 }

@@ -107,6 +107,22 @@ public class FtpService {
         }
     }
 
+    public void initFtpFolder() throws Exception {
+        if (useSftp) {
+            ChannelSftp sftp = getSftpClient();
+            sftp.mkdir("assets");
+            sftp.mkdir("assets/data");
+            sftp.mkdir("assets/data/uploads");
+            sftp.disconnect();
+        } else {
+            FTPClient ftp = getFtpClient();
+            ftp.mkd("assets");
+            ftp.mkd("assets/data");
+            ftp.mkd("assets/data/uploads");
+            ftp.disconnect();
+        }
+    }
+
     public void delete(String path) throws Exception {
 
         if (useSftp) {

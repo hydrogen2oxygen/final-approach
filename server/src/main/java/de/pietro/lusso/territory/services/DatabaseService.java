@@ -1095,10 +1095,12 @@ public class DatabaseService {
     }
 
     public void uploadTerritoryMapApplication() throws Exception {
-        File territoryMapFolder = new ClassPathResource("territoryMap").getFile();// new File("./src/main/resources/territoryMap");
+        File territoryMapFolder = new ClassPathResource("territoryMap").getFile();
         System.out.println(territoryMapFolder.getAbsolutePath());
         Map<String, String> s = loadSettings().getSettings();
         String httpHost = s.get("ftp.httpHost");
+
+        ftpService.initFtpFolder();
 
         for (File file : territoryMapFolder.listFiles()) {
             if (file.isFile()) {

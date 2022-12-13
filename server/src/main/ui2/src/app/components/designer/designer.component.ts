@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, HostListener, OnInit, Output} from '@angular/core';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
 import olMap from 'ol/Map';
 import TileLayer from 'ol/layer/Tile';
 import View from 'ol/View';
@@ -7,7 +7,7 @@ import XYZ from 'ol/source/XYZ';
 import {FormControl} from "@angular/forms";
 import {fromLonLat, toLonLat} from 'ol/proj';
 import {Coordinate} from "ol/coordinate";
-import {Draw, Modify, Select} from "ol/interaction";
+import {DragAndDrop, Draw, Modify, Select} from "ol/interaction";
 import GeometryType from "ol/geom/GeometryType";
 import VectorSource from "ol/source/Vector";
 import VectorLayer from "ol/layer/Vector";
@@ -18,11 +18,12 @@ import {MapDesignService} from "../../services/map-design.service";
 import {Congregation, Territory} from "../../domains/Congregation";
 import {Geometry} from "ol/geom";
 import {Feature} from "ol";
-import {WKT} from "ol/format";
+import {GeoJSON, GPX, IGC, TopoJSON, WKT} from "ol/format";
 import {ToastrService} from "ngx-toastr";
 import {Extent} from "ol/extent";
 import {NavigationService} from "../../services/navigation.service";
 import KML from "ol/format/KML";
+import VectorImageLayer from "ol/layer/VectorImage";
 
 @Component({
   selector: 'app-designer',
@@ -40,6 +41,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
   lastSelectedFeature: Feature | undefined = undefined;
   lastSelectedTerritoryMap: TerritoryMap | undefined = undefined;
   lastSavedTerritoryName: string = '';
+  importedFeature: Feature | undefined = undefined;
 
   styleRedOutline: Style = new Style({
     fill: new Fill({
@@ -48,6 +50,28 @@ export class DesignerComponent implements OnInit, AfterViewInit {
     stroke: new Stroke({
       color: [255, 0, 0, 0.5],
       width: 5
+    }),
+    text: new Text({
+      text: '',
+      font: '12px Calibri,sans-serif',
+      overflow: true,
+      fill: new Fill({
+        color: '#000',
+      }),
+      stroke: new Stroke({
+        color: '#fff',
+        width: 3,
+      }),
+    })
+  });
+
+  styleImported: Style = new Style({
+    fill: new Fill({
+      color: [0, 0, 0, 0.05]
+    }),
+    stroke: new Stroke({
+      color: [255, 0, 0, 0.25],
+      width: 4
     }),
     text: new Text({
       text: '',
@@ -92,6 +116,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
   territoryCustomNumber = new FormControl('');
   territoryCustomName = new FormControl('');
   selectInteraction = new Select();
+  dragAndDropInteraction = new DragAndDrop({formatConstructors: [GPX, GeoJSON, IGC, KML, TopoJSON],});
   wktFormat = new WKT();
   featureModified = false;
   modeSelected = '';
@@ -120,7 +145,9 @@ export class DesignerComponent implements OnInit, AfterViewInit {
       style: function (feature) {
         let style = that.styleRedOutline;
 
-        if (feature.get('draft') == false) {
+        if (feature.get('imported')) {
+          style = that.styleImported;
+        } else if (feature.get('draft') == false) {
           style = that.styleGreenOutlineActive;
         }
 
@@ -157,6 +184,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.map?.setTarget('map');
     this.map?.addInteraction(this.selectInteraction);
+    this.map?.addInteraction(this.dragAndDropInteraction);
 
     this.selectInteraction.on('select', e => {
       if (e.deselected) {
@@ -180,6 +208,31 @@ export class DesignerComponent implements OnInit, AfterViewInit {
           this.lastSelectedTerritoryMap = t;
         }
       })
+    });
+
+    this.dragAndDropInteraction.on('addfeatures', e => {
+
+      // @ts-ignore
+      this.importedFeature = e.features[0];
+      // @ts-ignore
+      this.importedFeature.set('imported');
+      let data = this.wktFormat.writeGeometry(<Geometry>this.importedFeature?.getGeometry());
+
+      this.congregation.simpleFeatureData = data;
+      this.congregationService.saveCongregation(this.congregation).subscribe(
+        (c: Congregation) => this.congregation = c
+      );
+
+      const vectorSource = new VectorSource({
+        // @ts-ignore
+        features: e.features,
+      });
+      this.map?.addLayer(
+        new VectorImageLayer({
+          source: vectorSource,
+        })
+      );
+      this.map?.getView().fit(vectorSource.getExtent());
     });
 
     this.loadMap(true);
@@ -221,7 +274,17 @@ export class DesignerComponent implements OnInit, AfterViewInit {
       feature.set('draft', territoryMap.draft);
       feature.setId(territoryMap.territoryNumber);
       this.source.addFeature(feature);
-    })
+    });
+
+    if (this.congregation.simpleFeatureData) {
+      let feature = format.readFeature(this.congregation.simpleFeatureData, {
+        dataProjection: 'EPSG:3857',
+        featureProjection: 'EPSG:3857'
+      });
+
+      feature.set('imported', true);
+      this.source.addFeature(feature);
+    }
 
     this.featureModified = false;
     this.modeSelected = '';

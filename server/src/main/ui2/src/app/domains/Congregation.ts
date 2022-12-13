@@ -1,6 +1,7 @@
 export class Congregation {
   lastUpdate:Date = new Date();
   notes: string | null | undefined;
+  simpleFeatureData: string | null | undefined;
   territoryList:Territory[] = [];
   territoriesNoContacts:Territory[] = [];
   territoriesOlder8Months:Territory[] = [];
