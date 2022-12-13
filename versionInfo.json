@@ -1,10 +1,10 @@
 {
-  "downloadPath": "https://github.com/hydrogen2oxygen/final-approach/releases/download/v1.0.29/final-approach-1.0.29.zip",
-  "currentVersion": "1.0.29",
-  "currentVersionInfo": "Init FTP folder, Drag&Drop KML for congregation assignment outline,  upload the territory map html to the FTP site",
+  "downloadPath": "https://github.com/hydrogen2oxygen/final-approach/releases/download/v1.0.30/final-approach-1.0.30.zip",
+  "currentVersion": "1.0.30",
+  "currentVersionInfo": "Bugfix missing UI inside jar",
   "versionInfoDetailList": [
     {
-      "version": "1.0.29"
+      "version": "1.0.30"
     }
   ]
 }
