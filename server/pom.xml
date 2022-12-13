@@ -12,7 +12,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <version>1.0.29</version>
+    <version>1.0.30</version>
     <groupId>de.pietro.lusso</groupId>
     <artifactId>server</artifactId>
 
@@ -133,76 +133,60 @@
                 <configuration>
                     <nodeVersion>v18.3.0</nodeVersion>
                     <npmVersion>8.12.2</npmVersion>
-                    <workingDirectory>${basedir}/src/main/ui2</workingDirectory>
                     <installDirectory>target</installDirectory>
                     <environmentVariables>
                         <production>true</production>
                     </environmentVariables>
                 </configuration>
                 <executions>
+
                     <execution>
                         <id>install node and npm</id>
                         <goals>
                             <goal>install-node-and-npm</goal>
                         </goals>
                     </execution>
+
                     <execution>
-                        <id>npm install</id>
+                        <id>npm install ui</id>
                         <goals>
                             <goal>npm</goal>
                         </goals>
                         <configuration>
                             <arguments>install</arguments>
+                            <workingDirectory>${basedir}/src/main/ui2</workingDirectory>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>prod</id>
+                        <id>prod build ui</id>
                         <goals>
                             <goal>npm</goal>
                         </goals>
                         <configuration>
                             <arguments>run-script build</arguments>
+                            <workingDirectory>${basedir}/src/main/ui2</workingDirectory>
                         </configuration>
                         <phase>generate-resources</phase>
                     </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>com.github.eirslett</groupId>
-                <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.7.6</version>
-                <configuration>
-                    <nodeVersion>v18.3.0</nodeVersion>
-                    <npmVersion>8.12.2</npmVersion>
-                    <workingDirectory>${basedir}/src/main/territoryMap</workingDirectory>
-                    <installDirectory>target</installDirectory>
-                    <environmentVariables>
-                        <production>true</production>
-                    </environmentVariables>
-                </configuration>
-                <executions>
+
                     <execution>
-                        <id>install node and npm</id>
-                        <goals>
-                            <goal>install-node-and-npm</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>npm install</id>
+                        <id>npm install territoryMap</id>
                         <goals>
                             <goal>npm</goal>
                         </goals>
                         <configuration>
                             <arguments>install</arguments>
+                            <workingDirectory>${basedir}/src/main/territoryMap</workingDirectory>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>prod</id>
+                        <id>prod build territoryMap</id>
                         <goals>
                             <goal>npm</goal>
                         </goals>
                         <configuration>
                             <arguments>run-script build</arguments>
+                            <workingDirectory>${basedir}/src/main/territoryMap</workingDirectory>
                         </configuration>
                         <phase>generate-resources</phase>
                     </execution>

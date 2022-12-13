@@ -6,7 +6,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <revision>1.0.29</revision>
+        <revision>1.0.30</revision>
         <version.info>Video help component and new settings</version.info>
     </properties>
 
