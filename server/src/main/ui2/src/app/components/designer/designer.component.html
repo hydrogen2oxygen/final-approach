@@ -9,6 +9,8 @@
   <button class="btn btn-sm btn-info toolbar-button" (click)="setNavigateMode()" title="NAVIGATION MODE (NO EDIT)"><i class="bi bi-eye"></i></button>
   <button *ngIf="featureModified && territoryNumberSet()" class="btn btn-sm btn-warning toolbar-button" (click)="saveMap()">SAVE MODIFICATION!</button>
   <button *ngIf="featureModified && !territoryNumberSet()" class="btn btn-sm btn-warning toolbar-button" disabled>SAVE MODIFICATION!</button>
+  <button *ngIf="!hideImportedFeature" (click)="hideImportedFeature = !hideImportedFeature; vectorLayer.getSource().changed();" class="btn btn-sm btn-info toolbar-button" title="hide outline polygon"><i class="bi bi-easel-fill"></i></button>
+  <button *ngIf="hideImportedFeature" (click)="hideImportedFeature = !hideImportedFeature; vectorLayer.getSource().changed();" class="btn btn-sm btn-primary toolbar-button" title="show outline polygon"><i class="bi bi-easel2"></i></button>
   <button class="btn btn-sm btn-danger toolbar-button" (click)="deleteMap()" title="DELETE MAP"><i class="bi bi-trash3-fill"></i></button>
 </div>
 <div style="position: fixed; bottom:10px; left: 10px;">

@@ -34,6 +34,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
 
   map: olMap | null = null;
   view: View = new View();
+  vectorLayer:VectorLayer<any>=new VectorLayer<any>();
   coordinateX = new FormControl(48.6974947);
   coordinateY = new FormControl(9.1506559);
   source = new VectorSource();
@@ -42,6 +43,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
   lastSelectedTerritoryMap: TerritoryMap | undefined = undefined;
   lastSavedTerritoryName: string = '';
   importedFeature: Feature | undefined = undefined;
+  hideImportedFeature:boolean = false;
 
   styleRedOutline: Style = new Style({
     fill: new Fill({
@@ -140,22 +142,26 @@ export class DesignerComponent implements OnInit, AfterViewInit {
 
     let that = this;
 
-    const vectorLayer = new VectorLayer({
+    this.vectorLayer = new VectorLayer({
       source: this.source,
       style: function (feature) {
         let style = that.styleRedOutline;
 
-        if (feature.get('imported')) {
+        if (feature.get('imported') && !that.hideImportedFeature) {
           style = that.styleImported;
+        } else if (feature.get('imported') && that.hideImportedFeature) {
+          style = new Style({});
         } else if (feature.get('draft') == false) {
           style = that.styleGreenOutlineActive;
         }
 
-        // @ts-ignore
-        if (that.map.getView().getZoom() > 14) {
-          style.getText().setText(feature.get('name'));
-        } else {
-          style.getText().setText('');
+        if (!feature.get('imported')) {
+          // @ts-ignore
+          if (that.map.getView().getZoom() > 14) {
+            style.getText().setText(feature.get('name'));
+          } else {
+            style.getText().setText('');
+          }
         }
         return style;
       }
@@ -174,7 +180,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
     this.map = new olMap({
       layers: [
         osmLayer,
-        vectorLayer
+        this.vectorLayer
       ],
       view: this.view,
       controls: []

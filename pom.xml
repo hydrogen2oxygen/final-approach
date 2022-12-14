@@ -6,8 +6,8 @@
     <packaging>pom</packaging>
 
     <properties>
-        <revision>1.0.30</revision>
-        <version.info>Video help component and new settings</version.info>
+        <revision>1.0.31</revision>
+        <version.info>hide outline polygon button</version.info>
     </properties>
 
     <version>${revision}</version>
