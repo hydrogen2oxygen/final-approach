@@ -98,12 +98,16 @@ public class FtpService {
 
         if (useSftp) {
             ChannelSftp sftp = getSftpClient();
-            sftp.put(file.getAbsolutePath(), rootPath + "/" + path + file.getName());
-            sftp.disconnect();
+            if (sftp != null) {
+                sftp.put(file.getAbsolutePath(), rootPath + "/" + path + file.getName());
+                sftp.disconnect();
+            }
         } else {
             FTPClient ftp = getFtpClient();
-            ftp.storeFile(rootPath + "/" + path + file.getName(), new FileInputStream(file));
-            ftp.disconnect();
+            if (ftp != null) {
+                ftp.storeFile(rootPath + "/" + path + file.getName(), new FileInputStream(file));
+                ftp.disconnect();
+            }
         }
     }
 
@@ -139,6 +143,8 @@ public class FtpService {
     private FTPClient getFtpClient() throws Exception {
 
         FTPClient ftp = new FTPClient();
+
+        if ("NOT_SET" == ftpHost) return null;
 
         try {
             ftp.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out)));

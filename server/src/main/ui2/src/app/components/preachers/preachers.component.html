@@ -20,9 +20,13 @@
   </button>
 </div>
 
+Preachers {{
+congregation.preacherList.length
+}}
+<hr>
 <h3>Protocol:</h3>
 <ul>
-  <li *ngFor="let p of congregation.protocol"><span class="badge text-bg-light">{{p}}</span></li>
+  <li *ngFor="let p of congregation.protocol.reverse()"><span class="badge text-bg-dark">{{p}}</span></li>
 </ul>
 
 <!-- Modal -->
