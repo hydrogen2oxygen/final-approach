@@ -20,6 +20,10 @@
   </button>
 </div>
 
+<h3>Protocol:</h3>
+<ul>
+  <li *ngFor="let p of congregation.protocol"><span class="badge text-bg-light">{{p}}</span></li>
+</ul>
 
 <!-- Modal -->
 <div class="modal fade" id="preacherDetailsModal" tabindex="-1" aria-labelledby="preacherDetailsModal" aria-hidden="true">

@@ -27,6 +27,11 @@ import java.nio.file.attribute.FileTime;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Date;
 
 @Service
 @DependsOn("ftpService")
@@ -1082,6 +1087,13 @@ public class DatabaseService {
         Preacher preacher = new Preacher();
         preacher.setName(Congregation.CONGREGATION);
         registryEntry.setPreacher(preacher);
+
+        Date now = new Date();
+        Instant current = now.toInstant();
+        LocalDateTime ldt = LocalDateTime.ofInstant(current,
+                ZoneId.systemDefault());
+
+        congregation.getProtocol().add(ldt + " Territory " + number + " - " + territory.getName() + " returned to " + Congregation.CONGREGATION);
 
         if (territory.getRegistryEntryList().size() > 0) {
             RegistryEntry lastEntry = territory.getRegistryEntryList().get(territory.getRegistryEntryList().size() -1);

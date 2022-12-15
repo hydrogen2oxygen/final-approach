@@ -84,6 +84,10 @@ export class TerritoriesComponent implements OnInit {
     registryEntry.returnDate = null;
     this.territory.registryEntryList.push(registryEntry);
     this.territory.newPreacherAssigned = true;
+    this.congregation.protocol.push(new Date().toLocaleString() + " - Territory " + this.territory.number + " - " + this.territory.name + " assigned to " + copyOfPreacher.name);
+    if (this.congregation.protocol.length > 50) {
+      this.congregation.protocol.shift();
+    }
     console.log("New preacher assigned to territory " + this.territory.number + " " + copyOfPreacher.name)
   }
 

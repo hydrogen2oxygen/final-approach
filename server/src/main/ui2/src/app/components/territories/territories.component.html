@@ -102,6 +102,12 @@ Territories {{
   + congregation.territoriesToBeAssigned.length
 }}
 
+<h3>Protocol:</h3>
+<ul>
+  <li *ngFor="let p of congregation.protocol"><span class="badge text-bg-light">{{p}}</span></li>
+</ul>
+
+
 <!-- Modal -->
 <div class="modal fade" id="territoryDetailsModal" tabindex="-1" aria-labelledby="territoryDetailsModal" aria-hidden="true">
   <div class="modal-dialog">

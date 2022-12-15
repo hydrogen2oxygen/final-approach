@@ -26,6 +26,8 @@ public class Congregation {
     private List<Territory> territoriesToBeAssigned = new ArrayList<>();
     private List<Territory> territoriesArchived = new ArrayList<>();
 
+    private List<String> protocol = new ArrayList<>();
+
     public UUID getUuid() {
         return uuid;
     }
@@ -128,5 +130,13 @@ public class Congregation {
 
     public void setSimpleFeatureData(String simpleFeatureData) {
         this.simpleFeatureData = simpleFeatureData;
+    }
+
+    public List<String> getProtocol() {
+        return protocol;
+    }
+
+    public void setProtocol(List<String> protocol) {
+        this.protocol = protocol;
     }
 }
