@@ -43,7 +43,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
   lastSelectedTerritoryMap: TerritoryMap | undefined = undefined;
   lastSavedTerritoryName: string = '';
   importedFeature: Feature | undefined = undefined;
-  hideImportedFeature:boolean = false;
+  hideImportedFeature:boolean = true;
 
   styleRedOutline: Style = new Style({
     fill: new Fill({
