@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.attribute.FileTime;
 import java.text.ParseException;
@@ -57,6 +58,8 @@ public class DatabaseService {
 
     @PostConstruct
     public void initService() throws Exception {
+
+        System.out.println(Charset.defaultCharset());
 
         objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);

@@ -6,7 +6,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <revision>1.1.1</revision>
+        <revision>1.1.2</revision>
         <version.info>Removed NitriteDB as main database, instead using ObjectMapper and plain JSON (faster and stable)</version.info>
     </properties>
 

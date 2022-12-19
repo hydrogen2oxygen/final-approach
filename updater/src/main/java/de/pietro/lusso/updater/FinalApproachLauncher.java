@@ -30,10 +30,10 @@ public class FinalApproachLauncher extends JFrame {
     private ObjectMapper objectMapper;
     private Process proc;
     private boolean stop = false;
-    private static String jarStarterCommand = "java -jar server.jar";;
+    private static String jarStarterCommand = "java -Dfile.encoding=UTF-8 -jar server.jar";;
 
     public static void main(String [] args) throws IOException, InterruptedException {
-        System.out.println("FinalApproachLauncher ...");
+        System.out.println("FinalApproachLauncher 1.1.1 ...");
         if (args.length > 0) {
             jarStarterCommand = "";
             for (String arg : args) {
@@ -202,6 +202,7 @@ public class FinalApproachLauncher extends JFrame {
                 downloadUpdate(remoteVersion);
                 objectMapper.writeValue(versionInfoFile, remoteVersion);
                 versionInfo = remoteVersion;
+                setTitle("Final-Approach Launcher - Version " + versionInfo);
                 return true;
             } else {
                 System.out.println("same old version");
