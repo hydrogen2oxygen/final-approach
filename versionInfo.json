@@ -1,10 +1,10 @@
 {
-  "downloadPath": "https://github.com/hydrogen2oxygen/final-approach/releases/download/v1.1.1/final-approach-1.1.1.zip",
-  "currentVersion": "1.1.1",
+  "downloadPath": "https://github.com/hydrogen2oxygen/final-approach/releases/download/v1.1.2/final-approach-1.1.2.zip",
+  "currentVersion": "1.1.2",
   "currentVersionInfo": "Removed NitriteDB as main database, instead using ObjectMapper and plain JSON (faster and stable)",
   "versionInfoDetailList": [
     {
-      "version": "1.1.1"
+      "version": "1.1.2"
     }
   ]
 }
