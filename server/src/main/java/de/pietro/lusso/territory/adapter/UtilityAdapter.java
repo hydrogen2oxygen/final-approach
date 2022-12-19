@@ -26,26 +26,7 @@ public class UtilityAdapter {
     @GetMapping("shutdown")
     public void shutDown() {
 
-        Executor executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> {
-
-            logger.info("received shutdown request");
-            databaseService.shutdown();
-            int seconds = 1;
-
-            while (databaseService.isClosed()) {
-                try {
-                    Thread.sleep(1000);
-                    logger.info("wait " + seconds + " second");
-                    seconds++;
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            logger.info("shutting down server");
-            System.exit(0);
-        });
+        System.exit(0);
     }
 
     @PostMapping("importTerritoriesFromText")

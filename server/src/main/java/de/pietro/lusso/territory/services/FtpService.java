@@ -35,7 +35,7 @@ public class FtpService {
     private DatabaseService databaseService;
 
     @PostConstruct
-    public void init() {
+    public void init() throws IOException {
         Map<String, String> s = databaseService.loadSettings().getSettings();
         ftpUser = s.get("ftp.user");
         ftpPassword = s.get("ftp.password");

@@ -9,6 +9,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("map/")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -26,18 +28,18 @@ public class MapDesignAdapter {
     }
 
     @GetMapping
-    public MapDesign getMapDesign() {
+    public MapDesign getMapDesign() throws IOException {
         return databaseService.loadMapDesign();
     }
 
     @PutMapping
-    public MapDesign saveMapDesign(@RequestBody MapDesign mapDesign) {
+    public MapDesign saveMapDesign(@RequestBody MapDesign mapDesign) throws IOException {
 
         return databaseService.saveMapDesign(mapDesign);
     }
 
     @PutMapping("territoryMap")
-    public TerritoryMap saveTerritoryMap(@RequestBody TerritoryMap territoryMap) {
+    public TerritoryMap saveTerritoryMap(@RequestBody TerritoryMap territoryMap) throws IOException {
 
         return databaseService.saveTerritoryMap(territoryMap);
     }
@@ -49,7 +51,7 @@ public class MapDesignAdapter {
     }
 
     @DeleteMapping("territoryMap/{number}")
-    public MapDesign deleteTerritoryMap(@PathVariable String number) {
+    public MapDesign deleteTerritoryMap(@PathVariable String number) throws IOException {
 
         MapDesign mapDesign = databaseService.loadMapDesign();
         TerritoryMap territoryMap = null;

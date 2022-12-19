@@ -7,6 +7,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("settings/")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -24,12 +26,12 @@ public class SettingsAdapter {
     }
 
     @GetMapping
-    public Settings getSettings() {
+    public Settings getSettings() throws IOException {
         return databaseService.loadSettings();
     }
 
     @PutMapping
-    public Settings saveMapDesign(@RequestBody Settings settings) {
+    public Settings saveMapDesign(@RequestBody Settings settings) throws IOException {
         databaseService.saveSettings(settings);
         return settings;
     }

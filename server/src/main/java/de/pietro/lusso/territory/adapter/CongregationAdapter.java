@@ -47,7 +47,7 @@ public class CongregationAdapter {
     }
 
     @GetMapping
-    public Congregation getCongregation() {
+    public Congregation getCongregation() throws IOException {
         return databaseService.loadCongregation();
     }
 
@@ -108,7 +108,7 @@ public class CongregationAdapter {
     }
 
     @PutMapping
-    public Congregation saveCongregation(@RequestBody Congregation congregation) {
+    public Congregation saveCongregation(@RequestBody Congregation congregation) throws IOException {
 
         return databaseService.saveCongregation(congregation);
     }
