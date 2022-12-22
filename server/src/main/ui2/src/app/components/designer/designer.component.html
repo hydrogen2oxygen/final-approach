@@ -36,6 +36,7 @@
     <input class="form-control form-control-sm" type="text" placeholder="territory name" [formControl]="territoryCustomName">
     <input class="form-control form-control-sm" type="text" placeholder="note" [formControl]="note">
     <div class="input-group-append">
+      <button style="margin-left: 0.2rem" class="btn btn-success btn-sm" (click)="getDownloadOSMdata()">Download OSM Data</button>
       <button style="margin-left: 0.2rem" class="btn btn-primary btn-sm" (click)="saveMap()">Save Map for Territory</button>
       <button *ngIf="lastSelectedTerritoryMap?.draft == true" style="margin-left: 0.2rem" class="btn btn-success btn-sm" (click)="setActive()">Set Active</button>
     </div>

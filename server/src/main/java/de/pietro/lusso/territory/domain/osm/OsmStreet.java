@@ -1,4 +1,4 @@
-package de.pietro.lusso.territory.domain;
+package de.pietro.lusso.territory.domain.osm;
 
 import java.util.ArrayList;
 import java.util.List;

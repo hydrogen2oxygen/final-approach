@@ -5,6 +5,7 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import de.pietro.lusso.territory.domain.*;
+import de.pietro.lusso.territory.domain.osm.OsmStreet;
 import de.pietro.lusso.territory.utils.AlphaNumericalComparator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

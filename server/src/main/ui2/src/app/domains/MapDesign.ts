@@ -1,3 +1,5 @@
+import {ResidentialUnit} from "./ResidentialUnit";
+
 export class MapDesign {
   coordinatesX:number = -472202;
   coordinatesY:number = 7530279;
@@ -21,5 +23,7 @@ export class TerritoryMap {
   note:string='';
   lastUpdate:Date=new Date();
   streetList:OsmStreet[] = [];
+
+  residentialUnits:ResidentialUnit[] = [];
   url:string='';
 }

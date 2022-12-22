@@ -5,7 +5,7 @@ import View from 'ol/View';
 import OSM from 'ol/source/OSM.js';
 import XYZ from 'ol/source/XYZ';
 import {FormControl} from "@angular/forms";
-import {fromLonLat, toLonLat} from 'ol/proj';
+import {fromLonLat, Projection, toLonLat} from 'ol/proj';
 import {Coordinate} from "ol/coordinate";
 import {DragAndDrop, Draw, Modify, Select} from "ol/interaction";
 import GeometryType from "ol/geom/GeometryType";
@@ -16,7 +16,7 @@ import {MapDesign, TerritoryMap} from "../../domains/MapDesign";
 import {CongregationService} from "../../services/congregation.service";
 import {MapDesignService} from "../../services/map-design.service";
 import {Congregation, Territory} from "../../domains/Congregation";
-import {Geometry} from "ol/geom";
+import {Geometry, Point} from "ol/geom";
 import {Feature} from "ol";
 import {GeoJSON, GPX, IGC, TopoJSON, WKT} from "ol/format";
 import {ToastrService} from "ngx-toastr";
@@ -24,6 +24,10 @@ import {Extent} from "ol/extent";
 import {NavigationService} from "../../services/navigation.service";
 import KML from "ol/format/KML";
 import VectorImageLayer from "ol/layer/VectorImage";
+import {Options} from "ol/proj/Projection";
+import {OsmElement} from "../../domains/OsmElement";
+import {forEach} from "ol/geom/flat/segments";
+import {ResidentialUnit} from "../../domains/ResidentialUnit";
 
 @Component({
   selector: 'app-designer',
@@ -103,6 +107,28 @@ export class DesignerComponent implements OnInit, AfterViewInit {
       overflow: true,
       fill: new Fill({
         color: '#007700',
+      }),
+      stroke: new Stroke({
+        color: '#fff',
+        width: 2,
+      }),
+    })
+  });
+
+  styleBlueOutlineActive: Style = new Style({
+    fill: new Fill({
+      color: [0, 255, 0, 0.1]
+    }),
+    stroke: new Stroke({
+      color: [0, 100, 0, 0.5],
+      width: 5
+    }),
+    text: new Text({
+      text: '',
+      font: '12px Calibri,sans-serif',
+      overflow: true,
+      fill: new Fill({
+        color: '#00c4ff',
       }),
       stroke: new Stroke({
         color: '#fff',
@@ -272,7 +298,6 @@ export class DesignerComponent implements OnInit, AfterViewInit {
         dataProjection: 'EPSG:3857',
         featureProjection: 'EPSG:3857'
       });
-
       feature.set('territoryNumber', territoryMap.territoryNumber);
       feature.set('territoryName', territoryMap.territoryName);
       feature.set('note', territoryMap.note);
@@ -598,12 +623,71 @@ export class DesignerComponent implements OnInit, AfterViewInit {
   }
 
   territoryNumberSet() {
-    console.log(this.territoryCustomNumber.value);
     if (this.territoryCustomNumber.value) {
-      console.log(this.territoryCustomNumber.value?.length);
       return this.territoryCustomNumber.value?.length > 0;
     }
     return false;
+  }
+
+  getDownloadOSMdata() {
+
+    let epsg4326 = new Projection({'code':'EPSG:4326'});
+    let epsg900913 = new Projection({'code':'EPSG:900913'});
+    // @ts-ignore
+    let extend:any[] = this.lastSelectedFeature?.getGeometry().getExtent();
+    let xy1Coordinates = [extend[0],extend[1]];
+    // @ts-ignore
+    let xy1:number[] = new Point(xy1Coordinates).transform(epsg900913, epsg4326).flatCoordinates;
+    let xy2Coordinates = [extend[2],extend[3]];
+    // @ts-ignore
+    let xy2:number[] = new Point(xy2Coordinates).transform(epsg900913, epsg4326).flatCoordinates;
+
+    this.mapDesignService.downloadOsmData(xy1[1],xy1[0],xy2[1],xy2[0]).subscribe( (units:ResidentialUnit[]) => {
+
+      let format = new WKT();
+      let territoryMap:TerritoryMap|undefined;
+
+      this.mapDesign.territoryMapList.forEach(t => {
+        if (t.territoryNumber == this.territoryCustomNumber.value) {
+          territoryMap = t;
+        }
+      });
+
+      console.log(territoryMap)
+      if (territoryMap == undefined) return;
+      territoryMap.residentialUnits = [];
+
+      units.forEach( unit => {
+
+        if (unit.polygon) {
+          let feature = format.readFeature(unit.polygon, {
+            dataProjection: 'EPSG:3857',
+            featureProjection: 'EPSG:3857'
+          });
+
+          // @ts-ignore
+          let xy:any = this.getCenterOfExtent(feature.getGeometry()?.getExtent());
+
+          // @ts-ignore
+          if (this.lastSelectedFeature?.getGeometry().containsXY(xy[0],xy[1])) {
+
+            feature.set('unit.data', '' + unit);
+            this.source.addFeature(feature);
+            territoryMap?.residentialUnits.push(unit);
+          }
+        }
+      });
+
+      if (territoryMap.residentialUnits.length > 0) {
+        this.saveMap();
+      }
+    });
+  }
+
+  getCenterOfExtent(extent:Extent){
+    var X = extent[0] + (extent[2]-extent[0])/2;
+    var Y = extent[1] + (extent[3]-extent[1])/2;
+    return [X, Y];
   }
 }
 

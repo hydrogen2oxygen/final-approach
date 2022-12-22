@@ -25,6 +25,7 @@
         <nitrite.version>3.2.0</nitrite.version>
         <geotools.version>26.4</geotools.version>
         <jts.version>1.16.1</jts.version>
+        <proj4j.version>1.2.2</proj4j.version>
         <revision>${version}</revision>
     </properties>
 
@@ -72,6 +73,18 @@
             <artifactId>nitrite</artifactId>
             <version>${nitrite.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.locationtech.proj4j</groupId>
+            <artifactId>proj4j</artifactId>
+            <version>${proj4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.locationtech.proj4j</groupId>
+            <artifactId>proj4j-epsg</artifactId>
+            <version>${proj4j.version}</version>
+        </dependency>
+
 
         <!-- SFTP -->
         <dependency>

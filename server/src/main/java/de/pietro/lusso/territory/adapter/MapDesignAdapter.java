@@ -3,13 +3,17 @@ package de.pietro.lusso.territory.adapter;
 
 import de.pietro.lusso.territory.domain.MapDesign;
 import de.pietro.lusso.territory.domain.TerritoryMap;
+import de.pietro.lusso.territory.domain.osm.ResidentialUnit;
 import de.pietro.lusso.territory.services.DatabaseService;
+import de.pietro.lusso.territory.services.OsmService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
 
 @RestController
 @RequestMapping("map/")
@@ -20,6 +24,9 @@ public class MapDesignAdapter {
 
     @Autowired
     private DatabaseService databaseService;
+
+    @Autowired
+    private OsmService osmService;
 
     @GetMapping("status")
     public String status() {
@@ -69,6 +76,13 @@ public class MapDesignAdapter {
         }
 
         return mapDesign;
+    }
+
+    @GetMapping("downloadResidantialUnits/{lon1}/{lat1}/{lon2}/{lat2}")
+    public Collection<ResidentialUnit> downloadResidantialUnits(@PathVariable Double lon1, @PathVariable Double lat1,
+                                                                @PathVariable Double lon2, @PathVariable Double lat2) throws IOException, NoSuchAlgorithmException {
+
+        return osmService.downloadResidantialUnits(lon1,lat1,lon2,lat2);
     }
 
 }

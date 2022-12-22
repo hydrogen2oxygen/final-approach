@@ -1,8 +1,9 @@
 import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
-import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {MapDesign, TerritoryMap} from "../domains/MapDesign";
+import {ResidentialUnit} from "../domains/ResidentialUnit";
 
 @Injectable({
   providedIn: 'root'
@@ -61,4 +62,9 @@ export class MapDesignService {
       return value;
     };
   };
+
+  downloadOsmData(x1:number,y1:number,x2:number,y2:number):Observable<ResidentialUnit[]> {
+    //console.log(`https://overpass-api.de/api/interpreter?data=[out:json];nwr(${x1},${y1},${x2},${y2});out;`);
+    return this.http.get<ResidentialUnit[]>(`${MapDesignService.url}/downloadResidantialUnits/${x1}/${y1}/${x2}/${y2}`);
+  }
 }

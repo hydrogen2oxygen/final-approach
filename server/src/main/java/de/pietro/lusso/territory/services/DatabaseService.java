@@ -3,6 +3,7 @@ package de.pietro.lusso.territory.services;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.pietro.lusso.territory.domain.*;
+import de.pietro.lusso.territory.domain.osm.OsmStreet;
 import de.pietro.lusso.territory.utils.EncryptionTool;
 import de.pietro.lusso.territory.utils.SettingsInitializer;
 import org.apache.commons.io.FileUtils;
@@ -208,6 +209,7 @@ public class DatabaseService {
             settings = objectMapper.readValue(settingsFile, Settings.class);
         } else {
             settings = new Settings();
+            objectMapper.writeValue(settingsFile, settings);
         }
 
         SettingsInitializer.init(settings);

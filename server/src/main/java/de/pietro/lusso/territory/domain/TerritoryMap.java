@@ -1,5 +1,8 @@
 package de.pietro.lusso.territory.domain;
 
+import de.pietro.lusso.territory.domain.osm.OsmStreet;
+import de.pietro.lusso.territory.domain.osm.ResidentialUnit;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -16,6 +19,8 @@ public class TerritoryMap {
     private String url;
     private Calendar lastUpdate;
     private List<OsmStreet> streetList = new ArrayList<>();
+
+    private List<ResidentialUnit> residentialUnits = new ArrayList<>();
 
     public String getTerritoryNumber() {
         return territoryNumber;
@@ -95,5 +100,13 @@ public class TerritoryMap {
 
     public void setStreetList(List<OsmStreet> streetList) {
         this.streetList = streetList;
+    }
+
+    public List<ResidentialUnit> getResidentialUnits() {
+        return residentialUnits;
+    }
+
+    public void setResidentialUnits(List<ResidentialUnit> residentialUnits) {
+        this.residentialUnits = residentialUnits;
     }
 }

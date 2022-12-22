@@ -1,5 +1,7 @@
 package de.pietro.lusso.territory.domain;
 
+import de.pietro.lusso.territory.domain.osm.OsmStreet;
+
 import java.util.*;
 
 /**
