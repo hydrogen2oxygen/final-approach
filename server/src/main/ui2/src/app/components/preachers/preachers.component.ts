@@ -93,11 +93,23 @@ export class PreachersComponent implements OnInit {
     let whatsAppMessage = this.settings?.settings['text.whatsApp'];
     // @ts-ignore
     let whatsAppMessageNote = this.settings?.settings['text.whatsApp.note'];
+    // @ts-ignore
+    let whatsAppMessageDashboard = this.settings?.settings['text.whatsApp.dashboard'];
 
     let message = '=============================\n'
       + preacher.name
       + ' ( ' + this.datepipe.transform(new Date(), 'dd.MM.yyyy')
-      + ' ),\n' + whatsAppMessage + '\n\n';
+      + ' ),\n' + whatsAppMessage + '\n';
+
+    if (this.settings != null && preacher.uuid) {
+      message += '\n>>> *' + whatsAppMessageDashboard + '* <<<\n';
+      // @ts-ignore
+      let host = this.settings.settings['ftp.httpHost'];
+      if (!host.endsWith("/")) {
+        host += "/";
+      }
+      message += host + '?id=dashboard-' + preacher.uuid + '\n';
+    }
 
     preacher.territoryListNumbers.forEach(territoryNumber => {
 
@@ -107,7 +119,7 @@ export class PreachersComponent implements OnInit {
         let assignDate: Date | undefined = this.getAssignDateFromTerritory(territory);
         let formattedDate = this.datepipe.transform(assignDate, 'dd.MM.yyyy')
 
-        message += territory.number + ' - ' + territory.name + ' (' + formattedDate + ')\n';
+        message += '\n' + territory.number + ' - ' + territory.name + ' (' + formattedDate + ')\n';
 
         if (this.settings != null) {
           // @ts-ignore
@@ -123,7 +135,6 @@ export class PreachersComponent implements OnInit {
           message += note + '\n';
         });
 
-        message += '\n';
       }
 
     });
@@ -264,6 +275,5 @@ export class PreachersComponent implements OnInit {
       this.territories = [];
     })
   }
-
 
 }

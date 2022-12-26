@@ -11,12 +11,14 @@ import {ReactiveFormsModule} from "@angular/forms";
 import {StreetsOverviewComponent} from './components/streets-overview/streets-overview.component';
 import {APP_BASE_HREF} from "@angular/common";
 import {RouterModule} from "@angular/router";
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MapComponent,
-    StreetsOverviewComponent
+    StreetsOverviewComponent,
+    DashboardComponent
   ],
   imports: [
     BrowserModule,

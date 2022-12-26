@@ -22,11 +22,13 @@ public class SettingsInitializer {
         addIfMissing(settings, "ftp.syncPassword");
         addIfMissing(settings, "text.whatsApp");
         addIfMissing(settings, "text.whatsApp.note");
+        addIfMissing(settings, "text.whatsApp.dashboard");
 
         if (NOT_SET.equals(settings.getSettings().get("text.whatsApp"))) {
             // Italian text is default
             settings.getSettings().put("text.whatsApp","una lista dei tuoi territori online:");
             settings.getSettings().put("text.whatsApp.note","NOTE:");
+            settings.getSettings().put("text.whatsApp.dashboard","SOMMARIO");
         }
     }
 

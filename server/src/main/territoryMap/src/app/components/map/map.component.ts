@@ -31,6 +31,7 @@ import {Point} from "ol/geom";
 export class MapComponent implements OnInit {
 
   id: string = '';
+  dashboardMode:boolean = false;
   extent: Extent | undefined = undefined;
   map: olMap | null = null;
   view: View = new View();
@@ -75,6 +76,7 @@ export class MapComponent implements OnInit {
       }),
     })
   });
+
 
 
   constructor(
@@ -150,13 +152,16 @@ export class MapComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       if (params['id']) {
         this.id = params['id'];
-        this.loadTerritoryData(this.id);
+        if (this.id.startsWith("dashboard")) {
+          this.dashboardMode = true;
+        } else {
+          this.loadTerritoryData(this.id);
+        }
       }
 
       if (params['message']) {
         this.message = params['message'];
       }
-      // TODO check more params as streets, message and coordinate xy
     });
   }
 
@@ -164,6 +169,7 @@ export class MapComponent implements OnInit {
 
     this.dataService.loadTerritoryData(uuid).subscribe(territoryData => {
 
+      console.log(territoryData)
       this.territoryData = new TerritoryData(territoryData);
 
       if (!this.territoryData.active) {

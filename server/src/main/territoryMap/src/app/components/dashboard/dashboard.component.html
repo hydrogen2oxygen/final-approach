@@ -1,0 +1,7 @@
+<div class="container-fluid">
+  <h1>Territories</h1>
+  <ul>
+    <li *ngFor="let t of dashboard.territories"><a class="btn btn-primary" href="?id={{t.uuid}}">{{t.number}}
+      - {{t.name}}<br>Assigned: {{t.assignDate | date:'dd.MM.yyyy'}}</a></li>
+  </ul>
+</div>

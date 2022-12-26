@@ -3,6 +3,8 @@ package de.pietro.lusso.territory.services;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.pietro.lusso.territory.domain.*;
+import de.pietro.lusso.territory.domain.dashboard.Dashboard;
+import de.pietro.lusso.territory.domain.dashboard.TerritoryInfos;
 import de.pietro.lusso.territory.domain.osm.OsmStreet;
 import de.pietro.lusso.territory.utils.EncryptionTool;
 import de.pietro.lusso.territory.utils.SettingsInitializer;
@@ -403,6 +405,7 @@ public class DatabaseService {
 
     public Congregation saveCongregation(Congregation congregation) throws IOException {
 
+        Set<String> preacherNamesUpdated = new HashSet<>();
         Preacher preacherForHardDelete = null;
         resetTerritoryList(congregation);
         for (Preacher preacher : congregation.getPreacherList()) {
@@ -446,9 +449,59 @@ public class DatabaseService {
             if (territory.isNewPreacherAssigned()) {
                 try {
                     exportTerritoryData(territory.getNumber());
+                    String preacherName = territory.getRegistryEntryList().get(territory.getRegistryEntryList().size() - 1).getPreacher().getName();
+                    preacherNamesUpdated.add(preacherName);
+                    // update both, the current user and the previous one
+                    if (territory.getRegistryEntryList().size() > 1) {
+                        preacherNamesUpdated.add(territory.getRegistryEntryList().get(territory.getRegistryEntryList().size() - 2).getPreacher().getName());
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            }
+        }
+
+        Map<String, Preacher> preacherMap = new HashMap<>();
+        congregation = objectMapper.readValue(congregationFile, Congregation.class);
+
+        for (Preacher preacher : congregation.getPreacherList()) {
+
+            preacher.getTerritoryListNumbers().clear();
+            if (preacher.getName() == null || preacher.getName().trim().length() == 0) continue;
+            preacherMap.put(preacher.getName(), preacher);
+        }
+
+        for (Territory territory : congregation.getTerritoryList()) {
+
+            RegistryEntry lastEntry = territory.getRegistryEntryList().get(territory.getRegistryEntryList().size() - 1);
+            if (preacherMap.get(lastEntry.getPreacher().getName()) == null) continue;
+            preacherMap.get(lastEntry.getPreacher().getName()).getTerritoryListNumbers().add(territory.getNumber());
+        }
+
+        for (String preacherName : preacherNamesUpdated) {
+            try {
+                Preacher preacher = loadPreacher(congregation, preacherName);
+                Dashboard dashboard = new Dashboard();
+                dashboard.setUuid(preacher.getUuid());
+
+                for (String territoryNumber : preacher.getTerritoryListNumbers()) {
+                    Territory territory = getTerritoryByNumber(congregation, territoryNumber);
+                    RegistryEntry lastRegistryEntry = territory.getRegistryEntryList().get(territory.getRegistryEntryList().size() - 1);
+                    TerritoryInfos territoryInfos = new TerritoryInfos();
+                    territoryInfos.setUuid(territory.getUuid());
+                    territoryInfos.setNumber(territoryNumber);
+                    territoryInfos.setName(territory.getName());
+                    territoryInfos.setAssignDate(lastRegistryEntry.getAssignDate());
+                    territoryInfos.setReturnDate(lastRegistryEntry.getReturnDate());
+                    dashboard.getTerritories().add(territoryInfos);
+                }
+
+                File jsonFile = new File(TERRITORY_JSON_DATA + "dashboard-" + dashboard.getUuid().toString() + ".json");
+                objectMapper.writeValue(jsonFile, dashboard);
+
+                ftpService.upload(jsonFile);
+            } catch (Exception e) {
+                logger.error(e);
             }
         }
 
@@ -734,6 +787,7 @@ public class DatabaseService {
         }
 
         RegistryEntry registryEntry = territory.getRegistryEntryList().get(territory.getRegistryEntryList().size() - 1);
+        Preacher preacher = loadPreacher(congregation, registryEntry.getPreacher().getName());
 
         if (territory.getUuid() == null) {
             UUID uuid = UUID.randomUUID();
@@ -750,6 +804,7 @@ public class DatabaseService {
             logger.info("jsonFile.exists, therefore deactivate first old territory (set active = false)");
             TerritoryData territoryData = objectMapper.readValue(jsonFile, TerritoryData.class);
             territoryData.setActive(false);
+            territoryData.setPreacherUUID(null);
             territoryData.setReturnDate(Calendar.getInstance().getTime());
             objectMapper.writeValue(jsonFile, territoryData);
             try {
@@ -762,6 +817,12 @@ public class DatabaseService {
 
         logger.info("Create a new JSON (inside a local folder)");
         TerritoryData territoryData = new TerritoryData();
+        territoryData.setUuid(territory.getUuid());
+        if (!Congregation.CONGREGATION.equals(preacher.getName())) {
+            territoryData.setPreacherUUID(preacher.getUuid());
+        } else {
+            territoryData.setPreacherUUID(null);
+        }
         territoryData.setActive(true);
         territoryData.setName(territory.getName());
         territoryData.setNumber(String.valueOf(territory.getNumber()));
@@ -775,6 +836,7 @@ public class DatabaseService {
             UUID uuid = UUID.randomUUID();
             logger.info("set a new UUID for the territory: " + uuid.toString());
             territory.setUuid(uuid);
+            territoryData.setUuid(uuid);
         }
 
         // TODO Link the JSON to the other territories of the preacher and relink the other JSONs to this one (n to n)
@@ -1160,7 +1222,7 @@ public class DatabaseService {
         ZipEntry zipEntry;
         byte[] buffer = new byte[1024];
 
-        while((zipEntry = zis.getNextEntry()) != null) {
+        while ((zipEntry = zis.getNextEntry()) != null) {
 
             FileOutputStream fos = new FileOutputStream(congregationFolder.getAbsoluteFile() + File.separator + zipEntry.getName());
             int len;
@@ -1224,6 +1286,7 @@ public class DatabaseService {
                     new File("data/tmp/").mkdirs();
                     File index = new File("data/tmp/index.html");
                     String indexStr = FileUtils.readFileToString(file, "UTF-8");
+                    indexStr += "\n<!-- Version: " + version.getRevision() + " -->";
                     FileUtils.writeStringToFile(index, indexStr.replace("/baseHrefPlaceHolder/", httpHost));
                     ftpService.uploadWithRootPath(index, "", "");
                 } else {

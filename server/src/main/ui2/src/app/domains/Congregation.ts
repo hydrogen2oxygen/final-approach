@@ -16,6 +16,8 @@ export class Congregation {
 
 export class Preacher {
   name:string = '';
+
+  uuid:string = '';
   territoryListNumbers:string[] = [];
   group:string[] = [];
   softdelete:boolean = false;

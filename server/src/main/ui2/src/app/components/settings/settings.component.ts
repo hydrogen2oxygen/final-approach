@@ -26,6 +26,8 @@ export class SettingsComponent implements OnInit {
   whatsApp = new FormControl('');
   whatsAppNote = new FormControl('');
 
+  whatsAppDashboard = new FormControl('');
+
   constructor(private settingsService:SettingsService) { }
 
   ngOnInit(): void {
@@ -53,6 +55,7 @@ export class SettingsComponent implements OnInit {
         this.syncPassword.setValue(s.settings['ftp.syncPassword']);
         this.whatsApp.setValue(s.settings['text.whatsApp']);
         this.whatsAppNote.setValue(s.settings['text.whatsApp.note']);
+        this.whatsAppDashboard.setValue(s.settings['text.whatsApp.dashboard']);
       }
     });
   }
@@ -80,6 +83,7 @@ export class SettingsComponent implements OnInit {
       this.settings.settings['ftp.syncPassword'] = this.syncPassword.value;
       this.settings.settings['text.whatsApp'] = this.whatsApp.value;
       this.settings.settings['text.whatsApp.note'] = this.whatsAppNote.value;
+      this.settings.settings['text.whatsApp.dashboard'] = this.whatsAppDashboard.value;
       console.log(this.settings)
       this.settingsService.saveSettings(this.settings).subscribe((s: Settings | null) => this.settings = s);
     }

@@ -31,6 +31,7 @@ export class HouseNumber {
 
 export class TerritoryData {
   UUID:string = '';
+  preacherUUID:string = '';
   simpleFeatureData: string = '';
   number: number = 0;
   name: string = '';
@@ -47,6 +48,7 @@ export class TerritoryData {
     if (t == undefined) return;
 
     this.UUID = t.UUID;
+    this.preacherUUID = t.preacherUUID;
     this.simpleFeatureData = t.simpleFeatureData;
     this.number = t.number;
     this.name = t.name;

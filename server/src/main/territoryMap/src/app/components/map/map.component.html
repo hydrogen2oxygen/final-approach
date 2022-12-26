@@ -1,5 +1,5 @@
 <div id="map" style="top: 0px; left:0px;width: 100%; height: 100%; position:fixed; background-color: #125699"></div>
-<div *ngIf="!map" style="text-align: center; background-color: #ffbb00; top:0px; left:0px; position: fixed;">
+<div *ngIf="!map" style="text-align: center; background-color: #ffbb00; color:black; top:0px; left:0px; position: fixed;">
   <h1>{{territoryData.number}} {{territoryData.name}}</h1>
   <hr>
   <h2>{{territoryData.assignDate | date:'dd.MM.yyyy'}} - {{territoryData.returnDate | date:'dd.MM.yyyy'}}</h2>
@@ -7,20 +7,17 @@
   <h3>Il territorio è stato ridistribuito.</h3>
 </div>
 
-<button class="btn btn-sm btn-primary btn-bottom" style="right: 1rem" (click)="switchButtons()">...</button>
+<div *ngIf="id.length > 0 && !dashboardMode" style="background-color: #000a1c; color: white; position: fixed; bottom: 0rem; width: 100%">
+  &nbsp;&nbsp;{{territoryData.number}} - {{territoryData.name}} - {{territoryData.assignDate | date:'dd.MM.yyyy'}}
+  <a *ngIf="territoryData.preacherUUID" class="btn btn-sm btn-primary" href="?id=dashboard-{{territoryData.preacherUUID}}">Overview</a>
+</div>
+
+<button *ngIf="id.length > 0" class="btn btn-sm btn-primary btn-bottom" style="right: 1rem" (click)="switchButtons()">...</button>
 <div *ngIf="map && showButtons" style="position: fixed; bottom: 1rem">
   <button *ngIf="!tracking" class="btn btn-sm btn-primary" (click)="centerGeoLocation()">TRACK</button>
   <button *ngIf="tracking" class="btn btn-sm btn-warning" (click)="stopTracking()">STOP</button>
   <button class="btn btn-sm btn-primary" (click)="switchLayer()">{{currentLayer}}</button>
 </div>
-
-<!--
-<a *ngIf="map && showButtons"
-   style="bottom: 5.5rem; right:1rem; position:fixed;"
-   class="btn btn-sm btn-primary"
-   href="https://www.google.com/maps/@{{getCoordinates(map.getView().getCenter()).toString().split(',')[1]}},{{getCoordinates(map.getView().getCenter()).toString().split(',')[0]}},{{map.getView().getZoom()}}z"
-   target="googleMaps">GMaps</a>
--->
 
 <div *ngIf="showMessageDialog"
      style="width: 100%; height: 100%; top:4rem; left:0px; position: fixed; background-color: #4e555b">
@@ -43,3 +40,5 @@
     {{message}}
   </div>
 </div>
+
+<app-dashboard *ngIf="dashboardMode"></app-dashboard>

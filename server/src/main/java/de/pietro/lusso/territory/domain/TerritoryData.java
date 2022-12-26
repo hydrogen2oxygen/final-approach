@@ -13,6 +13,7 @@ import java.util.*;
 public class TerritoryData {
 
     private UUID uuid;
+    private UUID preacherUUID;
     private String simpleFeatureData;
     private String number;
     private String name;
@@ -37,6 +38,14 @@ public class TerritoryData {
 
     public void setUuid(UUID uuid) {
         this.uuid = uuid;
+    }
+
+    public UUID getPreacherUUID() {
+        return preacherUUID;
+    }
+
+    public void setPreacherUUID(UUID preacherUUID) {
+        this.preacherUUID = preacherUUID;
     }
 
     public String getSimpleFeatureData() {

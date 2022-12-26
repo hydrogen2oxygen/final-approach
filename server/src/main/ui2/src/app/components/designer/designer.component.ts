@@ -24,9 +24,6 @@ import {Extent} from "ol/extent";
 import {NavigationService} from "../../services/navigation.service";
 import KML from "ol/format/KML";
 import VectorImageLayer from "ol/layer/VectorImage";
-import {Options} from "ol/proj/Projection";
-import {OsmElement} from "../../domains/OsmElement";
-import {forEach} from "ol/geom/flat/segments";
 import {ResidentialUnit} from "../../domains/ResidentialUnit";
 
 @Component({
@@ -48,6 +45,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
   lastSavedTerritoryName: string = '';
   importedFeature: Feature | undefined = undefined;
   hideImportedFeature:boolean = true;
+  showOsmData:boolean = false;
 
   styleRedOutline: Style = new Style({
     fill: new Fill({
@@ -117,10 +115,10 @@ export class DesignerComponent implements OnInit, AfterViewInit {
 
   styleBlueOutlineActive: Style = new Style({
     fill: new Fill({
-      color: [0, 255, 0, 0.1]
+      color: [0, 255, 0, 0.05]
     }),
     stroke: new Stroke({
-      color: [0, 100, 0, 0.5],
+      color: [0, 0, 255, 0.05],
       width: 5
     }),
     text: new Text({
@@ -171,9 +169,14 @@ export class DesignerComponent implements OnInit, AfterViewInit {
     this.vectorLayer = new VectorLayer({
       source: this.source,
       style: function (feature) {
+
         let style = that.styleRedOutline;
 
-        if (feature.get('imported') && !that.hideImportedFeature) {
+        if (!that.showOsmData && feature.get('residentialUnit')) {
+          style = new Style({});
+        } if (that.showOsmData && feature.get('residentialUnit')) {
+          style = that.styleBlueOutlineActive;
+        } else if (feature.get('imported') && !that.hideImportedFeature) {
           style = that.styleImported;
         } else if (feature.get('imported') && that.hideImportedFeature) {
           style = new Style({});
@@ -181,7 +184,7 @@ export class DesignerComponent implements OnInit, AfterViewInit {
           style = that.styleGreenOutlineActive;
         }
 
-        if (!feature.get('imported')) {
+        if (!(feature.get('imported') || feature.get('residentialUnit'))) {
           // @ts-ignore
           if (that.map.getView().getZoom() > 14) {
             style.getText().setText(feature.get('name'));
@@ -305,6 +308,19 @@ export class DesignerComponent implements OnInit, AfterViewInit {
       feature.set('draft', territoryMap.draft);
       feature.setId(territoryMap.territoryNumber);
       this.source.addFeature(feature);
+
+      if (territoryMap.residentialUnits) {
+        territoryMap.residentialUnits.forEach( (unit:ResidentialUnit) => {
+          let featureUnit = format.readFeature(unit.polygon, {
+            dataProjection: 'EPSG:3857',
+            featureProjection: 'EPSG:3857'
+          });
+          featureUnit.set('residentialUnit', true);
+          featureUnit.set('residentialData', unit);
+          featureUnit.set('name', '');
+          this.source.addFeature(featureUnit);
+        });
+      }
     });
 
     if (this.congregation.simpleFeatureData) {
@@ -679,7 +695,11 @@ export class DesignerComponent implements OnInit, AfterViewInit {
       });
 
       if (territoryMap.residentialUnits.length > 0) {
-        this.saveMap();
+        this.mapDesignService.saveMapDesign(this.mapDesign).subscribe(() => {
+          // @ts-ignore
+          this.toastr.success(`OSM Data downloaded, with ${territoryMap.residentialUnits.length} residential units`, "Map Service");
+          //this.loadMap();
+        })
       }
     });
   }
