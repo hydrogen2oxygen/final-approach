@@ -5,9 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.pietro.lusso.territory.domain.*;
 import de.pietro.lusso.territory.domain.dashboard.Dashboard;
 import de.pietro.lusso.territory.domain.dashboard.TerritoryInfos;
+import de.pietro.lusso.territory.domain.mapDesign.MapDesign;
+import de.pietro.lusso.territory.domain.mapDesign.TerritoryMap;
 import de.pietro.lusso.territory.domain.osm.OsmStreet;
+import de.pietro.lusso.territory.services.mapDesign.MapDesignService;
 import de.pietro.lusso.territory.utils.EncryptionTool;
 import de.pietro.lusso.territory.utils.SettingsInitializer;
+import de.pietro.lusso.territory.utils.ZipUtility;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -18,7 +22,6 @@ import org.dizitart.no2.exceptions.NitriteIOException;
 import org.dizitart.no2.objects.ObjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -35,7 +38,6 @@ import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
 
 @Service
 @DependsOn("ftpService")
@@ -46,17 +48,19 @@ public class DatabaseService {
 
     final File congregationFolder = new File("data/congregation");
     final File congregationFile = new File("data/congregation/congregation.json");
-    final File mapDesignFile = new File("data/congregation/mapDesign.json");
+    public final File mapDesignFile = new File("data/congregation/mapDesign.json");
     final File settingsFile = new File("data/congregation/settings.json");
 
     @Autowired
     private FtpService ftpService;
+    @Autowired
+    private MapDesignService mapDesignService;
     private ObjectMapper objectMapper;
     private EncryptionTool encryptionTool;
     private String databaseName = "territory.db";
-    private Version version = new Version();
+    public Version version = new Version();
     private boolean updated = false;
-    private boolean uploading = false;
+    public boolean uploading = false;
     private boolean downloading = false;
 
     @PostConstruct
@@ -135,7 +139,7 @@ public class DatabaseService {
         }
     }
 
-    private void makeCopyOfDatabase() {
+    public void makeCopyOfDatabase() {
 
         if (congregationFile.exists()) {
 
@@ -147,61 +151,14 @@ public class DatabaseService {
 
             try {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss");
-                zipBackup("backup/congregation_" + sdf.format(Calendar.getInstance().getTime()) + ".zip");
+                ZipUtility.zipBackup("backup/congregation_" + sdf.format(Calendar.getInstance().getTime()) + ".zip", new File[]{congregationFile, mapDesignFile, settingsFile});
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private void zipBackup(String backupFile) throws IOException {
 
-        ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(new File(backupFile)));
-
-        writeZipEntry(zos, congregationFile);
-        writeZipEntry(zos, mapDesignFile);
-        writeZipEntry(zos, settingsFile);
-
-        zos.close();
-    }
-
-    private void writeZipEntry(ZipOutputStream zos, File file) throws IOException {
-        zos.putNextEntry(new ZipEntry(file.getName()));
-        zos.write(FileUtils.readFileToString(file, "UTF-8").getBytes());
-        zos.closeEntry();
-    }
-
-    private void unzipBackup(String backupFile) {
-        try {
-            byte[] buffer = new byte[1024];
-            ZipInputStream zis = new ZipInputStream(new FileInputStream(backupFile));
-
-            ZipEntry zipEntry = zis.getNextEntry();
-
-            while (zipEntry != null) {
-                File newFile = new File(zipEntry.getName());
-                if (zipEntry.isDirectory()) {
-                    if (!newFile.isDirectory() && !newFile.mkdirs()) {
-                        throw new IOException("Failed to create directory " + newFile);
-                    }
-                } else {
-                    // write file content
-                    System.out.println(newFile.getName());
-                    FileOutputStream fos = new FileOutputStream(newFile);
-                    int len;
-                    while ((len = zis.read(buffer)) > 0) {
-                        fos.write(buffer, 0, len);
-                    }
-                    fos.close();
-                }
-                zipEntry = zis.getNextEntry();
-            }
-            zis.closeEntry();
-            zis.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     public Settings loadSettings() throws IOException {
 
@@ -216,16 +173,6 @@ public class DatabaseService {
 
         SettingsInitializer.init(settings);
         return settings;
-
-        /*if (settingsOR.find().size() == 0) {
-            Settings settings = new Settings();
-            settingsOR.insert(settings);
-        }
-
-        Settings settings = settingsOR.find().firstOrDefault();
-        SettingsInitializer.init(settings);
-
-        return settings;*/
     }
 
     public void saveSettings(Settings settings) throws IOException {
@@ -315,7 +262,7 @@ public class DatabaseService {
         congregation.getTerritoryList().removeAll(toBeRemoved);
     }
 
-    private void resetTerritoryList(Congregation congregation) {
+    public void resetTerritoryList(Congregation congregation) {
         congregation.getTerritoryList().addAll(congregation.getTerritoriesArchived());
         congregation.getTerritoryList().addAll(congregation.getTerritoriesAssigned());
         congregation.getTerritoryList().addAll(congregation.getTerritoriesToBeAssigned());
@@ -427,6 +374,11 @@ public class DatabaseService {
             }
 
             setLastAssignedDate(territory);
+
+            // limit the registry entries to 20
+            while (territory.getRegistryEntryList().size() > 20) {
+                territory.getRegistryEntryList().remove(0);
+            }
         }
 
         if (preacherForHardDelete != null) {
@@ -499,7 +451,9 @@ public class DatabaseService {
                 File jsonFile = new File(TERRITORY_JSON_DATA + "dashboard-" + dashboard.getUuid().toString() + ".json");
                 objectMapper.writeValue(jsonFile, dashboard);
 
-                ftpService.upload(jsonFile);
+                if (ftpService.isInitialized()) {
+                    ftpService.upload(jsonFile);
+                }
             } catch (Exception e) {
                 logger.error(e);
             }
@@ -533,31 +487,7 @@ public class DatabaseService {
         }).start();
     }
 
-    private void uploadMapDesign(MapDesign mapDesign) {
 
-        if (uploading) return;
-
-        uploading = true;
-
-        (new Thread() {
-            public void run() {
-                try {
-                    String json = objectMapper.writeValueAsString(mapDesign);
-                    File localUploadFolder = new File("uploads");
-                    localUploadFolder.mkdirs();
-                    String encryptedJSON = encryptionTool.encrypt("871a5c07-5c2d-41bd-98af-bb8cbdb06519cd185d47-bd50-4325-a599-a1a80d91924a", json);
-                    String date = DateFormatUtils.format(Calendar.getInstance().getTime(), "yyyyMMddHHmmSS");
-                    File uploadFile = new File("uploads/mapDesign_" + date + ".db");
-                    FileUtils.writeStringToFile(uploadFile, encryptedJSON, "UTF-8");
-                    ftpService.upload(uploadFile, "uploads/");
-                    uploading = false;
-                    logger.info("Uploading mapDesign success!");
-                } catch (Exception e) {
-                    logger.error("Uploading mapDesign data failed", e);
-                }
-            }
-        }).start();
-    }
 
     public MapDesign loadMapDesign() throws IOException {
 
@@ -626,7 +556,7 @@ public class DatabaseService {
 
         objectMapper.writeValue(mapDesignFile, mapDesign);
         updated = true;
-        uploadMapDesign(mapDesign);
+        mapDesignService.uploadMapDesign(mapDesign);
 
         return loadMapDesign();
     }
@@ -818,11 +748,7 @@ public class DatabaseService {
         logger.info("Create a new JSON (inside a local folder)");
         TerritoryData territoryData = new TerritoryData();
         territoryData.setUuid(territory.getUuid());
-        if (!Congregation.CONGREGATION.equals(preacher.getName())) {
-            territoryData.setPreacherUUID(preacher.getUuid());
-        } else {
-            territoryData.setPreacherUUID(null);
-        }
+        territoryData.setPreacherUUID(preacher.getUuid());
         territoryData.setActive(true);
         territoryData.setName(territory.getName());
         territoryData.setNumber(String.valueOf(territory.getNumber()));
@@ -1235,7 +1161,6 @@ public class DatabaseService {
         databaseCorrection001_translateCongregationName();
     }
 
-
     public Congregation returnTerritory(String number) throws IOException {
 
         Congregation congregation = loadCongregation();
@@ -1268,31 +1193,5 @@ public class DatabaseService {
         territory.getRegistryEntryList().add(registryEntry);
 
         return saveCongregation(congregation);
-    }
-
-    public void uploadTerritoryMapApplication() throws Exception {
-        File territoryMapFolder = new ClassPathResource("territoryMap").getFile();
-        System.out.println(territoryMapFolder.getAbsolutePath());
-        Map<String, String> s = loadSettings().getSettings();
-        String httpHost = s.get("ftp.httpHost");
-
-        ftpService.initFtpFolder();
-
-        for (File file : territoryMapFolder.listFiles()) {
-            if (file.isFile()) {
-                System.out.println(file.getAbsolutePath());
-
-                if ("index.html".equals(file.getName())) {
-                    new File("data/tmp/").mkdirs();
-                    File index = new File("data/tmp/index.html");
-                    String indexStr = FileUtils.readFileToString(file, "UTF-8");
-                    indexStr += "\n<!-- Version: " + version.getRevision() + " -->";
-                    FileUtils.writeStringToFile(index, indexStr.replace("/baseHrefPlaceHolder/", httpHost));
-                    ftpService.uploadWithRootPath(index, "", "");
-                } else {
-                    ftpService.uploadWithRootPath(file, "", "");
-                }
-            }
-        }
     }
 }

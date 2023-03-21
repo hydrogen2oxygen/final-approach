@@ -12,6 +12,7 @@ import de.pietro.lusso.territory.domain.Territory;
 import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -35,6 +36,9 @@ public class PrintService {
     private float fntSize, lineSpacing;
     private Font font;
     private Font fontBold;
+
+    @Autowired
+    private DatabaseService databaseService;
 
     public static String note[] = {"Cara sorella, caro fratello, per favore osserva la data del territorio.",
             "Se si avvicina a 4 mesi per favore ritorna il territorio al fratello responsabile.",
@@ -258,6 +262,8 @@ public class PrintService {
     }
 
     public void printCongregation(Congregation congregation) throws Exception {
+
+        databaseService.resetTerritoryList(congregation);
         Map<String, String> territoryMap = readTerritoryMap(congregation);
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yy");
         Document document = new Document(PageSize.A4, 10f, 10f, 10f, 10f);
@@ -268,7 +274,7 @@ public class PrintService {
 
         document.addTitle(congregation.getName());
 
-        PdfWriter.getInstance(document, new FileOutputStream("target/territories.pdf"));
+        PdfWriter.getInstance(document, new FileOutputStream("territories.pdf"));
 
         document.open();
         Map<String,List<RegistryEntry>> registryEntriesMap = new HashMap<>();

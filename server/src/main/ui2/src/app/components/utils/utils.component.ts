@@ -1,6 +1,7 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {environment} from "../../../environments/environment";
 import {UtilityService} from "../../services/utility.service";
+import {MapDesignService} from "../../services/map-design.service";
 
 @Component({
   selector: 'app-utils',
@@ -9,7 +10,10 @@ import {UtilityService} from "../../services/utility.service";
 })
 export class UtilsComponent implements OnInit {
 
-  constructor(private utilityService:UtilityService) { }
+  constructor(
+    private utilityService:UtilityService,
+    private mapDesignService:MapDesignService
+  ) { }
 
   ngOnInit(): void {
   }
@@ -29,6 +33,12 @@ export class UtilsComponent implements OnInit {
   uploadTerritoryMapUI() {
     this.utilityService.uploadTerritoryMapApplication().subscribe( result => {
       console.log(result);
+    })
+  }
+
+  downloadMapDesign() {
+    this.mapDesignService.downloadMapDesign().subscribe( ()=> {
+      console.log("done")
     })
   }
 }

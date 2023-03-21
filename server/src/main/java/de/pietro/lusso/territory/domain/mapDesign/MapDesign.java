@@ -1,4 +1,4 @@
-package de.pietro.lusso.territory.domain;
+package de.pietro.lusso.territory.domain.mapDesign;
 
 import org.dizitart.no2.objects.Id;
 

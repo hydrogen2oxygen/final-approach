@@ -12,10 +12,10 @@ export class DataService {
   constructor(private http:HttpClient) { }
 
   loadTerritoryData(uuid:string):Observable<TerritoryData> {
-    return this.http.get<TerritoryData>(`assets/data/${uuid}.json`);
+    return this.http.get<TerritoryData>(`assets/data/${uuid}.json?_=` + Date.now());
   }
 
   loadDashboardData(uuid:string):Observable<Dashboard> {
-    return this.http.get<Dashboard>(`assets/data/${uuid}.json`);
+    return this.http.get<Dashboard>(`assets/data/${uuid}.json?_=` + Date.now());
   }
 }

@@ -1,4 +1,4 @@
-package de.pietro.lusso.territory.domain;
+package de.pietro.lusso.territory.domain.mapDesign;
 
 import de.pietro.lusso.territory.domain.osm.OsmStreet;
 import de.pietro.lusso.territory.domain.osm.ResidentialUnit;

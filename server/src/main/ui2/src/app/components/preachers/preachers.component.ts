@@ -15,6 +15,7 @@ import {DomSanitizer} from "@angular/platform-browser";
 })
 export class PreachersComponent implements OnInit {
 
+  loading:boolean=false;
   congregation: Congregation = new Congregation();
   preacher: Preacher | null = null;
   settings: Settings | null = null;
@@ -48,6 +49,7 @@ export class PreachersComponent implements OnInit {
       if (this.congregation.notes) {
         this.notes.setValue(this.congregation.notes);
       }
+      this.loading = false;
     });
   }
 
@@ -260,9 +262,11 @@ export class PreachersComponent implements OnInit {
   }
 
   returnTerritoryByNumber(territory:Territory) {
+    this.loading = true;
     this.congregationService.returnTerritory(territory).subscribe( (c: Congregation) => {
       if (c == null) {
         console.error("Returned congregation is null!");
+        this.loading = false;
         return;
       }
 

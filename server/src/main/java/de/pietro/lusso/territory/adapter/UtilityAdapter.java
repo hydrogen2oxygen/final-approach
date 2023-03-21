@@ -4,6 +4,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import de.pietro.lusso.territory.domain.ImportData;
 import de.pietro.lusso.territory.services.DatabaseService;
+import de.pietro.lusso.territory.services.territoryMap.TerritoryMapService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ public class UtilityAdapter {
 
     @Autowired
     private DatabaseService databaseService;
+    @Autowired
+    private TerritoryMapService territoryMapService;
 
     @GetMapping("shutdown")
     public void shutDown() {
@@ -36,6 +39,6 @@ public class UtilityAdapter {
 
     @PutMapping("uploadTerritoryMapApplication")
     public void uploadTerritoryMapApplication() throws Exception {
-        databaseService.uploadTerritoryMapApplication();
+        territoryMapService.uploadTerritoryMapApplication();
     }
 }

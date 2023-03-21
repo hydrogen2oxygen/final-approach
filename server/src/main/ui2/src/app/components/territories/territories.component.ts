@@ -11,6 +11,7 @@ import {ToastrService} from "ngx-toastr";
 })
 export class TerritoriesComponent implements OnInit {
 
+  loading:boolean=false;
   congregation: Congregation = new Congregation();
   territory: Territory | null = null;
   preacherList: Preacher[] = [];
@@ -99,6 +100,8 @@ export class TerritoriesComponent implements OnInit {
 
   saveTerritory() {
 
+    this.loading = true;
+
     if (this.territory != null && this.intoArchive.value != null) {
       this.territory.archive = this.intoArchive.value;
     }
@@ -110,7 +113,7 @@ export class TerritoriesComponent implements OnInit {
     this.congregationService.saveCongregation(this.congregation).subscribe((c: Congregation) => {
       this.congregation = c;
       this.preacherList = c.preacherList;
-
+      this.loading = false;
       if (this.territory == null) return;
 
       if (this.territory.newPreacherAssigned) {
@@ -134,6 +137,12 @@ export class TerritoriesComponent implements OnInit {
   repairTerritory(territory: Territory) {
     this.congregationService.exportTerritoryData(territory.number,true).subscribe( () => {
       this.toastr.info('Territory repaired','Export Service')
+    });
+  }
+
+  printPDF() {
+    this.congregationService.printCongregation().subscribe( () => {
+      this.toastr.success("S-16 was created inside root folder!","PDF PRINT SERVICE")
     });
   }
 }

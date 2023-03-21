@@ -11,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.Map;
 import java.util.Vector;
 
@@ -30,6 +27,7 @@ public class FtpService {
     private String knownHosts;
     private String rootPath;
     private boolean useSftp;
+    private boolean initialized = false;
 
     @Autowired
     private DatabaseService databaseService;
@@ -56,6 +54,22 @@ public class FtpService {
                 e.printStackTrace();
             }
         }
+
+        if (useSftp) {
+            try {
+                getSftpClient().ls(".");
+                initialized = true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                getFtpClient().listFiles("");
+                initialized = true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public Vector<String> list(String path) throws Exception {
@@ -71,7 +85,7 @@ public class FtpService {
             sftp.disconnect();
         } else {
             FTPClient ftp = getFtpClient();
-            FTPFile[] files = ftp.listFiles();
+            FTPFile[] files = ftp.listFiles(path);
             for (FTPFile file : files) {
                 String details = file.getName();
                 v.add(details);
@@ -109,6 +123,23 @@ public class FtpService {
                 ftp.disconnect();
             }
         }
+    }
+
+    public InputStream downloadFile(String filePath) throws Exception {
+
+        if (useSftp) {
+            ChannelSftp sftp = getSftpClient();
+            if (sftp != null) {
+                return sftp.get(filePath);
+            }
+        } else {
+            FTPClient ftp = getFtpClient();
+            if (ftp != null) {
+                return ftp.retrieveFileStream(filePath);
+            }
+        }
+
+        return null;
     }
 
     public void initFtpFolder() throws Exception {
@@ -230,5 +261,9 @@ public class FtpService {
 
     public void setUseSftp(boolean useSftp) {
         this.useSftp = useSftp;
+    }
+
+    public boolean isInitialized() {
+        return initialized;
     }
 }

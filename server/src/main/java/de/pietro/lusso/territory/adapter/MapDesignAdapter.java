@@ -1,11 +1,12 @@
 package de.pietro.lusso.territory.adapter;
 
 
-import de.pietro.lusso.territory.domain.MapDesign;
-import de.pietro.lusso.territory.domain.TerritoryMap;
+import de.pietro.lusso.territory.domain.mapDesign.MapDesign;
+import de.pietro.lusso.territory.domain.mapDesign.TerritoryMap;
 import de.pietro.lusso.territory.domain.osm.ResidentialUnit;
 import de.pietro.lusso.territory.services.DatabaseService;
 import de.pietro.lusso.territory.services.OsmService;
+import de.pietro.lusso.territory.services.mapDesign.MapDesignService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +25,10 @@ public class MapDesignAdapter {
 
     @Autowired
     private DatabaseService databaseService;
-
     @Autowired
     private OsmService osmService;
+    @Autowired
+    private MapDesignService mapDesignService;
 
     @GetMapping("status")
     public String status() {
@@ -43,6 +45,11 @@ public class MapDesignAdapter {
     public MapDesign saveMapDesign(@RequestBody MapDesign mapDesign) throws IOException {
 
         return databaseService.saveMapDesign(mapDesign);
+    }
+
+    @GetMapping("downloadMapDesign")
+    public void downloadMapDesign() throws Exception {
+        mapDesignService.downloadMapDesign();
     }
 
     @PutMapping("territoryMap")

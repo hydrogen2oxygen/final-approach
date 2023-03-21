@@ -18,6 +18,10 @@ export class MapDesignService {
     return this.http.get<MapDesign>(`${MapDesignService.url}`);
   }
 
+  downloadMapDesign():Observable<void> {
+    return this.http.get<void>(`${MapDesignService.url}downloadMapDesign`)
+  }
+
   saveMapDesign(mapDesign:MapDesign):Observable<MapDesign> {
 
     let stringMapDesign = JSON.stringify(mapDesign, this.getCircularReplacer());

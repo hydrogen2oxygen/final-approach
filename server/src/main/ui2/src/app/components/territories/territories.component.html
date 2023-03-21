@@ -1,3 +1,4 @@
+<h1 style="color: darkorange" *ngIf="loading">... please wait ... processing ...</h1>
 <div class="collapseContainer collapseToBeAssigned">
   <h4 class="collapseHeader" data-bs-toggle="collapse" href="#toBeAssigned" role="button" aria-expanded="false" aria-controls="toBeAssigned">
     To be assigned ({{congregation.territoriesToBeAssigned.length}})
@@ -101,6 +102,8 @@ Territories {{
   + congregation.territoriesOlder8Months.length
   + congregation.territoriesToBeAssigned.length
 }}
+<hr>
+<button class="btn btn-success" (click)="printPDF()">PRINT PDF</button>
 <hr>
 <h3>Protocol:</h3>
 <ul>
