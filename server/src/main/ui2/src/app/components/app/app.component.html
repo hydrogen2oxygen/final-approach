@@ -1,3 +1,7 @@
+<div class="content" role="main" *ngIf="internetOffline">
+  <h1 class="badge bg-danger" style="font-size: larger">Internet is offline!</h1>
+  <p>Check your internet connection and refresh this site!</p>
+</div>
 <nav class="navbar navbar-expand-lg bg-light">
   <div class="container-fluid">
     <a class="navbar-brand">Final-Approach
@@ -34,6 +38,7 @@
   <!-- Footer -->
   <footer></footer>
 </div>
+
 <div class="content" role="main" *ngIf="version == null">
   <h1 class="badge bg-danger">Server is offline!</h1>
   <p>You need to restart your server application. Click on start.bat</p>

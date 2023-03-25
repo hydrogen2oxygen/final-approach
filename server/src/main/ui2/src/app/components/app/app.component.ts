@@ -4,6 +4,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {CongregationService} from "../../services/congregation.service";
 import {Version} from "../../domains/Congregation";
 import {NavigationService} from "../../services/navigation.service";
+import {SettingsService} from "../../services/settings.service";
 
 @Component({
   selector: 'app-root',
@@ -14,12 +15,14 @@ export class AppComponent {
   title = 'TERRITORIES';
   links: Link[] = this.getLinks();
   version: Version|null = null;
+  internetOffline:boolean = false;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private congregationService:CongregationService,
-    private navigationService:NavigationService
+    private navigationService:NavigationService,
+    private settingsService:SettingsService
   ) {
     let currentUrl = window.location.href;
     currentUrl = currentUrl.substring(currentUrl.lastIndexOf("/") + 1);
@@ -29,6 +32,16 @@ export class AppComponent {
     this.navigationService.navigate.subscribe( (url:string) => {
       this.navigate(url);
     });
+
+    this.settingsService.isInternetAvailable().subscribe( result => {
+      let strResult:string = result.toString();
+      if (strResult == "true") {
+        this.internetOffline = false;
+      } else {
+        this.internetOffline = true;
+      }
+
+    })
   }
 
   checkVersion() {

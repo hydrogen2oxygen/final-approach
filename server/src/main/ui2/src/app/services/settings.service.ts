@@ -13,6 +13,10 @@ export class SettingsService {
 
   constructor(private http:HttpClient) { }
 
+  isInternetAvailable():Observable<any> {
+    return this.http.get<any>(`${SettingsService.url}/internet`);
+  }
+
   getSettings():Observable<Settings> {
     return this.http.get<Settings>(`${SettingsService.url}`);
   }
