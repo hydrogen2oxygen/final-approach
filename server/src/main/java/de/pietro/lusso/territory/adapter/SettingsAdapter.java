@@ -47,7 +47,7 @@ public class SettingsAdapter {
 
     private static boolean netIsAvailable() {
         try {
-            final URL url = new URL("http://www.google.com");
+            final URL url = new URL("https://www.google.com");
             final URLConnection conn = url.openConnection();
             conn.connect();
             conn.getInputStream().close();
