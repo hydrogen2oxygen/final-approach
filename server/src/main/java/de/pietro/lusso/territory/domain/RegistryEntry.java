@@ -11,6 +11,8 @@ public class RegistryEntry implements Serializable {
     private Date assignDate;
     private Date returnDate;
 
+    private Boolean registration = false;
+
     public String getTerritoryNumber() {
         return territoryNumber;
     }
@@ -41,6 +43,14 @@ public class RegistryEntry implements Serializable {
 
     public void setReturnDate(Date returnDate) {
         this.returnDate = returnDate;
+    }
+
+    public Boolean getRegistration() {
+        return registration;
+    }
+
+    public void setRegistration(Boolean registration) {
+        this.registration = registration;
     }
 
     @Override

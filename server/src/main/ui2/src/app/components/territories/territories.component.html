@@ -127,7 +127,7 @@ Territories {{
               </tr>
               </thead>
               <tbody>
-              <tr *ngFor="let registryEntry of territory.registryEntryList; index as i" class="col-auto">
+              <tr *ngFor="let registryEntry of territory.registryEntryList; index as i" class="col-auto" [class.registered]="registryEntry.registration">
                 <td>{{registryEntry.preacher.name}}</td>
                 <td>{{registryEntry.assignDate | date:'dd-MM-yy'}}</td>
                 <td>{{registryEntry.returnDate | date:'dd-MM-yy'}}</td>
@@ -185,6 +185,7 @@ Territories {{
 
       </div>
       <div class="modal-footer" *ngIf="territory">
+        <button type="button" class="btn btn-success" style="margin-right: 1rem" (click)="registerTerritory(territory)" data-bs-toggle="modal" data-bs-target="#territoryDetailsModal">REGISTER</button>
         <button type="button" class="btn btn-warning" (click)="repairTerritory(territory)" data-bs-toggle="modal" data-bs-target="#territoryDetailsModal">REPAIR</button>
         <button type="button" class="btn btn-outline-warning" (click)="territory = null" data-bs-toggle="modal" data-bs-target="#territoryDetailsModal">Cancel</button>
         <button type="button" class="btn btn-outline-success" (click)="saveTerritory()" data-bs-toggle="modal" data-bs-target="#territoryDetailsModal">Save</button>

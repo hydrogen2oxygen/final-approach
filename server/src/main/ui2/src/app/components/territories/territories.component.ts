@@ -39,6 +39,7 @@ export class TerritoriesComponent implements OnInit {
   }
 
   showTerritoryDetails(territory: Territory) {
+    console.log(territory)
     this.territory = territory;
     this.intoArchive.setValue(territory.archive);
     this.noContacts.setValue(territory.noContacts);
@@ -143,6 +144,12 @@ export class TerritoriesComponent implements OnInit {
   printPDF() {
     this.congregationService.printCongregation().subscribe( () => {
       this.toastr.success("S-16 was created inside root folder!","PDF PRINT SERVICE")
+    });
+  }
+
+  registerTerritory(territory: Territory) {
+    this.congregationService.registerTerritory(territory.number).subscribe( () => {
+      this.toastr.info('Territory registered!','Territory Service')
     });
   }
 }

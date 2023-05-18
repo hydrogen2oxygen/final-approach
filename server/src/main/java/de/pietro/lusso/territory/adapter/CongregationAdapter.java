@@ -74,6 +74,14 @@ public class CongregationAdapter {
         ImageIO.write(image, "PNG", response.getOutputStream());
     }
 
+    @PostMapping("registerTerritory/{number}")
+    public Message registerTerritory(@PathVariable String number) throws Exception {
+        databaseService.registerTerritory(number);
+        Message msg = new Message();
+        msg.setMsg("Territory " + number + " registered!");
+        return msg;
+    }
+
     @PostMapping("exportDatabase")
     public void exportDatabase() {
         databaseService.exportDatabase();

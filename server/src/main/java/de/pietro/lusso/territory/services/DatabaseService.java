@@ -35,6 +35,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
@@ -242,13 +243,13 @@ public class DatabaseService {
                 continue;
             }
 
-            if (territory.getRegistryEntryList().get(registrySize - 1).getAssignDate().before(old8Cal.getTime())) {
+            if (territory.getDate().before(old8Cal.getTime())) {
                 congregation.getTerritoriesOlder8Months().add(territory);
                 toBeRemoved.add(territory);
                 continue;
             }
 
-            if (territory.getRegistryEntryList().get(registrySize - 1).getAssignDate().before(old4Cal.getTime())) {
+            if (territory.getDate().before(old4Cal.getTime())) {
                 congregation.getTerritoriesOlder4Months().add(territory);
                 toBeRemoved.add(territory);
                 continue;
@@ -290,8 +291,16 @@ public class DatabaseService {
     private void setLastAssignedDate(final Territory territory) {
         int registrySize = territory.getRegistryEntryList().size();
         if (registrySize == 0) return;
-        Date date = territory.getRegistryEntryList().get(registrySize - 1).getAssignDate();
-        territory.setDate(date);
+
+        // set the last assignment, but not the last registration
+        AtomicReference<Date> date = new AtomicReference<>();
+        territory.getRegistryEntryList().forEach(registryEntry -> {
+            if (!registryEntry.getRegistration()) {
+                date.set(registryEntry.getAssignDate());
+            }
+        });
+                //territory.getRegistryEntryList().get(registrySize - 1).getAssignDate();
+        territory.setDate(date.get());
     }
 
     private Congregation enhanceCongregationData(Congregation congregation) throws IOException {
@@ -434,6 +443,7 @@ public class DatabaseService {
             try {
                 Preacher preacher = loadPreacher(congregation, preacherName);
                 Dashboard dashboard = new Dashboard();
+                dashboard.setFinalApproachVersion(readVersionInfos().getRevision());
                 dashboard.setUuid(preacher.getUuid());
 
                 for (String territoryNumber : preacher.getTerritoryListNumbers()) {
@@ -1193,5 +1203,18 @@ public class DatabaseService {
         territory.getRegistryEntryList().add(registryEntry);
 
         return saveCongregation(congregation);
+    }
+
+    public void registerTerritory(String number) throws IOException {
+        Congregation congregation = loadCongregation();
+        Territory territory = getTerritoryByNumber(congregation, number);
+        RegistryEntry registryEntry = territory.getRegistryEntryList().get(territory.getRegistryEntryList().size() -1);
+        RegistryEntry registration = new RegistryEntry();
+        registration.setAssignDate(Calendar.getInstance().getTime());
+        registration.setPreacher(getPreacherByName(registryEntry.getPreacher().getName()));
+        registration.setTerritoryNumber(registryEntry.getTerritoryNumber());
+        registration.setRegistration(true); // this is the difference!
+        territory.getRegistryEntryList().add(registration);
+        saveCongregation(congregation);
     }
 }

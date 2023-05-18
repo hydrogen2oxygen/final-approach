@@ -48,6 +48,8 @@ export class RegistryEntry {
   preacher:Preacher = new Preacher();
   assignDate:Date = new Date();
   returnDate:Date | null = new Date();
+
+  registration:boolean = false;
   territory:Territory = new Territory();
 }
 

@@ -9,6 +9,7 @@ import java.util.UUID;
  */
 public class Dashboard {
 
+    private String finalApproachVersion = "";
     private UUID uuid;
     private List<TerritoryInfos> territories = new ArrayList<>();
 
@@ -26,5 +27,13 @@ public class Dashboard {
 
     public void setTerritories(List<TerritoryInfos> territories) {
         this.territories = territories;
+    }
+
+    public String getFinalApproachVersion() {
+        return finalApproachVersion;
+    }
+
+    public void setFinalApproachVersion(String finalApproachVersion) {
+        this.finalApproachVersion = finalApproachVersion;
     }
 }

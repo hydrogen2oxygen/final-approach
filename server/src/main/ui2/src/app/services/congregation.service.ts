@@ -31,6 +31,11 @@ export class CongregationService {
     return this.http.get<void>(`${CongregationService.url}printPDF`);
   }
 
+  registerTerritory(territoryNumber?:string):Observable<Message> {
+
+      return this.http.post<Message>(`${CongregationService.url}registerTerritory/${territoryNumber}`,null);
+  }
+
   exportDatabase():Observable<void> {
     return this.http.post<void>(`${CongregationService.url}exportDatabase`,null);
   }

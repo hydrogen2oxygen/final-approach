@@ -401,6 +401,10 @@ public class PrintService {
                         ZoneId.systemDefault());
             }
 
+            if (entry.getTerritoryNumber() == null) {
+                continue;
+            }
+
             String territoryName = entry.getTerritoryNumber() + " " + territoryMap.get(entry.getTerritoryNumber());
 
             if (entry.getReturnDate() != null || entry.getPreacher().getName().toLowerCase().trim().equals(Congregation.CONGREGATION.toLowerCase())) {
