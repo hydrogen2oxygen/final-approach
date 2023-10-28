@@ -15,3 +15,11 @@
   cursor: pointer;
 }
 
+.centeredSearch {
+  position: fixed;
+  top: 50%!important;
+  left: 50%!important;
+  width: 25%!important;
+  margin: auto;
+  transform: translate(-50%, -50%);
+}

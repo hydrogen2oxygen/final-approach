@@ -44,3 +44,10 @@
   <p>You need to restart your server application. Click on start.bat</p>
   <img src="assets/startServer.png">
 </div>
+
+<div *ngIf="showSearch" class="content centeredSearch">
+  <div>
+    <input #centeredSearch [formControl]="searchField" class="form-control" (keyup)="search()" />
+  </div>
+  <div style="margin-top: 0.2rem" *ngFor="let s of searchResult?.searchResults"><button class="btn btn-sm btn-success" (click)="selectSearchResult(s)">{{s.searchType}} | {{s.readableText}}</button></div>
+</div>

@@ -1,5 +1,6 @@
 package de.pietro.lusso.territory.services;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.pietro.lusso.territory.domain.*;
@@ -71,6 +72,7 @@ public class DatabaseService {
 
         objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, true);
 
         congregationFolder.mkdirs();
         new File("data/congregation/").mkdirs();

@@ -95,6 +95,27 @@
   </div>
 </div>
 
+
+<div class="collapseContainer collapseArchived">
+  <h4 class="collapseHeader" data-bs-toggle="collapse" href="#sorted" role="button" aria-expanded="false" aria-controls="sorted">
+    ALL TERRITORIES SORTED
+  </h4>
+  <div class="collapse" id="sorted">
+    <button class="btn btn-sm btn-territory"
+            *ngFor="let t of territoriesSorted"
+            (click)="showTerritoryDetails(t)"
+            style="{{getTerritoryButtonColor(t.number)}}"
+            data-bs-toggle="modal" data-bs-target="#territoryDetailsModal">
+      {{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}} <i-bs *ngIf="t.notes.length > 0" name="info-circle" style="color: #380000"></i-bs>
+      <i *ngIf="t.mapExist" class="bi bi-map-fill"></i>
+      <i *ngIf="t.uuid && !t.ftpExported" class="bi bi-cloud-slash" style="margin-left: 0.25rem"></i>
+    </button>
+  </div>
+</div>
+
+
+
+
 Territories {{
   congregation.territoriesAssigned.length
   + congregation.territoriesNoContacts.length
@@ -112,7 +133,7 @@ Territories {{
 
 
 <!-- Modal -->
-<div class="modal fade" id="territoryDetailsModal" tabindex="-1" aria-labelledby="territoryDetailsModal" aria-hidden="true">
+<div #territoryDetailsModal class="modal fade" id="territoryDetailsModal" tabindex="-1" aria-labelledby="territoryDetailsModal" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-body" *ngIf="territory">

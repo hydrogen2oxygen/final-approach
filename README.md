@@ -11,3 +11,8 @@ The application is intended to be run *"offline"*, not as a server, because it l
 - Send a Whatsapp message with a list of assigned territories to a preacher
 - Download maps as KML file
 - Print statistics and tables (PDF)
+
+## Development Environment
+1) Download XAMPP (or set up your own Apache/PHP/FakeSftp)
+2) Set the port in Apache to 90, at least not 80 as FM (Listen 90)
+3) Change Setting in FinalApproach accordingly (FTP, User, PW, etc)

@@ -1,8 +1,12 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {CongregationService} from "../../services/congregation.service";
 import {Congregation, Preacher, RegistryEntry, Territory} from "../../domains/Congregation";
 import {FormControl} from "@angular/forms";
 import {ToastrService} from "ngx-toastr";
+import {SharedService} from "../../services/shared.service";
+import {Search, SearchResult} from "../../domains/Search";
+
+declare var $:any;
 
 @Component({
   selector: 'app-territories',
@@ -11,9 +15,18 @@ import {ToastrService} from "ngx-toastr";
 })
 export class TerritoriesComponent implements OnInit {
 
+  private territoryDetailsModal: ElementRef | undefined;
+
+  @ViewChild('territoryDetailsModal') set content(content: ElementRef) {
+    if(content) { // initially setter gets called with undefined
+      this.territoryDetailsModal = content;
+    }
+  }
+
   loading:boolean=false;
   congregation: Congregation = new Congregation();
   territory: Territory | null = null;
+  territoriesSorted: Territory[] = [];
   preacherList: Preacher[] = [];
   selectedPreacher: any = null;
   keyword: string = "name";
@@ -24,17 +37,50 @@ export class TerritoriesComponent implements OnInit {
 
   constructor(
     private congregationService: CongregationService,
-    private toastr: ToastrService) {
+    private toastr: ToastrService,
+    private sharedService:SharedService
+  ) {
   }
 
   ngOnInit(): void {
     this.reloadCongregation();
+    this.sharedService.getSearchSubject().subscribe(value => this.search(value))
+    this.sharedService.getSearchResultIdentifiedSubject().subscribe(value => this.searchResultIdentified(value))
+  }
+
+  searchResultIdentified(searchResult:SearchResult) {
+    this.showTerritoryDetails(searchResult.data);
+    $('#territoryDetailsModal').modal('show');
+  }
+
+  search(text:string) {
+    console.log(`SEARCH FUNCTION IN TERRITORIES ... ${text}`)
+    if (text.length < 4) return
+    let territory = this.territoriesSorted.find(territory => territory.number == text)
+    if (territory) {
+      let search = new Search();
+      let searchResult = new SearchResult();
+      searchResult.searchType = "TERRITORY"
+      searchResult.readableText = `${territory.number} ${territory.name}`
+      searchResult.data = territory
+      search.searchResults.push(searchResult)
+      this.sharedService.searchPerformed.next(search)
+    }
   }
 
   private reloadCongregation() {
     this.congregationService.getCongregation().subscribe((c: Congregation) => {
       this.congregation = c;
       this.preacherList = c.preacherList;
+
+      this.territoriesSorted = [];
+      this.territoriesSorted = this.territoriesSorted.concat(c.territoriesAssigned);
+      this.territoriesSorted = this.territoriesSorted.concat(c.territoriesNoContacts);
+      this.territoriesSorted = this.territoriesSorted.concat(c.territoriesToBeAssigned);
+      this.territoriesSorted = this.territoriesSorted.concat(c.territoriesOlder8Months);
+      this.territoriesSorted = this.territoriesSorted.concat(c.territoriesOlder4Months);
+
+      this.territoriesSorted = this.territoriesSorted.sort((a, b) => (a.number > b.number ? 1 : -1));
     });
   }
 
@@ -151,5 +197,19 @@ export class TerritoriesComponent implements OnInit {
     this.congregationService.registerTerritory(territory.number).subscribe( () => {
       this.toastr.info('Territory registered!','Territory Service')
     });
+  }
+
+  getTerritoryButtonColor(number: string) {
+    //  #002347, #003366, #003f7d, #ff8e00, #fd7702 and #ff5003.
+    if (number.startsWith("1")) return "background-color: #002347; color: white;";
+    if (number.startsWith("2")) return "background-color: #003366; color: white;";
+    if (number.startsWith("3")) return "background-color: #003f7d; color: white;";
+    if (number.startsWith("4")) return "background-color: #ff8e00; color: white;";
+    if (number.startsWith("5")) return "background-color: #fd7702; color: white;";
+    if (number.startsWith("6")) return "background-color: #ff5003; color: white;";
+    if (number.startsWith("7")) return "background-color: #ff0000; color: white;";
+    if (number.startsWith("8")) return "background-color: #ff4800; color: white;";
+    if (number.startsWith("9")) return "background-color: #ffae00; color: white;";
+    return "";
   }
 }
