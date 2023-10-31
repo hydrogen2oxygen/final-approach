@@ -6,12 +6,13 @@ import {ToastrService} from "ngx-toastr";
 import {SharedService} from "../../services/shared.service";
 import {Search, SearchResult} from "../../domains/Search";
 
+
 declare var $:any;
 
 @Component({
   selector: 'app-territories',
   templateUrl: './territories.component.html',
-  styleUrls: ['./territories.component.scss']
+  styleUrls: ['./territories.component.scss'],
 })
 export class TerritoriesComponent implements OnInit {
 
