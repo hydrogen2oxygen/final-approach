@@ -11,4 +11,5 @@ export class TerritoryInfos {
   returnDate:Date|undefined;
   registerRequest:Date|undefined;
   returnRequest:Date|undefined;
+  simpleFeatureData: string = '';
 }

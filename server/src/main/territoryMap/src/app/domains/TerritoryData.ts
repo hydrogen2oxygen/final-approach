@@ -33,7 +33,7 @@ export class TerritoryData {
   UUID:string = '';
   preacherUUID:string = '';
   simpleFeatureData: string = '';
-  number: number = 0;
+  number: string = '';
   name: string = '';
   notes: string = '';
   lastUpdate: Date = new Date();
