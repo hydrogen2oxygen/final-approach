@@ -390,7 +390,9 @@ export class DesignerComponent implements OnInit, AfterViewInit {
 
     this.mapDesignService.saveMapDesign(this.mapDesign).subscribe(() => {
       this.territoryNumber.setValue('');
-      this.loadMap();
+      setTimeout(()=>{ // because sometimes this error occurs: com.fasterxml.jackson.databind.exc.MismatchedInputException: No content to map due to end-of-input
+        this.loadMap();
+      },250)
     })
   }
 
