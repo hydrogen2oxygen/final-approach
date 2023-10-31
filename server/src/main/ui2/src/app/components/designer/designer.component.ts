@@ -186,7 +186,11 @@ export class DesignerComponent implements OnInit, AfterViewInit {
 
         if (!(feature.get('imported') || feature.get('residentialUnit'))) {
           // @ts-ignore
-          if (that.map.getView().getZoom() > 14) {
+          if (that.map.getView().getZoom() > 14 && feature.get('additionalNote')) {
+            style.getText().setText(feature.get('name') + "\n" + feature.get('additionalNote'));
+          } else
+            // @ts-ignore
+            if (that.map.getView().getZoom() > 14) {
             style.getText().setText(feature.get('name'));
           } else {
             style.getText().setText('');
@@ -294,6 +298,9 @@ export class DesignerComponent implements OnInit, AfterViewInit {
     this.mapDesign = mapDesign;
 
     let format = new WKT();
+    let territories = this.congregation.territoriesAssigned;
+    territories = territories.concat(this.congregation.territoriesOlder4Months)
+    territories = territories.concat(this.congregation.territoriesOlder8Months)
 
     mapDesign.territoryMapList.forEach(territoryMap => {
 
@@ -307,6 +314,8 @@ export class DesignerComponent implements OnInit, AfterViewInit {
       feature.set('name', '' + territoryMap.territoryNumber);
       feature.set('draft', territoryMap.draft);
       feature.setId(territoryMap.territoryNumber);
+      let territory = territories.find(terr => terr.number == territoryMap.territoryNumber)
+      if (territory) feature.set('additionalNote', territory.registryEntryList[territory.registryEntryList.length - 1].preacher.name)
       this.source.addFeature(feature);
 
       if (territoryMap.residentialUnits) {

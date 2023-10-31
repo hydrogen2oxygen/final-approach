@@ -457,6 +457,8 @@ public class DatabaseService {
                     territoryInfos.setName(territory.getName());
                     territoryInfos.setAssignDate(lastRegistryEntry.getAssignDate());
                     territoryInfos.setReturnDate(lastRegistryEntry.getReturnDate());
+                    TerritoryMap territoryMap = getTerritoryMapByNumber(territoryNumber);
+                    territoryInfos.setSimpleFeatureData(territoryMap.getSimpleFeatureData());
                     dashboard.getTerritories().add(territoryInfos);
                 }
 

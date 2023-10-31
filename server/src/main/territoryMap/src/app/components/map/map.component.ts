@@ -154,6 +154,7 @@ export class MapComponent implements OnInit {
         this.id = params['id'];
         if (this.id.startsWith("dashboard")) {
           this.dashboardMode = true;
+          this.loadDashboardData(this.id)
         } else {
           this.loadTerritoryData(this.id);
         }
@@ -165,7 +166,21 @@ export class MapComponent implements OnInit {
     });
   }
 
-  private loadTerritoryData(uuid: string) {
+  private loadDashboardData(uuid:string) {
+    this.dataService.loadDashboardData(uuid).subscribe( dashboard => {
+      dashboard.territories.forEach(terr => {
+        console.log(terr)
+        if (terr.simpleFeatureData != null) {
+          this.readTerritoryMap(terr.number, terr.name, terr.simpleFeatureData);
+        }
+      })
+      this.extent = this.source.getExtent();
+      this.map?.getView().fit(this.extent);
+      this.title.setTitle('DASHBOARD TERRITORIES');
+    })
+  }
+
+  private loadTerritoryData(uuid:string) {
 
     this.dataService.loadTerritoryData(uuid).subscribe(territoryData => {
 
@@ -178,28 +193,7 @@ export class MapComponent implements OnInit {
       }
 
       if (territoryData.simpleFeatureData != null) {
-        let feature = this.wktFormat.readFeature(territoryData.simpleFeatureData, {
-          dataProjection: 'EPSG:3857',
-          featureProjection: 'EPSG:3857'
-        });
-
-        feature.set('number', territoryData.number);
-        feature.set('name', '' + territoryData.name);
-        feature.setId(territoryData.number);
-        this.source.addFeature(feature);
-
-        // @ts-ignore
-        this.extent = feature.getGeometry().getExtent();
-        this.map?.getView().fit(this.extent);
-
-        this.title.setTitle(territoryData.number + ' ' + territoryData.name);
-
-        this.territoryData.streetList.forEach(street => {
-          let value: boolean = this.local.get(this.territoryData.number + ' ' + street.streetName);
-          if (value == null) value = false;
-          street.checked = value;
-        });
-
+        this.readTerritoryMap(territoryData.number, territoryData.name, territoryData.simpleFeatureData);
       } else if (territoryData.territories.length > 0) {
         this.title.setTitle(territoryData.name);
 
@@ -214,11 +208,30 @@ export class MapComponent implements OnInit {
           feature.setId(t.number);
           this.source.addFeature(feature);
         });
-
-        this.extent = this.source.getExtent();
-        this.map?.getView().fit(this.extent);
       }
 
+      this.extent = this.source.getExtent();
+      this.map?.getView().fit(this.extent);
+
+    });
+  }
+
+  private readTerritoryMap(number:string,name:string,simpleFeatureData:string) {
+    let feature = this.wktFormat.readFeature(simpleFeatureData, {
+      dataProjection: 'EPSG:3857',
+      featureProjection: 'EPSG:3857'
+    });
+
+    feature.set('number', number);
+    feature.set('name', number + ' ' + name);
+    feature.setId(number);
+    this.source.addFeature(feature);
+    this.title.setTitle(number + ' ' + name);
+
+    this.territoryData.streetList.forEach(street => {
+      let value: boolean = this.local.get(this.territoryData.number + ' ' + street.streetName);
+      if (value == null) value = false;
+      street.checked = value;
     });
   }
 

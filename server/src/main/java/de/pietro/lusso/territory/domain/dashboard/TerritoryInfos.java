@@ -13,6 +13,8 @@ public class TerritoryInfos {
     private Date registerRequest;
     private Date returnRequest;
 
+    private String simpleFeatureData;
+
     public UUID getUuid() {
         return uuid;
     }
@@ -67,5 +69,13 @@ public class TerritoryInfos {
 
     public void setReturnRequest(Date returnRequest) {
         this.returnRequest = returnRequest;
+    }
+
+    public String getSimpleFeatureData() {
+        return simpleFeatureData;
+    }
+
+    public void setSimpleFeatureData(String simpleFeatureData) {
+        this.simpleFeatureData = simpleFeatureData;
     }
 }
