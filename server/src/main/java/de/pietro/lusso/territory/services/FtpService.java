@@ -60,14 +60,14 @@ public class FtpService {
                 getSftpClient().ls(".");
                 initialized = true;
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Initializing SFTP error", e);
             }
         } else {
             try {
                 getFtpClient().listFiles("");
                 initialized = true;
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Initializing FTP error", e);
             }
         }
     }
@@ -173,49 +173,44 @@ public class FtpService {
 
     private FTPClient getFtpClient() throws Exception {
 
+        initialized = false;
         FTPClient ftp = new FTPClient();
 
         if ("NOT_SET" == ftpHost) return null;
 
-        try {
-            ftp.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out)));
-            System.out.print(" connecting to ftp " + ftpHost + ":" + ftpPort + " ... ");
-            ftp.connect(ftpHost, ftpPort);
-            int replyCode = ftp.getReplyCode();
+        ftp.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out)));
+        logger.info(" connecting to ftp " + ftpHost + ":" + ftpPort + " ... ");
+        ftp.connect(ftpHost, ftpPort);
+        int replyCode = ftp.getReplyCode();
 
-            if (!FTPReply.isPositiveCompletion(replyCode)) {
-                logger.error("Connect failed");
-                return null;
-            }
-            logger.info("Connected!");
-            System.out.print(ftp.getReplyString());
+        if (!FTPReply.isPositiveCompletion(replyCode)) {
+            logger.error("Connect failed");
+            return null;
+        }
+        logger.info("Connected!");
+        logger.info(ftp.getReplyString());
 
-            //after connecting to the server set the local passive mode
-            ftp.enterLocalPassiveMode();
+        //after connecting to the server set the local passive mode
+        ftp.enterLocalPassiveMode();
 
-            System.out.print(" login to ftp with user " + ftpUser + " and password ****** ... ");
-            boolean success = ftp.login(ftpUser, ftpPassword);
+        logger.info(" login to ftp with user " + ftpUser + " and password ****** ... ");
+        boolean success = ftp.login(ftpUser, ftpPassword);
 
-            if (!success) {
-                logger.error("Could not login to the server");
-                return null;
-            }
-
-            logger.info("Login was successful!");
-
-            int reply = ftp.getReplyCode();
-
-            if (!FTPReply.isPositiveCompletion(reply)) {
-                ftp.disconnect();
-                logger.error("FTP server refused connection.");
-            }
-
-            return ftp;
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (!success) {
+            logger.error("Could not login to the server");
+            return null;
         }
 
-        return null;
+        logger.info("Login was successful!");
+
+        int reply = ftp.getReplyCode();
+
+        if (!FTPReply.isPositiveCompletion(reply)) {
+            ftp.disconnect();
+            logger.error("FTP server refused connection.");
+        }
+        initialized = true;
+        return ftp;
     }
 
     private ChannelSftp getSftpClient() throws JSchException {

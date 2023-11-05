@@ -52,6 +52,10 @@ export class CongregationService {
     return this.http.post<Message>(`${CongregationService.url}exportTerritoryData`,null);
   }
 
+  reexportTerritoryData():Observable<Message> {
+    return this.http.post<Message>(`${CongregationService.url}reexportTerritoryData`,null);
+  }
+
   exportAllTerritoryData():Observable<void> {
     return this.http.post<void>(`${CongregationService.url}exportAllTerritoryData`,null);
   }

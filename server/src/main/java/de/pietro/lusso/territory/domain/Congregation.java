@@ -27,6 +27,7 @@ public class Congregation {
     private List<Territory> territoriesArchived = new ArrayList<>();
 
     private List<String> protocol = new ArrayList<>();
+    private int counterFtpUploadFailed = 0;
 
     public UUID getUuid() {
         return uuid;
@@ -138,5 +139,13 @@ public class Congregation {
 
     public void setProtocol(List<String> protocol) {
         this.protocol = protocol;
+    }
+
+    public int getCounterFtpUploadFailed() {
+        return counterFtpUploadFailed;
+    }
+
+    public void setCounterFtpUploadFailed(int counterFtpUploadFailed) {
+        this.counterFtpUploadFailed = counterFtpUploadFailed;
     }
 }

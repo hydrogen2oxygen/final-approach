@@ -10,7 +10,7 @@ export class Congregation {
   territoriesToBeAssigned:Territory[] = [];
   territoriesArchived:Territory[] = [];
   preacherList:Preacher[] = [];
-
+  counterFtpUploadFailed:number = 0;
   protocol:string[] = [];
 }
 

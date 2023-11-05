@@ -35,6 +35,8 @@ export class TerritoriesComponent implements OnInit {
   noContacts = new FormControl(false);
   intoArchive = new FormControl(false);
   note = new FormControl('');
+  preDateAssigned = new FormControl(null);
+  preDateReturned = new FormControl(null);
 
   constructor(
     private congregationService: CongregationService,
@@ -131,6 +133,19 @@ export class TerritoriesComponent implements OnInit {
     registryEntry.territoryNumber = this.territory.number;
     registryEntry.preacher = copyOfPreacher;
     registryEntry.returnDate = null;
+
+    if (this.preDateAssigned.value) {
+
+      registryEntry.assignDate = this.preDateAssigned.value
+
+      if (this.preDateReturned.value) {
+        registryEntry.returnDate = this.preDateReturned.value
+      }
+    }
+
+    this.preDateAssigned.setValue(null)
+    this.preDateReturned.setValue(null)
+
     this.territory.registryEntryList.push(registryEntry);
     this.territory.newPreacherAssigned = true;
     this.congregation.protocol.push(new Date().toLocaleString() + " - Territory " + this.territory.number + " - " + this.territory.name + " assigned to " + copyOfPreacher.name);
@@ -212,5 +227,25 @@ export class TerritoriesComponent implements OnInit {
     if (number.startsWith("8")) return "background-color: #ff4800; color: white;";
     if (number.startsWith("9")) return "background-color: #ffae00; color: white;";
     return "";
+  }
+
+  repairFtpUploads() {
+    this.congregationService.reexportTerritoryData().subscribe(value => {
+      this.toastr.success("All failed territories exported!")
+      this.reloadCongregation();
+    })
+  }
+
+  removeRegistryEntry(registryEntry: RegistryEntry) {
+
+    if (this.territory == null || this.territory?.registryEntryList == null) return;
+
+    let newRegistries: RegistryEntry[] = [];
+
+    this.territory.registryEntryList.forEach(n => {
+      if (n != registryEntry) newRegistries.push(n);
+    });
+
+    this.territory.registryEntryList = newRegistries;
   }
 }

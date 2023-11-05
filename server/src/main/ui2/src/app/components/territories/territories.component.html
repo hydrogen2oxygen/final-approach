@@ -124,7 +124,8 @@ Territories {{
   + congregation.territoriesToBeAssigned.length
 }}
 <hr>
-<button class="btn btn-success" (click)="printPDF()">PRINT PDF</button>
+<button class="btn btn-sm btn-success" (click)="printPDF()">PRINT PDF</button>
+<button *ngIf="congregation.counterFtpUploadFailed > 0" class="btn btn-sm btn-danger" style="margin-left: 0.5rem; font-weight: bolder" (click)="repairFtpUploads()">REPAIR FTP UPLOADS <i class="bi bi-cloud-slash" style="margin-left: 0.25rem"></i> {{congregation.counterFtpUploadFailed}} failed uploads</button>
 <hr>
 <h3>Protocol:</h3>
 <ul>
@@ -145,6 +146,7 @@ Territories {{
                 <th>Name</th>
                 <th>Assigned</th>
                 <th>Returned</th>
+                <th>Actions</th>
               </tr>
               </thead>
               <tbody>
@@ -152,6 +154,7 @@ Territories {{
                 <td>{{registryEntry.preacher.name}}</td>
                 <td>{{registryEntry.assignDate | date:'dd-MM-yy'}}</td>
                 <td>{{registryEntry.returnDate | date:'dd-MM-yy'}}</td>
+                <td><button *ngIf="territory.registryEntryList.length > 1 && i > 0" class="btn btn-xs btn-danger" (click)="removeRegistryEntry(registryEntry)" title="Delete Registry Entry">DEL</button></td>
               </tr>
               </tbody>
             </table>
@@ -183,26 +186,50 @@ Territories {{
               </div>
             </div>
 
-            <div class="ng-autocomplete" style="width:75%">
-              <ng-autocomplete
-                [data]="preacherList"
-                [searchKeyword]="keyword"
-                placeHolder="Enter the Preacher Name"
-                (selected)='selectEvent($event)'
-                (inputChanged)='onChangeSearch($event)'
-                (inputFocused)='onFocused($event)'
-                [itemTemplate]="itemTemplate"
-                [notFoundTemplate]="notFoundTemplate">
-              </ng-autocomplete>
+        <div class="input-group mb-3">
+          <table>
+            <tr>
+              <td>
+                <mat-form-field class="modal-body"  >
+                  <mat-label>Assign date in past</mat-label>
+                  <input matInput [matDatepicker]="picker1" style="color: #0a53be" [formControl]="preDateAssigned">
+                  <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                  <mat-datepicker #picker1></mat-datepicker>
+                </mat-form-field>
+              </td>
+              <td>
+                <mat-form-field class="modal-body"  >
+                  <mat-label>Return date in past</mat-label>
+                  <input matInput [matDatepicker]="picker2" style="color: #0a53be" [formControl]="preDateReturned">
+                  <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                  <mat-datepicker #picker2></mat-datepicker>
+                </mat-form-field>
+              </td>
+            </tr>
+          </table>
+        </div>
 
-              <ng-template #itemTemplate let-item>
-                <a [innerHTML]="item.name"></a>
-              </ng-template>
+        <div class="ng-autocomplete" style="width: 75%">
+          <ng-autocomplete
+            [data]="preacherList"
+            [searchKeyword]="keyword"
+            placeHolder="Enter the Preacher Name"
+            (selected)='selectEvent($event)'
+            (inputChanged)='onChangeSearch($event)'
+            (inputFocused)='onFocused($event)'
+            [itemTemplate]="itemTemplate"
+            [notFoundTemplate]="notFoundTemplate">
+          </ng-autocomplete>
 
-              <ng-template #notFoundTemplate let-notFound>
-                <div [innerHTML]="notFound"></div>
-              </ng-template>
-            </div>
+          <ng-template #itemTemplate let-item>
+            <a [innerHTML]="item.name"></a>
+          </ng-template>
+
+          <ng-template #notFoundTemplate let-notFound>
+            <div [innerHTML]="notFound"></div>
+          </ng-template>
+        </div>
+
       </div>
 
       <div class="modal-footer" *ngIf="territory">

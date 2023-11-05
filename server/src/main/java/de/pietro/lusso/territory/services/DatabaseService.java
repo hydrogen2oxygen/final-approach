@@ -68,7 +68,7 @@ public class DatabaseService {
     @PostConstruct
     public void initService() throws Exception {
 
-        System.out.println(Charset.defaultCharset());
+        logger.info(Charset.defaultCharset());
 
         objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -340,7 +340,13 @@ public class DatabaseService {
             }
         }
 
+        congregation.setCounterFtpUploadFailed(0);
+
         for (Territory territory : congregation.getTerritoryList()) {
+
+            if (!territory.isFtpExported()) {
+                congregation.setCounterFtpUploadFailed(congregation.getCounterFtpUploadFailed() + 1);
+            }
 
             if (mapsActive.contains(territory.getNumber())) {
                 territory.setMapExist(true);
@@ -458,7 +464,11 @@ public class DatabaseService {
                     territoryInfos.setAssignDate(lastRegistryEntry.getAssignDate());
                     territoryInfos.setReturnDate(lastRegistryEntry.getReturnDate());
                     TerritoryMap territoryMap = getTerritoryMapByNumber(territoryNumber);
-                    territoryInfos.setSimpleFeatureData(territoryMap.getSimpleFeatureData());
+                    if (territoryMap == null) {
+                        logger.error("No territory available for number " + territoryNumber);
+                    } else {
+                        territoryInfos.setSimpleFeatureData(territoryMap.getSimpleFeatureData());
+                    }
                     dashboard.getTerritories().add(territoryInfos);
                 }
 
@@ -793,6 +803,7 @@ public class DatabaseService {
             territory.setFtpExported(true);
         } catch (Exception e) {
             logger.error("FTP Upload of new territory failed", e);
+            territory.setFtpExported(false);
         }
 
         saveCongregation(congregation);
@@ -1220,5 +1231,20 @@ public class DatabaseService {
         registration.setRegistration(true); // this is the difference!
         territory.getRegistryEntryList().add(registration);
         saveCongregation(congregation);
+    }
+
+    public void reexportFailedTerritoryData() throws IOException {
+
+        Congregation congregation = loadCongregation();
+        resetTerritoryList(congregation);
+        List<Territory> territories = congregation.getTerritoryList();
+        territories.forEach(territory -> {
+            if (territory.isFtpExported()) return;
+            try {
+                exportTerritoryData(territory.getNumber(), true);
+            } catch (Exception e) {
+                logger.error(e);
+            }
+        });
     }
 }

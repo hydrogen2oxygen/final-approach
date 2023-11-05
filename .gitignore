@@ -51,3 +51,4 @@ territory.db.*
 /territory*.db
 /uploads/
 /server/src/main/resources/territoryMap/
+/territories.pdf

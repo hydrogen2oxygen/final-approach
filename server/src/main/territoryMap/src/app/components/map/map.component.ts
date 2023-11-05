@@ -119,7 +119,7 @@ export class MapComponent implements OnInit {
       style: function (feature: any) {
         let style = that.styleRedOutline;
         // @ts-ignore
-        if (that.map.getView().getZoom() > 14) {
+        if (that.map.getView().getZoom() > 10) {
           style.getText().setText(feature.get('name'));
         } else {
           style.getText().setText('');
@@ -176,6 +176,7 @@ export class MapComponent implements OnInit {
       })
       this.extent = this.source.getExtent();
       this.map?.getView().fit(this.extent);
+      this.map?.getView().setZoom(13)
       this.title.setTitle('DASHBOARD TERRITORIES');
     })
   }
@@ -212,7 +213,7 @@ export class MapComponent implements OnInit {
 
       this.extent = this.source.getExtent();
       this.map?.getView().fit(this.extent);
-
+      this.map?.getView().setZoom(16)
     });
   }
 

@@ -103,6 +103,14 @@ public class CongregationAdapter {
         return msg;
     }
 
+    @PostMapping("reexportTerritoryData")
+    public Message reexportTerritoryData() throws Exception {
+        databaseService.reexportFailedTerritoryData();
+        Message msg = new Message();
+        msg.setMsg("Failed territories data reexported!");
+        return msg;
+    }
+
     @PostMapping("exportTerritoryData")
     public void exportTerritoryData() throws Exception {
         databaseService.exportTerritoryData();

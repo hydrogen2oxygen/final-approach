@@ -18,3 +18,7 @@ body {
 .showModal {
   display:block;
 }
+
+.cdk-overlay-container {
+  z-index:2000;
+}
