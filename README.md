@@ -19,11 +19,11 @@ The application is intended to be run *"offline"*, not as a server, because it l
 3) Change Setting in FinalApproach accordingly (FTP, User, PW, etc)
 4) Start Apache and FileZilla
 
-![Xampp-Start](server\docs\xampp-start.png)
+![Xampp-Start](server/docs/xampp-start.png)
 
 5) Setup a user in FileZilla
 
-![Xampp-Start](server\docs\FileZilla-User.png)
+![Xampp-Start](server/docs/FileZilla-User.png)
 
 6) create inside the htdocs the following hierarchy of folders **"finalapproach/assets/data"**
 7) Setup a folder in FileZilla (give read/write rights) and point it to a folder inside htdocs (or equivalent for your own Apache installation)
@@ -32,16 +32,16 @@ The application is intended to be run *"offline"*, not as a server, because it l
 
 8) Now setup the settings inside FinalApproach accordingly
 
-![Xampp-Start](server\docs\finalApproachSettings.png)
+![Xampp-Start](server/docs/finalApproachSettings.png)
 
 9) Upload the online website with the **UTILS / Upload TerritoryMapUI** button. You will see the angular application inside the folder.
 
-![Xampp-Start](server\docs\finalApproachUtilsUpload.png)
+![Xampp-Start](server/docs/finalApproachUtilsUpload.png)
 
 10) Edit the index.html, set the correct base href to the ui (don't forget the last slash at the end)
 
-![Xampp-Start](server\docs\indexHtmlBaseHref.png)
+![Xampp-Start](server/docs/indexHtmlBaseHref.png)
 
 11) Assign a territory to a user and then open the embedded map. You should see the map and you can also use the button **GO TO BIG MAP** for testing.
 
-![Xampp-Start](server\docs\finalApproachOpenEmbeddedMap.png)
+![Xampp-Start](server/docs/finalApproachOpenEmbeddedMap.png)
