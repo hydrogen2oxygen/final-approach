@@ -64,12 +64,14 @@ export class PreachersComponent implements OnInit {
       return;
     }
 
+    this.loading = true
     let newPreacher: Preacher = new Preacher();
     newPreacher.name = preacherName;
     this.congregation.preacherList.push(newPreacher);
 
     this.congregationService.saveCongregation(this.congregation).subscribe((c: Congregation) => {
       this.toastr.success(preacherName + " saved as a new preacher", "Data Service")
+      this.reloadCongregation();
     });
   }
 
