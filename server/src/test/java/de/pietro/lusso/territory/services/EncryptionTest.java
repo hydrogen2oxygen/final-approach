@@ -41,6 +41,7 @@ public class EncryptionTest {
     public void testGenerateStrongSecret() {
         String strongSecret = encryptionTool.generateStrongSecret(256, true);
         System.out.println(strongSecret);
+        Assertions.assertEquals(64, strongSecret.length());
     }
 
 }
