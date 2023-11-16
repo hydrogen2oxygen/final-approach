@@ -262,6 +262,10 @@ public class DatabaseService {
         }
 
         sortTerritoriesByDateAsc(congregation.getTerritoriesToBeAssigned());
+        sortTerritoriesByDateAsc(congregation.getTerritoriesAssigned());
+        sortTerritoriesByDateAsc(congregation.getTerritoriesOlder4Months());
+        sortTerritoriesByDateAsc(congregation.getTerritoriesOlder8Months());
+        sortTerritoriesByDateAsc(congregation.getTerritoriesArchived());
         congregation.getTerritoryList().removeAll(toBeRemoved);
     }
 

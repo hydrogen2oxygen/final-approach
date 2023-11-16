@@ -126,6 +126,7 @@ Territories {{
 <hr>
 <button class="btn btn-sm btn-success" (click)="printPDF()">PRINT PDF</button>
 <button *ngIf="congregation.counterFtpUploadFailed > 0" class="btn btn-sm btn-danger" style="margin-left: 0.5rem; font-weight: bolder" (click)="repairFtpUploads()">REPAIR FTP UPLOADS <i class="bi bi-cloud-slash" style="margin-left: 0.25rem"></i> {{congregation.counterFtpUploadFailed}} failed uploads</button>
+<button *ngIf="congregation.territoriesOlder8Months.length > 0" class="btn btn-sm btn-warning" style="margin-left: 0.5rem; font-weight: bolder" (click)="copyOlderThan12MonthsMessage()">OLDER THAN 12 MONTHS MESSAGE</button>
 <hr>
 <h3>Protocol:</h3>
 <ul>

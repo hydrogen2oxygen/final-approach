@@ -248,4 +248,53 @@ export class TerritoriesComponent implements OnInit {
 
     this.territory.registryEntryList = newRegistries;
   }
+
+  copyOlderThan12MonthsMessage() {
+
+    let message = "--------------------\n";
+    let maxEntries = 9
+    let date12 = new Date()
+    date12.setDate(date12.getDate() - 365);
+
+    this.congregation.territoriesOlder8Months.forEach( (t,i) => {
+      if (i > maxEntries) return
+      let dateCurrent = new Date(t.date) // fix api problem
+      if (dateCurrent.getTime() < date12.getTime()) {
+        message += `${t.number} ${t.name}\n`
+      }
+    })
+
+    message += "--------------------\n";
+
+    this.copyMessage(message)
+  }
+
+  copyMessage(val: string) {
+    const selBox = document.createElement('textarea');
+    selBox.style.position = 'fixed';
+    selBox.style.left = '0';
+    selBox.style.top = '0';
+    selBox.style.opacity = '0';
+    selBox.value = val;
+    document.body.appendChild(selBox);
+    selBox.focus();
+    selBox.select();
+
+    let that = this;
+
+    if (!navigator.clipboard) {
+      document.execCommand('copy');
+    } else {
+      navigator.clipboard.writeText(val).then(
+        function () {
+          that.toastr.success(`Message copied to clipboard!`) // success
+        })
+        .catch(
+          function () {
+            that.toastr.error("Copy to clipboard failed!") // error
+          });
+    }
+
+    document.body.removeChild(selBox);
+  }
 }
