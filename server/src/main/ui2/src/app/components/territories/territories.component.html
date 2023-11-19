@@ -128,10 +128,17 @@ Territories {{
 <button *ngIf="congregation.counterFtpUploadFailed > 0" class="btn btn-sm btn-danger" style="margin-left: 0.5rem; font-weight: bolder" (click)="repairFtpUploads()">REPAIR FTP UPLOADS <i class="bi bi-cloud-slash" style="margin-left: 0.25rem"></i> {{congregation.counterFtpUploadFailed}} failed uploads</button>
 <button *ngIf="congregation.territoriesOlder8Months.length > 0" class="btn btn-sm btn-warning" style="margin-left: 0.5rem; font-weight: bolder" (click)="copyOlderThan12MonthsMessage()">OLDER THAN 12 MONTHS MESSAGE</button>
 <hr>
-<h3>Protocol:</h3>
-<ul>
-  <li *ngFor="let p of congregation.protocol.reverse()"><span class="badge text-bg-dark">{{p}}</span></li>
-</ul>
+<div class="collapseContainer collapseProtocol">
+  <h4 class="collapseHeader" data-bs-toggle="collapse" href="#protocol" role="button" aria-expanded="false" aria-controls="protocol">
+    PROTOCOL
+  </h4>
+  <div class="collapse" id="protocol">
+    <ul>
+      <li *ngFor="let p of congregation.protocol.reverse()"><span class="badge text-bg-dark">{{p}}</span></li>
+    </ul>
+  </div>
+</div>
+
 
 
 <!-- Modal -->
