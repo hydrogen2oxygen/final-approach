@@ -5,6 +5,7 @@ import {FormControl} from "@angular/forms";
 import {ToastrService} from "ngx-toastr";
 import {SharedService} from "../../services/shared.service";
 import {Search, SearchResult} from "../../domains/Search";
+import {line} from "ngx-bootstrap-icons";
 
 
 declare var $:any;
@@ -252,15 +253,28 @@ export class TerritoriesComponent implements OnInit {
   copyOlderThan12MonthsMessage() {
 
     let message = "--------------------\n";
-    let maxEntries = 9
+    let maxEntries = 20
     let date12 = new Date()
     date12.setDate(date12.getDate() - 365);
+    let maxLength = 0
+
+    this.congregation.territoriesOlder8Months.forEach( (t,i) => {
+      let line = `${t.number} ${t.name}`
+      if (maxLength < line.length) maxLength = line.length
+    })
+
+    console.log(maxLength)
 
     this.congregation.territoriesOlder8Months.forEach( (t,i) => {
       if (i > maxEntries) return
       let dateCurrent = new Date(t.date) // fix api problem
       if (dateCurrent.getTime() < date12.getTime()) {
-        message += `${t.number} ${t.name}\n`
+        let entry = `${t.number} ${t.name}`
+        if (maxLength - entry.length > 0) {
+          entry += ' '.repeat(maxLength - entry.length)
+        }
+        entry += `| ${t.registryEntryList[t.registryEntryList.length - 1].preacher.name}\n`
+        message += entry
       }
     })
 

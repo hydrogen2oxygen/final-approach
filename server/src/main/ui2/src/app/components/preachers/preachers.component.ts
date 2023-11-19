@@ -7,6 +7,7 @@ import {DatePipe, formatDate} from "@angular/common";
 import {Settings} from "../../domains/Settings";
 import {SettingsService} from "../../services/settings.service";
 import {DomSanitizer} from "@angular/platform-browser";
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-preachers',
@@ -229,9 +230,8 @@ export class PreachersComponent implements OnInit {
   }
 
   getTerritoryNameAndDetails(territory: Territory): string {
-
-    let date = formatDate(Date.now(), 'dd-MM-yy', this.locale);
-    return `${territory.name} (${date})`;
+    let formattedDate = (moment(territory.date)).format('DD.MM.YYYY')
+    return `${territory.name} (${formattedDate})`;
   }
 
   getTerritoryByNumber(territoryNumber: string): Territory | undefined {
