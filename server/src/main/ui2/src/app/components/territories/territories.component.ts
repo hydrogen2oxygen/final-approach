@@ -32,6 +32,8 @@ export class TerritoriesComponent implements OnInit {
   preacherList: Preacher[] = [];
   selectedPreacher: any = null;
   keyword: string = "name";
+  visitedDuringLastYear:number = 0
+  notVisitedForOneYear:number = 0
 
   noContacts = new FormControl(false);
   intoArchive = new FormControl(false);
@@ -85,8 +87,45 @@ export class TerritoriesComponent implements OnInit {
       this.territoriesSorted = this.territoriesSorted.concat(c.territoriesOlder4Months);
 
       this.territoriesSorted = this.territoriesSorted.sort((a, b) => (a.number > b.number ? 1 : -1));
+
+      setTimeout(()=>{
+        this.visitedDuringLastYear = 0
+        this.notVisitedForOneYear = 0
+
+        let oneYearDate:Date = new Date()
+        oneYearDate.setFullYear(oneYearDate.getFullYear() - 1);
+
+        this.territoriesSorted.forEach(t => {
+          let registryExist:boolean = false
+          t.registryEntryList.forEach( r => {
+            if (r.returnDate) {
+              if (this.parseDateString(r.returnDate) > oneYearDate) {
+                registryExist = true
+              }
+            }
+          })
+
+          if (registryExist) this.visitedDuringLastYear = this.visitedDuringLastYear + 1
+        })
+
+        this.notVisitedForOneYear = this.congregation.territoriesAssigned.length
+        + this.congregation.territoriesNoContacts.length
+        + this.congregation.territoriesOlder4Months.length
+        + this.congregation.territoriesOlder8Months.length
+        + this.congregation.territoriesToBeAssigned.length
+        - this.visitedDuringLastYear;
+
+      },1)
     });
   }
+
+  parseDateString(dateString: any): Date {
+    if (dateString instanceof Date) {
+      return dateString;
+    }
+    return new Date(dateString);
+  }
+
 
   showTerritoryDetails(territory: Territory) {
     console.log(territory)

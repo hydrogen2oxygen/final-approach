@@ -11,6 +11,7 @@ import de.pietro.lusso.territory.domain.mapDesign.TerritoryMap;
 import de.pietro.lusso.territory.domain.osm.OsmStreet;
 import de.pietro.lusso.territory.services.mapDesign.MapDesignService;
 import de.pietro.lusso.territory.utils.EncryptionTool;
+import de.pietro.lusso.territory.utils.PreacherUtils;
 import de.pietro.lusso.territory.utils.SettingsInitializer;
 import de.pietro.lusso.territory.utils.ZipUtility;
 import org.apache.commons.io.FileUtils;
@@ -314,15 +315,22 @@ public class DatabaseService {
         Map<String, Preacher> preacherMap = new HashMap<>();
 
         boolean congregationExist = false;
+        int i = 1;
+
+        // ... use only to reset congregation.getPreacherList().forEach(preacher -> preacher.setShortName(null));
+        PreacherUtils.setShortNames(congregation.getPreacherList());
 
         for (Preacher preacher : congregation.getPreacherList()) {
+
+            if (StringUtils.isEmpty(preacher.getName())) {
+                preacher.setName("EMPTY_" + i++);
+            }
 
             if (Congregation.CONGREGATION.equals(preacher.getName())) {
                 congregationExist = true;
             }
 
             preacher.getTerritoryListNumbers().clear();
-            if (preacher.getName() == null || preacher.getName().trim().length() == 0) continue;
             preacherMap.put(preacher.getName(), preacher);
         }
 

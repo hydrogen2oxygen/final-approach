@@ -16,6 +16,7 @@ export class Congregation {
 
 export class Preacher {
   name:string = '';
+  shortName:string | undefined;
 
   uuid:string = '';
   territoryListNumbers:string[] = [];

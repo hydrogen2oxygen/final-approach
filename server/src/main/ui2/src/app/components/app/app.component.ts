@@ -28,7 +28,6 @@ export class AppComponent {
 
   constructor(
     private router: Router,
-
     private route: ActivatedRoute,
     private congregationService:CongregationService,
     private navigationService:NavigationService,

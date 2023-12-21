@@ -122,7 +122,7 @@ Territories {{
   + congregation.territoriesOlder4Months.length
   + congregation.territoriesOlder8Months.length
   + congregation.territoriesToBeAssigned.length
-}}
+}} | visited during one year {{visitedDuringLastYear}} | not visited for one year {{notVisitedForOneYear}}
 <hr>
 <button class="btn btn-sm btn-success" (click)="printPDF()">PRINT PDF</button>
 <button *ngIf="congregation.counterFtpUploadFailed > 0" class="btn btn-sm btn-danger" style="margin-left: 0.5rem; font-weight: bolder" (click)="repairFtpUploads()">REPAIR FTP UPLOADS <i class="bi bi-cloud-slash" style="margin-left: 0.25rem"></i> {{congregation.counterFtpUploadFailed}} failed uploads</button>

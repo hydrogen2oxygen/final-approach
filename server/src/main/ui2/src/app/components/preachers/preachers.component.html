@@ -17,8 +17,23 @@
           *ngFor="let p of congregation.preacherList"
           (click)="openPreacher(p)"
           data-bs-toggle="modal" data-bs-target="#preacherDetailsModal">
-    {{p.name}} <span *ngIf="p.territoryListNumbers.length > 0">({{p.territoryListNumbers.length}})</span>
+    {{p.name}}
+    <span *ngIf="p.territoryListNumbers.length > 0">({{p.territoryListNumbers.length}})</span>
   </button>
+</div>
+<hr>
+<div style="width: 50%">
+  <table class="table table-bordered table-sm table-striped table-dark">
+    <thead>
+    <tr><th>SHORT</th><th>NAME</th></tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let p of congregation.preacherList">
+      <td>{{p.shortName}}</td>
+      <td>{{p.name}}</td>
+    </tr>
+    </tbody>
+  </table>
 </div>
 
 Preachers {{

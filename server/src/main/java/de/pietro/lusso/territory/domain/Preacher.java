@@ -11,6 +11,8 @@ public class Preacher implements Serializable  {
 
     private String name;
 
+    private String shortName;
+
     private Boolean softdelete = false;
 
     private Boolean harddelete = false;
@@ -50,6 +52,14 @@ public class Preacher implements Serializable  {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getShortName() {
+        return shortName;
+    }
+
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
     }
 
     public List<String> getGroup() {
