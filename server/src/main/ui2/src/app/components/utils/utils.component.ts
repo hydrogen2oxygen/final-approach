@@ -44,4 +44,13 @@ export class UtilsComponent implements OnInit {
       console.log("done")
     })
   }
+
+  repairDashBoardsAndTerritoryData(repairAll: boolean = false) {
+    this.utilityService.repairDashBoardsAndTerritoryData(repairAll).subscribe( () => {
+      this.toastr.success('Successfully started the repair process for dashboards and territory data!', 'Repair Utility');
+    }, error => {
+      console.error(error);
+      this.toastr.error('Failed to repair dashboards and territory data!', 'Repair Utility');
+    });
+  }
 }

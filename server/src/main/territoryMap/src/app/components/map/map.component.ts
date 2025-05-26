@@ -54,6 +54,7 @@ export class MapComponent implements OnInit {
   positionFeature = new Feature();
   accuracyFeature = new Feature();
   tracking:boolean = false;
+  howOld:number = 0;
 
   styleRedOutline: Style = new Style({
     fill: new Fill({
@@ -210,6 +211,13 @@ export class MapComponent implements OnInit {
           this.source.addFeature(feature);
         });
       }
+
+      const today = new Date();
+      const assigned = new Date(territoryData.assignDate)
+      // Calculate the difference in milliseconds
+      const diffTime = today.getTime() - assigned.getTime();
+      // Convert milliseconds to days
+      this.howOld = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
       this.extent = this.source.getExtent();
       this.map?.getView().fit(this.extent);
@@ -376,5 +384,48 @@ export class MapComponent implements OnInit {
 
   switchButtons() {
     this.showButtons = !this.showButtons;
+  }
+
+  getAssignDateStyle() {
+    // Define transition points
+    const green = [0, 255, 0];       // Start: Bright Green
+    const yellow = [255, 255, 0];     // 4 Months: Yellow
+    const orange = [255, 165, 0];     // 8 Months: Orange
+    const red = [255, 0, 0];          // 1 Year: Red
+
+    let color: number[];
+
+    if (this.howOld < 120) {
+      // Green to Yellow (0 - 120 days)
+      color = this.interpolateColor(green, yellow, this.howOld / 120);
+    } else if (this.howOld < 240) {
+      // Yellow to Orange (120 - 240 days)
+      color = this.interpolateColor(yellow, orange, (this.howOld - 120) / 120);
+    } else if (this.howOld < 365) {
+      // Orange to Red (240 - 365 days)
+      color = this.interpolateColor(orange, red, (this.howOld - 240) / 125);
+    } else {
+      // Beyond 1 year: Stay Red
+      color = red;
+    }
+
+    // Font size logic: starts at 16px, increases 1px per week after 365 days
+    let fontSize = 16; // Base size
+    let bolder = ""
+    if (this.howOld > 365) {
+      fontSize += Math.floor((this.howOld - 365) / 7);
+    }
+
+    if (fontSize > 80) {
+      fontSize = 80
+      bolder = ";fontWeight: bolder"
+    }
+
+    return `color: rgb(${color[0]}, ${color[1]}, ${color[2]})!important; fontSize: ${fontSize}px${bolder}`;
+  }
+
+  // Color interpolation function
+  interpolateColor(start: number[], end: number[], factor: number): number[] {
+      return start.map((s, i) => Math.round(s + (end[i] - s) * factor));
   }
 }

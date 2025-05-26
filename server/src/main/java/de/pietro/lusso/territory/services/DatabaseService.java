@@ -15,6 +15,7 @@ import de.pietro.lusso.territory.utils.PreacherUtils;
 import de.pietro.lusso.territory.utils.SettingsInitializer;
 import de.pietro.lusso.territory.utils.ZipUtility;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.logging.log4j.LogManager;
@@ -47,9 +48,10 @@ import java.util.zip.ZipInputStream;
 public class DatabaseService {
 
     private static final Logger logger = LogManager.getLogger(DatabaseService.class);
-    private static final String TERRITORY_JSON_DATA = "data/";
+    public static final String TERRITORY_JSON_DATA = "data/";
 
     final File congregationFolder = new File("data/congregation");
+    final File territoriesFolder = new File("data/congregation/territories");
     final File congregationFile = new File("data/congregation/congregation.json");
     public final File mapDesignFile = new File("data/congregation/mapDesign.json");
     final File settingsFile = new File("data/congregation/settings.json");
@@ -75,13 +77,37 @@ public class DatabaseService {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, true);
 
-        congregationFolder.mkdirs();
-        new File("data/congregation/").mkdirs();
+        if (territoriesFolder.mkdirs()) {
+            logger.info("Folders created");
+        }
         encryptionTool = new EncryptionTool();
 
         openDatabase(databaseName);
         makeCopyOfDatabase();
         databaseCorrection001_translateCongregationName();
+
+        // Corrections for older versions of the database
+        correctionVersion115();
+    }
+
+    /**
+     * <h1>Correction for version 1.1.5 and higher</h1>
+     * Extract territories from the Congregation object and store them separately in the territories folder.
+     */
+    private void correctionVersion115() {
+        try {
+            Congregation congregation = loadCongregation();
+            if (congregation.getTerritoryList().size() > 0) {
+                for (Territory territory : congregation.getTerritoryList()) {
+                    File file = new File(territoriesFolder, territory.getNumber() + ".json");
+                    objectMapper.writeValue(file, territory);
+                }
+                congregation.getTerritoryList().clear();
+                saveCongregation(congregation);
+            }
+        } catch (Exception e) {
+            logger.error(e);
+        }
     }
 
     private void openDatabase(String databaseName) throws IOException {
@@ -200,12 +226,12 @@ public class DatabaseService {
         version.setCounterPreachers(congregation.getPreacherList().size());
 
         enhanceCongregationData(congregation);
-        splitTerritories(congregation);
+        //splitTerritories(congregation);
 
         return congregation;
     }
 
-    private void splitTerritories(Congregation congregation) {
+    /*private void splitTerritories(Congregation congregation) {
 
         List<Territory> toBeRemoved = new ArrayList<>();
 
@@ -268,8 +294,12 @@ public class DatabaseService {
         sortTerritoriesByDateAsc(congregation.getTerritoriesOlder8Months());
         sortTerritoriesByDateAsc(congregation.getTerritoriesArchived());
         congregation.getTerritoryList().removeAll(toBeRemoved);
-    }
+    }*/
 
+    /**
+     * Put all territories back into one list, for getTerritoryList()
+     * @param congregation
+     */
     public void resetTerritoryList(Congregation congregation) {
         congregation.getTerritoryList().addAll(congregation.getTerritoriesArchived());
         congregation.getTerritoryList().addAll(congregation.getTerritoriesAssigned());
@@ -353,8 +383,9 @@ public class DatabaseService {
         }
 
         congregation.setCounterFtpUploadFailed(0);
+        List<Territory> territories = getTerritoryList();
 
-        for (Territory territory : congregation.getTerritoryList()) {
+        for (Territory territory : territories) {
 
             if (!territory.isFtpExported()) {
                 congregation.setCounterFtpUploadFailed(congregation.getCounterFtpUploadFailed() + 1);
@@ -381,9 +412,8 @@ public class DatabaseService {
 
     public Congregation saveCongregation(Congregation congregation) throws IOException {
 
-        Set<String> preacherNamesUpdated = new HashSet<>();
         Preacher preacherForHardDelete = null;
-        resetTerritoryList(congregation);
+        resetTerritoryList(congregation); // FIXME
         for (Preacher preacher : congregation.getPreacherList()) {
 
             if (preacher.getUuid() == null) {
@@ -393,20 +423,6 @@ public class DatabaseService {
             if (preacher.getHarddelete()) {
                 preacherForHardDelete = preacher;
                 break;
-            }
-        }
-
-        // repair stuff
-        for (Territory territory : congregation.getTerritoryList()) {
-            if (territory.getUuid() == null) {
-                territory.setUuid(UUID.randomUUID());
-            }
-
-            setLastAssignedDate(territory);
-
-            // limit the registry entries to 20
-            while (territory.getRegistryEntryList().size() > 20) {
-                territory.getRegistryEntryList().remove(0);
             }
         }
 
@@ -425,23 +441,6 @@ public class DatabaseService {
         objectMapper.writeValue(congregationFile, congregation);
         updated = true;
 
-        // Export all territories assigned to a new preacher
-        for (Territory territory : congregation.getTerritoryList()) {
-            if (territory.isNewPreacherAssigned()) {
-                try {
-                    exportTerritoryData(territory.getNumber());
-                    String preacherName = territory.getRegistryEntryList().get(territory.getRegistryEntryList().size() - 1).getPreacher().getName();
-                    preacherNamesUpdated.add(preacherName);
-                    // update both, the current user and the previous one
-                    if (territory.getRegistryEntryList().size() > 1) {
-                        preacherNamesUpdated.add(territory.getRegistryEntryList().get(territory.getRegistryEntryList().size() - 2).getPreacher().getName());
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
         Map<String, Preacher> preacherMap = new HashMap<>();
         congregation = objectMapper.readValue(congregationFile, Congregation.class);
 
@@ -452,6 +451,7 @@ public class DatabaseService {
             preacherMap.put(preacher.getName(), preacher);
         }
 
+        // FIXME ... load separately the territories from folder
         for (Territory territory : congregation.getTerritoryList()) {
 
             RegistryEntry lastEntry = territory.getRegistryEntryList().get(territory.getRegistryEntryList().size() - 1);
@@ -459,43 +459,77 @@ public class DatabaseService {
             preacherMap.get(lastEntry.getPreacher().getName()).getTerritoryListNumbers().add(territory.getNumber());
         }
 
-        for (String preacherName : preacherNamesUpdated) {
-            try {
-                Preacher preacher = loadPreacher(congregation, preacherName);
-                Dashboard dashboard = new Dashboard();
-                dashboard.setFinalApproachVersion(readVersionInfos().getRevision());
-                dashboard.setUuid(preacher.getUuid());
+        return enhanceCongregationData(loadCongregation());
+    }
 
-                for (String territoryNumber : preacher.getTerritoryListNumbers()) {
-                    Territory territory = getTerritoryByNumber(congregation, territoryNumber);
-                    RegistryEntry lastRegistryEntry = territory.getRegistryEntryList().get(territory.getRegistryEntryList().size() - 1);
-                    TerritoryInfos territoryInfos = new TerritoryInfos();
-                    territoryInfos.setUuid(territory.getUuid());
-                    territoryInfos.setNumber(territoryNumber);
-                    territoryInfos.setName(territory.getName());
-                    territoryInfos.setAssignDate(lastRegistryEntry.getAssignDate());
-                    territoryInfos.setReturnDate(lastRegistryEntry.getReturnDate());
-                    TerritoryMap territoryMap = getTerritoryMapByNumber(territoryNumber);
-                    if (territoryMap == null) {
-                        logger.error("No territory available for number " + territoryNumber);
-                    } else {
-                        territoryInfos.setSimpleFeatureData(territoryMap.getSimpleFeatureData());
-                    }
-                    dashboard.getTerritories().add(territoryInfos);
-                }
+    public Territory saveTerritory(Territory territory) throws IOException {
 
-                File jsonFile = new File(TERRITORY_JSON_DATA + "dashboard-" + dashboard.getUuid().toString() + ".json");
-                objectMapper.writeValue(jsonFile, dashboard);
+        // For handling preacher only
+        Congregation congregation = loadCongregation();
 
-                if (ftpService.isInitialized()) {
-                    ftpService.upload(jsonFile);
-                }
-            } catch (Exception e) {
-                logger.error(e);
-            }
+        // repair stuff
+        if (territory.getUuid() == null) {
+            territory.setUuid(UUID.randomUUID());
         }
 
-        return enhanceCongregationData(loadCongregation());
+        setLastAssignedDate(territory);
+
+        // limit the registry entries to 20
+        while (territory.getRegistryEntryList().size() > 20) {
+            territory.getRegistryEntryList().remove(0);
+        }
+
+        // Export all territories assigned to a new preacher
+        try {
+            exportTerritoryData(territory.getNumber());
+            Preacher preacher = territory.getRegistryEntryList().get(territory.getRegistryEntryList().size() - 1).getPreacher();
+            exportDashboard(congregation, preacher);
+            territory.setFtpExported(true);
+        } catch (Exception e) {
+            territory.setFtpExported(false);
+            e.printStackTrace();
+        }
+
+        objectMapper.writeValue(new File(territoriesFolder, territory.getNumber() + ".json"), territory);
+
+        return territory;
+    }
+
+    public void exportDashboard(Congregation congregation, Preacher preacher) {
+
+        try {
+            Dashboard dashboard = new Dashboard();
+            dashboard.setFinalApproachVersion(readVersionInfos().getRevision());
+            dashboard.setUuid(preacher.getUuid());
+
+            for (String territoryNumber : preacher.getTerritoryListNumbers()) {
+                Territory territory = getTerritoryByNumber(territoryNumber);
+                RegistryEntry lastRegistryEntry = territory.getRegistryEntryList().get(territory.getRegistryEntryList().size() - 1);
+                TerritoryInfos territoryInfos = new TerritoryInfos();
+                territoryInfos.setUuid(territory.getUuid());
+                territoryInfos.setNumber(territoryNumber);
+                territoryInfos.setName(territory.getName());
+                territoryInfos.setAssignDate(lastRegistryEntry.getAssignDate());
+                territoryInfos.setReturnDate(lastRegistryEntry.getReturnDate());
+                TerritoryMap territoryMap = getTerritoryMapByNumber(territoryNumber);
+                if (territoryMap == null) {
+                    logger.error("No territory available for number " + territoryNumber);
+                } else {
+                    territoryInfos.setSimpleFeatureData(territoryMap.getSimpleFeatureData());
+                }
+                dashboard.getTerritories().add(territoryInfos);
+            }
+
+            File jsonFile = new File(TERRITORY_JSON_DATA + "dashboard-" + dashboard.getUuid().toString() + ".json");
+            objectMapper.writeValue(jsonFile, dashboard);
+
+            if (ftpService.isInitialized()) {
+                ftpService.delete("dashboard-" + dashboard.getUuid().toString() + ".json");
+                ftpService.upload(jsonFile);
+            }
+        } catch (Exception e) {
+            logger.error(e);
+        }
     }
 
     private void uploadCongregation(Congregation congregation) {
@@ -629,8 +663,7 @@ public class DatabaseService {
 
     public MapDesign setActiveTerritory(String number, String name) throws IOException {
 
-        Congregation congregation = loadCongregation();
-        Territory territory = getTerritoryByNumber(congregation, number);
+        Territory territory = getTerritoryByNumber(number);
 
         if (territory != null) {
             return setTerritoryMapActive(number);
@@ -649,8 +682,7 @@ public class DatabaseService {
         registryEntry.setPreacher(new Preacher(Congregation.CONGREGATION));
         territory.getRegistryEntryList().add(registryEntry);
 
-        congregation.getTerritoryList().add(territory);
-        saveCongregation(congregation);
+        saveTerritory(territory);
 
         return loadMapDesign();
     }
@@ -668,24 +700,10 @@ public class DatabaseService {
         return saveMapDesign(mapDesign);
     }
 
-    private Territory getTerritoryByNumber(final Congregation congregation, String number) {
+    public Territory getTerritoryByNumber(String number) throws IOException {
 
-        resetTerritoryList(congregation);
-
-        for (Territory territory : congregation.getTerritoryList()) {
-            if (territory.getNumber().equals(number)) return territory;
-        }
-
-        return null;
-    }
-
-    private Territory getTerritoryByNumber(String number) throws IOException {
-
-        Congregation congregation = loadCongregation();
-        resetTerritoryList(congregation);
-
-        for (Territory territory : congregation.getTerritoryList()) {
-            if (territory.getNumber() == number) return territory;
+        for (Territory territory : getTerritoryList()) {
+            if (Objects.equals(territory.getNumber(), number)) return territory;
         }
 
         return null;
@@ -734,7 +752,7 @@ public class DatabaseService {
         // Load the territory and the preacher assigned to it
         Map<String, UUID> linkedTerritories = new HashMap<>();
         Congregation congregation = loadCongregation();
-        Territory territory = getTerritoryByNumber(congregation, number);
+        Territory territory = getTerritoryByNumber(number);
         TerritoryMap territoryMap = getTerritoryMapByNumber(number);
 
         if (territory == null) {
@@ -812,13 +830,10 @@ public class DatabaseService {
         // Upload via FTP
         try {
             ftpService.upload(jsonFile);
-            territory.setFtpExported(true);
         } catch (Exception e) {
             logger.error("FTP Upload of new territory failed", e);
-            territory.setFtpExported(false);
+            throw e;
         }
-
-        saveCongregation(congregation);
 
         logger.info("Check the local folder for JSONs older than two years and delete them (inside the local folder and also on the remote server)");
         File dataFolder = new File(TERRITORY_JSON_DATA);
@@ -851,7 +866,7 @@ public class DatabaseService {
         }
     }
 
-    private Preacher loadPreacher(Congregation congregation, String name) {
+    public Preacher loadPreacher(Congregation congregation, String name) {
         for (Preacher preacher : congregation.getPreacherList()) {
             if (name.equals(preacher.getName())) return preacher;
         }
@@ -1012,13 +1027,16 @@ public class DatabaseService {
         saveCongregation(congregation);
     }
 
-    public Congregation deleteTerritory(String number) throws IOException {
+    // FIXME
+    public void deleteTerritory(String number) throws IOException {
 
-        Congregation congregation = loadCongregation();
-        Territory toBeRemoved = getTerritoryByNumber(congregation, number);
-
-        congregation.getTerritoryList().remove(toBeRemoved);
-        return saveCongregation(congregation);
+        for (File file : territoriesFolder.listFiles()) {
+            Territory territory = objectMapper.readValue(file, Territory.class);
+            if (territory.getNumber().equals(number)) {
+                file.delete();
+                break;
+            }
+        }
     }
 
     public void resetCongregation() throws IOException {
@@ -1060,7 +1078,7 @@ public class DatabaseService {
     public void fakeMonths(String number, Integer months) throws IOException {
 
         Congregation congregation = loadCongregation();
-        Territory territory = getTerritoryByNumber(congregation, number);
+        Territory territory = getTerritoryByNumber(number);
 
         if (territory == null) return;
 
@@ -1198,15 +1216,13 @@ public class DatabaseService {
         databaseCorrection001_translateCongregationName();
     }
 
-    public Congregation returnTerritory(String number) throws IOException {
+    public void returnTerritory(String number) throws IOException {
 
-        Congregation congregation = loadCongregation();
+        if (StringUtils.isEmpty(number)) return;
 
-        if (StringUtils.isEmpty(number)) return congregation;
+        Territory territory = getTerritoryByNumber(number);
 
-        Territory territory = getTerritoryByNumber(congregation, number);
-
-        if (territory == null) return congregation;
+        if (territory == null) return;
 
         RegistryEntry registryEntry = new RegistryEntry();
         registryEntry.setAssignDate(Calendar.getInstance().getTime());
@@ -1219,22 +1235,22 @@ public class DatabaseService {
         LocalDateTime ldt = LocalDateTime.ofInstant(current,
                 ZoneId.systemDefault());
 
+        Congregation congregation = loadCongregation();
         congregation.getProtocol().add(ldt + " Territory " + number + " - " + territory.getName() + " returned to " + Congregation.CONGREGATION);
+        saveCongregation(congregation);
 
-        if (territory.getRegistryEntryList().size() > 0) {
+        if (!territory.getRegistryEntryList().isEmpty()) {
             RegistryEntry lastEntry = territory.getRegistryEntryList().get(territory.getRegistryEntryList().size() - 1);
             lastEntry.setReturnDate(Calendar.getInstance().getTime());
         }
 
         territory.setNewPreacherAssigned(true);
         territory.getRegistryEntryList().add(registryEntry);
-
-        return saveCongregation(congregation);
+        saveTerritory(territory);
     }
 
     public void registerTerritory(String number) throws IOException {
-        Congregation congregation = loadCongregation();
-        Territory territory = getTerritoryByNumber(congregation, number);
+        Territory territory = getTerritoryByNumber(number);
         RegistryEntry registryEntry = territory.getRegistryEntryList().get(territory.getRegistryEntryList().size() -1);
         RegistryEntry registration = new RegistryEntry();
         registration.setAssignDate(Calendar.getInstance().getTime());
@@ -1242,7 +1258,7 @@ public class DatabaseService {
         registration.setTerritoryNumber(registryEntry.getTerritoryNumber());
         registration.setRegistration(true); // this is the difference!
         territory.getRegistryEntryList().add(registration);
-        saveCongregation(congregation);
+        saveTerritory(territory);
     }
 
     public void reexportFailedTerritoryData() throws IOException {
@@ -1258,5 +1274,21 @@ public class DatabaseService {
                 logger.error(e);
             }
         });
+    }
+
+    public List<Territory> getTerritoryList() throws IOException {
+
+        List<Territory> territories = new ArrayList<>();
+
+        for (File file : territoriesFolder.listFiles()) {
+            Territory territory = objectMapper.readValue(file, Territory.class);
+            territories.add(territory);
+        }
+
+        return territories;
+    }
+
+    public ObjectMapper getObjectMapper() {
+        return objectMapper;
     }
 }

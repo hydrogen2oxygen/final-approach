@@ -1,11 +1,11 @@
 <h1 style="color: darkorange" *ngIf="loading">... please wait ... processing ...</h1>
 <div class="collapseContainer collapseToBeAssigned">
   <h4 class="collapseHeader" data-bs-toggle="collapse" href="#toBeAssigned" role="button" aria-expanded="false" aria-controls="toBeAssigned">
-    To be assigned ({{congregation.territoriesToBeAssigned.length}})
+    To be assigned ({{territoriesToBeAssigned.length}})
   </h4>
   <div class="collapse" id="toBeAssigned">
     <button class="btn btn-sm toBeAssignedButton btn-territory"
-            *ngFor="let t of congregation.territoriesToBeAssigned"
+            *ngFor="let t of territoriesToBeAssigned"
             (click)="showTerritoryDetails(t)"
             data-bs-toggle="modal" data-bs-target="#territoryDetailsModal">
       {{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}} <i-bs *ngIf="t.notes.length > 0" name="info-circle" style="color: #ffffff"></i-bs>
@@ -17,11 +17,11 @@
 
 <div class="collapseContainer collapseAssigned">
   <h4 class="collapseHeader" data-bs-toggle="collapse" href="#assigned" role="button" aria-expanded="false" aria-controls="assigned">
-    Already assigned  ({{congregation.territoriesAssigned.length}})
+    Already assigned  ({{territoriesAssigned.length}})
   </h4>
   <div class="collapse" id="assigned">
     <button class="btn btn-sm assignedButton btn-territory"
-            *ngFor="let t of congregation.territoriesAssigned"
+            *ngFor="let t of territoriesAssigned"
             (click)="showTerritoryDetails(t)"
             data-bs-toggle="modal" data-bs-target="#territoryDetailsModal">
       {{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}} <i-bs *ngIf="t.notes.length > 0" name="info-circle" style="color: #ffca00"></i-bs>
@@ -33,11 +33,11 @@
 
 <div class="collapseContainer collapse4Months">
   <h4 class="collapseHeader" data-bs-toggle="collapse" href="#olderThan4Months" role="button" aria-expanded="false" aria-controls="olderThan8Months">
-    Older than 4 months  ({{congregation.territoriesOlder4Months.length}})
+    Older than 4 months  ({{territoriesOlder4Months.length}})
   </h4>
   <div class="collapse" id="olderThan4Months">
     <button class="btn btn-sm olderThan4MonthsButton btn-territory"
-            *ngFor="let t of congregation.territoriesOlder4Months"
+            *ngFor="let t of territoriesOlder4Months"
             (click)="showTerritoryDetails(t)"
             data-bs-toggle="modal" data-bs-target="#territoryDetailsModal">
       {{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}} <i-bs *ngIf="t.notes.length > 0" name="info-circle" style="color: #fff1bd"></i-bs>
@@ -49,11 +49,11 @@
 
 <div class="collapseContainer collapse8Months">
   <h4 class="collapseHeader" data-bs-toggle="collapse" href="#olderThan8Months" role="button" aria-expanded="false" aria-controls="olderThan8Months">
-    Older than 8 months ({{congregation.territoriesOlder8Months.length}})
+    Older than 8 months ({{territoriesOlder8Months.length}})
   </h4>
   <div class="collapse" id="olderThan8Months">
     <button class="btn btn-sm olderThan8MonthsButton btn-territory"
-            *ngFor="let t of congregation.territoriesOlder8Months"
+            *ngFor="let t of territoriesOlder8Months"
             (click)="showTerritoryDetails(t)"
             data-bs-toggle="modal" data-bs-target="#territoryDetailsModal">
       {{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}} <i-bs *ngIf="t.notes.length > 0" name="info-circle" style="color: #ffca00"></i-bs>
@@ -65,11 +65,11 @@
 
 <div class="collapseContainer collapseNoContacts">
   <h4 class="collapseHeader" data-bs-toggle="collapse" href="#noContacts" role="button" aria-expanded="false" aria-controls="noContacts">
-    No contacts  ({{congregation.territoriesNoContacts.length}})
+    No contacts  ({{territoriesNoContacts.length}})
   </h4>
   <div class="collapse" id="noContacts">
     <button class="btn btn-sm olderThan8MonthsButton btn-territory"
-            *ngFor="let t of congregation.territoriesNoContacts"
+            *ngFor="let t of territoriesNoContacts"
             (click)="showTerritoryDetails(t)"
             data-bs-toggle="modal" data-bs-target="#territoryDetailsModal">
       {{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}} <i-bs *ngIf="t.notes.length > 0" name="info-circle" style="color: #ffca00"></i-bs>
@@ -81,11 +81,11 @@
 
 <div class="collapseContainer collapseArchived">
   <h4 class="collapseHeader" data-bs-toggle="collapse" href="#archived" role="button" aria-expanded="false" aria-controls="archived">
-    Archived ({{congregation.territoriesArchived.length}})
+    Archived ({{territoriesArchived.length}})
   </h4>
   <div class="collapse" id="archived">
     <button class="btn btn-sm archivedButton btn-territory"
-            *ngFor="let t of congregation.territoriesArchived"
+            *ngFor="let t of territoriesArchived"
             (click)="showTerritoryDetails(t)"
             data-bs-toggle="modal" data-bs-target="#territoryDetailsModal">
       {{t.number}} {{t.name}} {{t.date | date:'dd-MM-yy'}} <i-bs *ngIf="t.notes.length > 0" name="info-circle" style="color: #380000"></i-bs>
@@ -117,16 +117,16 @@
 
 
 Territories {{
-  congregation.territoriesAssigned.length
-  + congregation.territoriesNoContacts.length
-  + congregation.territoriesOlder4Months.length
-  + congregation.territoriesOlder8Months.length
-  + congregation.territoriesToBeAssigned.length
+  territoriesAssigned.length
+  + territoriesNoContacts.length
+  + territoriesOlder4Months.length
+  + territoriesOlder8Months.length
+  + territoriesToBeAssigned.length
 }} | visited during one year {{visitedDuringLastYear}} | not visited for one year {{notVisitedForOneYear}}
 <hr>
 <button class="btn btn-sm btn-success" (click)="printPDF()">PRINT PDF</button>
 <button *ngIf="congregation.counterFtpUploadFailed > 0" class="btn btn-sm btn-danger" style="margin-left: 0.5rem; font-weight: bolder" (click)="repairFtpUploads()">REPAIR FTP UPLOADS <i class="bi bi-cloud-slash" style="margin-left: 0.25rem"></i> {{congregation.counterFtpUploadFailed}} failed uploads</button>
-<button *ngIf="congregation.territoriesOlder8Months.length > 0" class="btn btn-sm btn-warning" style="margin-left: 0.5rem; font-weight: bolder" (click)="copyOlderThan12MonthsMessage()">OLDER THAN 12 MONTHS MESSAGE</button>
+<button *ngIf="territoriesOlder8Months.length > 0" class="btn btn-sm btn-warning" style="margin-left: 0.5rem; font-weight: bolder" (click)="copyOlderThan12MonthsMessage()">OLDER THAN 12 MONTHS MESSAGE</button>
 <hr>
 <div class="collapseContainer collapseProtocol">
   <h4 class="collapseHeader" data-bs-toggle="collapse" href="#protocol" role="button" aria-expanded="false" aria-controls="protocol">

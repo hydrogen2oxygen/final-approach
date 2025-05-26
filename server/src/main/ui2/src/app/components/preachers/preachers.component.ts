@@ -25,6 +25,7 @@ export class PreachersComponent implements OnInit {
   datepipe: DatePipe = new DatePipe('en-US');
   monthsBefore4: Date = new Date();
   monthsBefore8: Date = new Date();
+  allTerritories: Territory[] = [];
   territories: Territory[] = [];
   territoryUrl: any | null = null;
   selectedTerritoryNumber: string | null = null;
@@ -47,6 +48,9 @@ export class PreachersComponent implements OnInit {
   private reloadCongregation() {
     this.congregationService.getCongregation().subscribe((c: Congregation) => {
       this.congregation = c;
+      this.congregationService.getTerritory().subscribe((t: Territory[]) => {
+        this.allTerritories = t;
+      })
       if (this.congregation.notes) {
         this.notes.setValue(this.congregation.notes);
       }
@@ -235,23 +239,18 @@ export class PreachersComponent implements OnInit {
   }
 
   getTerritoryByNumber(territoryNumber: string): Territory | undefined {
-    let territoryList: Territory[] = [];
-    territoryList = territoryList.concat(this.congregation.territoriesAssigned);
-    territoryList = territoryList.concat(this.congregation.territoriesOlder4Months);
-    territoryList = territoryList.concat(this.congregation.territoriesOlder8Months);
-    territoryList = territoryList.concat(this.congregation.territoriesNoContacts);
-    territoryList = territoryList.concat(this.congregation.territoriesToBeAssigned);
-    return territoryList.find(t => t.number === territoryNumber);
+    return this.allTerritories.find(t => t.number === territoryNumber);
   }
 
   cssAccordingToTerritory(territory: Territory): string {
     let css = "";
 
     if (territory) {
-      let lastRegistry = territory.registryEntryList[territory.registryEntryList.length - 1];
-      if (lastRegistry.assignDate > this.monthsBefore8) {
-        css = "btn-danger";
-        // TODO finish this
+      let lastRegistryDate = new Date(territory.registryEntryList[territory.registryEntryList.length - 1].assignDate);
+      if (new Date(lastRegistryDate) < this.monthsBefore8) {
+        css = "text-bg-danger";
+      } else if (lastRegistryDate < this.monthsBefore4) {
+        css = "text-bg-warning";
       }
     }
 
@@ -265,12 +264,7 @@ export class PreachersComponent implements OnInit {
 
   returnTerritoryByNumber(territory:Territory) {
     this.loading = true;
-    this.congregationService.returnTerritory(territory).subscribe( (c: Congregation) => {
-      if (c == null) {
-        console.error("Returned congregation is null!");
-        this.loading = false;
-        return;
-      }
+    this.congregationService.returnTerritory(territory).subscribe( () => {
 
       this.toastr.success('Territory ' + territory.number + " " + territory.name
         + " exported successfully for "

@@ -247,11 +247,11 @@ public class PrintService {
         }
     }
 
-    private List<Territory> getTerritoryListFromPreacher(Congregation congregation, Preacher preacher) {
+    private List<Territory> getTerritoryListFromPreacher(Congregation congregation, Preacher preacher) throws IOException {
 
         List<Territory> territoryList = new ArrayList<>();
 
-        for (Territory territory : congregation.getTerritoryList()) {
+        for (Territory territory : databaseService.getTerritoryList()) {
 
             if (preacher.getTerritoryListNumbers().contains(territory.getNumber())) {
                 territoryList.add(territory);
@@ -264,7 +264,7 @@ public class PrintService {
     public void printCongregation(Congregation congregation) throws Exception {
 
         databaseService.resetTerritoryList(congregation);
-        Map<String, String> territoryMap = readTerritoryMap(congregation);
+        Map<String, String> territoryMap = readTerritoryMap();
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yy");
         Document document = new Document(PageSize.A4, 10f, 10f, 10f, 10f);
 
@@ -279,7 +279,7 @@ public class PrintService {
         document.open();
         Map<String,List<RegistryEntry>> registryEntriesMap = new HashMap<>();
 
-        for (Territory territory : congregation.getTerritoryList()) {
+        for (Territory territory : databaseService.getTerritoryList()) {
             if (territory.isArchive()) continue;
             registryEntriesMap.put(territory.getNumber(),extractNewEntries(territory.getRegistryEntryList()));
         }
@@ -612,7 +612,7 @@ public class PrintService {
         table.addCell(cell);
     }
 
-    private Map<Integer, String> readTerritoryMap() throws IOException {
+    /*private Map<Integer, String> readTerritoryMap() throws IOException {
 
         List<String> lines = FileUtils.readLines(new File("territory.txt"), CharEncoding.UTF_8);
         Map<Integer, String> territoryMap = new HashMap<>();
@@ -624,13 +624,13 @@ public class PrintService {
         }
 
         return territoryMap;
-    }
+    }*/
 
-    private Map<String, String> readTerritoryMap(Congregation congregation) throws IOException {
+    private Map<String, String> readTerritoryMap() throws IOException {
 
         Map<String, String> territoryMap = new HashMap<>();
 
-        for (Territory territory : congregation.getTerritoryList()) {
+        for (Territory territory : databaseService.getTerritoryList()) {
 
             territoryMap.put(territory.getNumber(), territory.getName());
         }

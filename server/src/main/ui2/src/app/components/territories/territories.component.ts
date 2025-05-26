@@ -5,7 +5,7 @@ import {FormControl} from "@angular/forms";
 import {ToastrService} from "ngx-toastr";
 import {SharedService} from "../../services/shared.service";
 import {Search, SearchResult} from "../../domains/Search";
-import {line} from "ngx-bootstrap-icons";
+import {archive, line} from "ngx-bootstrap-icons";
 
 
 declare var $:any;
@@ -34,6 +34,13 @@ export class TerritoriesComponent implements OnInit {
   keyword: string = "name";
   visitedDuringLastYear:number = 0
   notVisitedForOneYear:number = 0
+
+  territoriesNoContacts:Territory[] = [];
+  territoriesOlder8Months:Territory[] = [];
+  territoriesOlder4Months:Territory[] = [];
+  territoriesAssigned:Territory[] = [];
+  territoriesToBeAssigned:Territory[] = [];
+  territoriesArchived:Territory[] = [];
 
   noContacts = new FormControl(false);
   intoArchive = new FormControl(false);
@@ -75,48 +82,80 @@ export class TerritoriesComponent implements OnInit {
   }
 
   private reloadCongregation() {
+    console.log("Reloading congregation data ...")
     this.congregationService.getCongregation().subscribe((c: Congregation) => {
       this.congregation = c;
       this.preacherList = c.preacherList;
+      this.territoriesNoContacts = [];
+      this.territoriesOlder8Months = [];
+      this.territoriesOlder4Months = [];
+      this.territoriesAssigned = [];
+      this.territoriesToBeAssigned = [];
+      this.territoriesArchived = [];
 
+      const now:Date = new Date();
+      const eightMonthsAgo:Date = new Date(now.getFullYear(), now.getMonth() - 8, now.getDate());
+      const fourMonthsAgo:Date = new Date(now.getFullYear(), now.getMonth() - 4, now.getDate());
       this.territoriesSorted = [];
-      this.territoriesSorted = this.territoriesSorted.concat(c.territoriesAssigned);
-      this.territoriesSorted = this.territoriesSorted.concat(c.territoriesNoContacts);
-      this.territoriesSorted = this.territoriesSorted.concat(c.territoriesToBeAssigned);
-      this.territoriesSorted = this.territoriesSorted.concat(c.territoriesOlder8Months);
-      this.territoriesSorted = this.territoriesSorted.concat(c.territoriesOlder4Months);
-
-      this.territoriesSorted = this.territoriesSorted.sort((a, b) => (a.number > b.number ? 1 : -1));
-
-      setTimeout(()=>{
-        this.visitedDuringLastYear = 0
-        this.notVisitedForOneYear = 0
-
-        let oneYearDate:Date = new Date()
-        oneYearDate.setFullYear(oneYearDate.getFullYear() - 1);
-
+      this.congregationService.getTerritory().subscribe((t: Territory[]) => {
+        this.territoriesSorted = t;
         this.territoriesSorted.forEach(t => {
-          let registryExist:boolean = false
-          t.registryEntryList.forEach( r => {
-            if (r.returnDate) {
-              if (this.parseDateString(r.returnDate) > oneYearDate) {
-                registryExist = true
+          if (t.registryEntryList.length == 0) {
+            this.territoriesToBeAssigned.push(t);
+          } else if (t.noContacts && !t.archive){
+            this.territoriesNoContacts.push(t);
+          } else if (t.archive) {
+            this.territoriesArchived.push(t);
+          } else if (t.registryEntryList[t.registryEntryList.length - 1].preacher.name == 'Congregation') {
+            this.territoriesToBeAssigned.push(t);
+          } else if (new Date(t.date) < eightMonthsAgo) {
+            this.territoriesOlder8Months.push(t);
+          } else if (new Date(t.date) < fourMonthsAgo) {
+            this.territoriesOlder4Months.push(t);
+          } else {
+            this.territoriesAssigned.push(t);
+          }
+        });
+
+        this.territoriesNoContacts = this.territoriesNoContacts.sort((a, b) => (new Date(a.date) > new Date(b.date) ? 1 : -1));
+        this.territoriesArchived = this.territoriesArchived.sort((a, b) => (new Date(a.date) > new Date(b.date) ? 1 : -1));
+        this.territoriesToBeAssigned = this.territoriesToBeAssigned.sort((a, b) => (new Date(a.date) > new Date(b.date) ? 1 : -1));
+        this.territoriesOlder4Months = this.territoriesOlder4Months.sort((a, b) => (new Date(a.date) > new Date(b.date) ? 1 : -1));
+        this.territoriesOlder8Months = this.territoriesOlder8Months.sort((a, b) => (new Date(a.date) > new Date(b.date) ? 1 : -1));
+        this.territoriesSorted = this.territoriesSorted.sort((a, b) => (a.number > b.number ? 1 : -1));
+
+        setTimeout(()=>{
+          this.visitedDuringLastYear = 0
+          this.notVisitedForOneYear = 0
+
+          let oneYearDate:Date = new Date()
+          oneYearDate.setFullYear(oneYearDate.getFullYear() - 1);
+
+          this.territoriesSorted.forEach(t => {
+            let registryExist:boolean = false
+            t.registryEntryList.forEach( r => {
+              if (r.returnDate) {
+                if (this.parseDateString(r.returnDate) > oneYearDate) {
+                  registryExist = true
+                }
               }
-            }
+            })
+
+            if (registryExist) this.visitedDuringLastYear = this.visitedDuringLastYear + 1
           })
 
-          if (registryExist) this.visitedDuringLastYear = this.visitedDuringLastYear + 1
-        })
+          this.notVisitedForOneYear = this.congregation.territoriesAssigned.length
+            + this.congregation.territoriesNoContacts.length
+            + this.congregation.territoriesOlder4Months.length
+            + this.congregation.territoriesOlder8Months.length
+            + this.congregation.territoriesToBeAssigned.length
+            - this.visitedDuringLastYear;
 
-        this.notVisitedForOneYear = this.congregation.territoriesAssigned.length
-        + this.congregation.territoriesNoContacts.length
-        + this.congregation.territoriesOlder4Months.length
-        + this.congregation.territoriesOlder8Months.length
-        + this.congregation.territoriesToBeAssigned.length
-        - this.visitedDuringLastYear;
+          },1)
+        });
+      })
 
-      },1)
-    });
+
   }
 
   parseDateString(dateString: any): Date {
@@ -230,10 +269,9 @@ export class TerritoriesComponent implements OnInit {
   }
 
   deleteTerritory(number: string) {
-    this.congregationService.deleteTerritory(number).subscribe((c: Congregation) => {
-      this.congregation = c;
-      this.preacherList = c.preacherList;
+    this.congregationService.deleteTerritory(number).subscribe(() => {
       this.territory = null;
+      console.log("Check if this still works!")
     });
   }
 

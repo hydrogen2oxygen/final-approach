@@ -1,10 +1,7 @@
 package de.pietro.lusso.territory.adapter;
 
 
-import de.pietro.lusso.territory.domain.BackupFile;
-import de.pietro.lusso.territory.domain.Congregation;
-import de.pietro.lusso.territory.domain.Message;
-import de.pietro.lusso.territory.domain.Version;
+import de.pietro.lusso.territory.domain.*;
 import de.pietro.lusso.territory.services.DatabaseService;
 import de.pietro.lusso.territory.services.PrintService;
 import org.apache.logging.log4j.LogManager;
@@ -137,9 +134,14 @@ public class CongregationAdapter {
         databaseService.fakeMonths(number, months);
     }
 
+    @GetMapping("territory")
+    public List<Territory> getTerritoryList() throws Exception {
+        return databaseService.getTerritoryList();
+    }
+
     @DeleteMapping("territory/{number}")
-    public Congregation deleteTerritory(@PathVariable String number) throws Exception {
-        return databaseService.deleteTerritory(number);
+    public void deleteTerritory(@PathVariable String number) throws Exception {
+        databaseService.deleteTerritory(number);
     }
 
     @GetMapping("backup")
@@ -158,7 +160,7 @@ public class CongregationAdapter {
     }
 
     @PutMapping("returnTerritory/{number}")
-    public Congregation returnTerritory(@PathVariable String number) throws IOException {
-        return databaseService.returnTerritory(number);
+    public void returnTerritory(@PathVariable String number) throws IOException {
+        databaseService.returnTerritory(number);
     }
 }

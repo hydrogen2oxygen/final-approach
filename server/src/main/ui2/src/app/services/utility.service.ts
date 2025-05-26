@@ -22,4 +22,11 @@ export class UtilityService {
   uploadTerritoryMapApplication():Observable<string> {
     return this.http.put<string>(`${UtilityService.url}uploadTerritoryMapApplication`, null);
   }
+
+  repairDashBoardsAndTerritoryData(repairAll:boolean = false):Observable<void> {
+    if (repairAll) {
+      return this.http.put<void>(`${UtilityService.url}repairDashBoardsAndTerritoryData/true`, null);
+    }
+    return this.http.put<void>(`${UtilityService.url}repairDashBoardsAndTerritoryData`, null);
+  }
 }

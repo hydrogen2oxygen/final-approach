@@ -1,6 +1,11 @@
 package de.pietro.lusso.territory.services;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jcraft.jsch.*;
+import de.pietro.lusso.territory.domain.Territory;
+import de.pietro.lusso.territory.domain.TerritoryData;
 import org.apache.commons.net.PrintCommandListener;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
@@ -12,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -70,7 +76,54 @@ public class FtpService {
                 logger.error("Initializing FTP error", e);
             }
         }
+
+        if (initialized) {
+            // start in a thread async
+            new Thread(() -> cleanUpInactiveFiles()).start();
+        }
     }
+
+    public void cleanUpInactiveFiles() {
+        try {
+            Vector<String> fileList = list("assets/data/");
+            List<Territory> territoryList = databaseService.loadCongregation().getTerritoryList();
+            for (Territory territory : territoryList) {
+                if (fileList.contains(territory.getUuid() + ".json")) {
+                    fileList.remove(territory.getUuid() + ".json");
+                }
+            }
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            objectMapper.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, true);
+
+            for (String fileName : fileList) {
+                if (!fileName.startsWith("dashboard") && fileName.endsWith("json")) {
+                    logger.info(fileName);
+                    File jsonFile = new File(databaseService.TERRITORY_JSON_DATA + fileName);
+                    if (jsonFile.exists()) {
+                        logger.info("File " + jsonFile.getAbsolutePath() + " still exists!");
+                        TerritoryData territoryData = objectMapper.readValue(jsonFile, TerritoryData.class);
+                        if (territoryData.isActive()) {
+                            logger.info("File " + jsonFile.getAbsolutePath() + " is active!");
+                        } else {
+                            logger.info("File " + jsonFile.getAbsolutePath() + " is inactive!");
+                            delete("assets/data/" + fileName);
+                            boolean deleted = jsonFile.delete();
+                            if (deleted) {
+                                logger.info("File " + jsonFile.getAbsolutePath() + " deleted!");
+                            } else {
+                                logger.info("File " + jsonFile.getAbsolutePath() + " could not be deleted!");
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error(e);
+        }
+    }
+
 
     public Vector<String> list(String path) throws Exception {
         Vector<String> v = new Vector<>();

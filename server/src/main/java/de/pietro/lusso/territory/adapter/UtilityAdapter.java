@@ -41,4 +41,17 @@ public class UtilityAdapter {
     public void uploadTerritoryMapApplication() throws Exception {
         territoryMapService.uploadTerritoryMapApplication();
     }
+
+    @PutMapping({"repairDashBoardsAndTerritoryData", "/repairDashBoardsAndTerritoryData/{repairAll}"})
+    public void repairDashBoardsAndTerritoryData(@PathVariable(required = false) Boolean repairAll) throws Exception {
+        boolean repairEverything = (repairAll != null) && repairAll;
+        Executor executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            try {
+                territoryMapService.repairDashBoardsAndTerritoryData(repairEverything);
+            } catch (Exception e) {
+                logger.error("Error repairing dashboards and territory data", e);
+            }
+        });
+    }
 }

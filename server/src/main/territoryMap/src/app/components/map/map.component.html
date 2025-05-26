@@ -7,8 +7,8 @@
   <h3>Il territorio è stato ridistribuito.</h3>
 </div>
 
-<div *ngIf="id.length > 0 && !dashboardMode" style="background-color: #000a1c; color: white; position: fixed; bottom: 0rem; width: 100%">
-  &nbsp;&nbsp;{{territoryData.number}} - {{territoryData.name}} - {{territoryData.assignDate | date:'dd.MM.yyyy'}}
+<div *ngIf="id.length > 0 && !dashboardMode" style="background-color: #000a1c; color:white; position: fixed; bottom: 0rem; width: 100%">
+  &nbsp;&nbsp;{{territoryData.number}} - {{territoryData.name}} - <span style="{{getAssignDateStyle()}}">{{territoryData.assignDate | date:'dd.MM.yyyy'}}</span>
   <a *ngIf="territoryData.preacherUUID" class="btn btn-sm btn-primary" href="?id=dashboard-{{territoryData.preacherUUID}}">Overview</a>
 </div>
 

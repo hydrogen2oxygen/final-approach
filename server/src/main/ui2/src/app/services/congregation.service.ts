@@ -19,6 +19,10 @@ export class CongregationService {
     return this.http.get<Congregation>(`${CongregationService.url}`);
   }
 
+  getTerritory():Observable<Territory[]> {
+    return this.http.get<Territory[]>(`${CongregationService.url}territory`);
+  }
+
   version():Observable<Version> {
     return this.http.get<Version>(`${CongregationService.url}version`);
   }
@@ -85,8 +89,8 @@ export class CongregationService {
     return this.http.put<Congregation>(`${CongregationService.url}`,uncycledCongregation);
   }
 
-  deleteTerritory(territoryNumber:string):Observable<Congregation> {
-      return this.http.delete<Congregation>(`${CongregationService.url}territory/${territoryNumber}`);
+  deleteTerritory(territoryNumber:string):Observable<void> {
+      return this.http.delete<void>(`${CongregationService.url}territory/${territoryNumber}`);
   }
 
   getBackupFiles():Observable<BackupFile[]> {
