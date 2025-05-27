@@ -86,7 +86,7 @@ public class CongregationAdapter {
 
     @PostMapping("exportTerritoryData/{number}")
     public Message exportTerritoryData(@PathVariable String number) throws Exception {
-        databaseService.exportTerritoryData(number);
+        databaseService.exportTerritoryData(databaseService.getTerritoryByNumber(number));
         Message msg = new Message();
         msg.setMsg("Territory " + number + " exported!");
         return msg;
@@ -94,7 +94,7 @@ public class CongregationAdapter {
 
     @PostMapping("reexportTerritoryData/{number}")
     public Message reexportTerritoryData(@PathVariable String number) throws Exception {
-        databaseService.exportTerritoryData(number, true);
+        databaseService.exportTerritoryData(databaseService.getTerritoryByNumber(number), true);
         Message msg = new Message();
         msg.setMsg("Territory " + number + " reexported!");
         return msg;
@@ -132,6 +132,12 @@ public class CongregationAdapter {
     @PutMapping("fake8Months/{number}/{months}")
     public void fake8Months(@PathVariable String number,@PathVariable Integer months) throws Exception {
         databaseService.fakeMonths(number, months);
+    }
+
+    @PutMapping("territory")
+    public Territory saveTerritory(@RequestBody Territory territory) throws IOException {
+
+        return databaseService.saveTerritory(territory);
     }
 
     @GetMapping("territory")

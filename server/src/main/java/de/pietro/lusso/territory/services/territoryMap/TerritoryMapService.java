@@ -1,9 +1,6 @@
 package de.pietro.lusso.territory.services.territoryMap;
 
 import de.pietro.lusso.territory.domain.*;
-import de.pietro.lusso.territory.domain.dashboard.Dashboard;
-import de.pietro.lusso.territory.domain.dashboard.TerritoryInfos;
-import de.pietro.lusso.territory.domain.mapDesign.TerritoryMap;
 import de.pietro.lusso.territory.services.DatabaseService;
 import de.pietro.lusso.territory.services.FtpService;
 import de.pietro.lusso.territory.utils.ResourceUtil;
@@ -14,7 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -101,7 +101,7 @@ public class TerritoryMapService {
                     }
                 }
                 if (repairEverything) {
-                    databaseService.exportTerritoryData(territory.getNumber(), true);
+                    databaseService.exportTerritoryData(territory, true);
                 }
             } catch (Exception e) {
                 System.out.println("- Error fetching data for territory " + territory.getNumber());
@@ -111,7 +111,7 @@ public class TerritoryMapService {
                     break;
                 }
 
-                databaseService.exportTerritoryData(territory.getNumber(), true);
+                databaseService.exportTerritoryData(territory, true);
             }
         }
 

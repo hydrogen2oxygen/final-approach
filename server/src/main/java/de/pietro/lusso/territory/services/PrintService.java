@@ -9,7 +9,6 @@ import de.pietro.lusso.territory.domain.Congregation;
 import de.pietro.lusso.territory.domain.Preacher;
 import de.pietro.lusso.territory.domain.RegistryEntry;
 import de.pietro.lusso.territory.domain.Territory;
-import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;

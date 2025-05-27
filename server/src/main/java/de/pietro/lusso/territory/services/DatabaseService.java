@@ -15,7 +15,6 @@ import de.pietro.lusso.territory.utils.PreacherUtils;
 import de.pietro.lusso.territory.utils.SettingsInitializer;
 import de.pietro.lusso.territory.utils.ZipUtility;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.logging.log4j.LogManager;
@@ -97,7 +96,17 @@ public class DatabaseService {
     private void correctionVersion115() {
         try {
             Congregation congregation = loadCongregation();
-            if (congregation.getTerritoryList().size() > 0) {
+            boolean correctionPreacherUUID = false;
+            for (Preacher preacher : congregation.getPreacherList()) {
+                if (preacher.getUuid() == null) {
+                    preacher.setUuid(UUID.randomUUID());
+                    correctionPreacherUUID = true;
+                }
+            }
+            if (correctionPreacherUUID) {
+                saveCongregation(congregation);
+            }
+            if (!congregation.getTerritoryList().isEmpty()) {
                 for (Territory territory : congregation.getTerritoryList()) {
                     File file = new File(territoriesFolder, territory.getNumber() + ".json");
                     objectMapper.writeValue(file, territory);
@@ -222,79 +231,13 @@ public class DatabaseService {
 
         resetTerritoryList(congregation);
 
-        version.setCounterTerritories(congregation.getTerritoryList().size());
+        version.setCounterTerritories(getTerritoryList().size());
         version.setCounterPreachers(congregation.getPreacherList().size());
 
         enhanceCongregationData(congregation);
-        //splitTerritories(congregation);
 
         return congregation;
     }
-
-    /*private void splitTerritories(Congregation congregation) {
-
-        List<Territory> toBeRemoved = new ArrayList<>();
-
-        Calendar old8Cal = Calendar.getInstance();
-        old8Cal.add(Calendar.MONTH, -8);
-
-        Calendar old4Cal = Calendar.getInstance();
-        old4Cal.add(Calendar.MONTH, -4);
-
-        for (Territory territory : congregation.getTerritoryList()) {
-
-            int registrySize = territory.getRegistryEntryList().size();
-
-            if (registrySize == 0) {
-                congregation.getTerritoriesToBeAssigned().add(territory);
-                toBeRemoved.add(territory);
-                continue;
-            }
-
-            if (territory.isNoContacts() && !territory.isArchive()) {
-                congregation.getTerritoriesNoContacts().add(territory);
-                toBeRemoved.add(territory);
-                continue;
-            }
-
-            if (territory.isArchive()) {
-                congregation.getTerritoriesArchived().add(territory);
-                toBeRemoved.add(territory);
-                continue;
-            }
-
-            // set last assigned date from registry
-            setLastAssignedDate(territory);
-
-            if (territory.getRegistryEntryList().get(registrySize - 1).getPreacher().getName().equals(Congregation.CONGREGATION)) {
-                congregation.getTerritoriesToBeAssigned().add(territory);
-                toBeRemoved.add(territory);
-                continue;
-            }
-
-            if (territory.getDate().before(old8Cal.getTime())) {
-                congregation.getTerritoriesOlder8Months().add(territory);
-                toBeRemoved.add(territory);
-                continue;
-            }
-
-            if (territory.getDate().before(old4Cal.getTime())) {
-                congregation.getTerritoriesOlder4Months().add(territory);
-                toBeRemoved.add(territory);
-                continue;
-            }
-
-            congregation.getTerritoriesAssigned().add(territory);
-            toBeRemoved.add(territory);
-        }
-
-        sortTerritoriesByDateAsc(congregation.getTerritoriesToBeAssigned());
-        sortTerritoriesByDateAsc(congregation.getTerritoriesAssigned());
-        sortTerritoriesByDateAsc(congregation.getTerritoriesOlder4Months());
-        sortTerritoriesByDateAsc(congregation.getTerritoriesOlder8Months());
-        sortTerritoriesByDateAsc(congregation.getTerritoriesArchived());
-        congregation.getTerritoryList().removeAll(toBeRemoved);
-    }*/
 
     /**
      * Put all territories back into one list, for getTerritoryList()
@@ -474,20 +417,24 @@ public class DatabaseService {
 
         setLastAssignedDate(territory);
 
-        // limit the registry entries to 20
-        while (territory.getRegistryEntryList().size() > 20) {
-            territory.getRegistryEntryList().remove(0);
-        }
-
         // Export all territories assigned to a new preacher
         try {
-            exportTerritoryData(territory.getNumber());
+            territory = exportTerritoryData(territory);
             Preacher preacher = territory.getRegistryEntryList().get(territory.getRegistryEntryList().size() - 1).getPreacher();
+            preacher = getPreacherByName(preacher.getName());
+            if (!preacher.getTerritoryListNumbers().contains(territory.getNumber())) {
+                preacher.getTerritoryListNumbers().add(territory.getNumber());
+            }
             exportDashboard(congregation, preacher);
             territory.setFtpExported(true);
         } catch (Exception e) {
             territory.setFtpExported(false);
             e.printStackTrace();
+        }
+
+        // limit the registry entries to 20
+        while (territory.getRegistryEntryList().size() > 20) {
+            territory.getRegistryEntryList().remove(0);
         }
 
         objectMapper.writeValue(new File(territoriesFolder, territory.getNumber() + ".json"), territory);
@@ -496,6 +443,10 @@ public class DatabaseService {
     }
 
     public void exportDashboard(Congregation congregation, Preacher preacher) {
+
+        if (preacher.getUuid() == null) {
+            preacher.setUuid(UUID.randomUUID());
+        }
 
         try {
             Dashboard dashboard = new Dashboard();
@@ -666,6 +617,8 @@ public class DatabaseService {
         Territory territory = getTerritoryByNumber(number);
 
         if (territory != null) {
+            territory.setMapExist(true);
+            saveTerritory(territory);
             return setTerritoryMapActive(number);
         }
 
@@ -674,6 +627,7 @@ public class DatabaseService {
         territory.setNumber(number);
         territory.setName(name);
         territory.setUuid(UUID.randomUUID());
+        territory.setMapExist(true);
 
         // First registry entry is for the congregation
         RegistryEntry registryEntry = new RegistryEntry();
@@ -744,30 +698,28 @@ public class DatabaseService {
      * </ul>
      * <p>If something goes wrong with the upload, the local folder has a copy of all data.</p>
      *
-     * @param number
      */
-    public void exportTerritoryData(String number, boolean onlyRepair) throws Exception {
+    public Territory exportTerritoryData(Territory territory, boolean onlyRepair) throws Exception {
 
-        logger.info("Export territory " + number + (onlyRepair ? " onlyRepair" : ""));
+        logger.info("Export territory " + territory.getNumber() + (onlyRepair ? " onlyRepair" : ""));
         // Load the territory and the preacher assigned to it
         Map<String, UUID> linkedTerritories = new HashMap<>();
         Congregation congregation = loadCongregation();
-        Territory territory = getTerritoryByNumber(number);
-        TerritoryMap territoryMap = getTerritoryMapByNumber(number);
+        TerritoryMap territoryMap = getTerritoryMapByNumber(territory.getNumber());
 
         if (territory == null) {
             logger.info("territory was null");
-            return;
+            return null;
         }
 
         if (territory.getRegistryEntryList() == null || territory.getRegistryEntryList().size() == 0) {
             logger.info("territory without registry entries");
-            return;
+            return territory;
         }
 
         if (territoryMap == null || territory.isArchive()) {
             logger.info("territory with no map or archived");
-            return;
+            return territory;
         }
 
         RegistryEntry registryEntry = territory.getRegistryEntryList().get(territory.getRegistryEntryList().size() - 1);
@@ -817,6 +769,7 @@ public class DatabaseService {
             logger.info("set a new UUID for the territory: " + uuid.toString());
             territory.setUuid(uuid);
             territoryData.setUuid(uuid);
+            objectMapper.writeValue(new File(territoriesFolder, territory.getNumber() + ".json"), territory);
         }
 
         // TODO Link the JSON to the other territories of the preacher and relink the other JSONs to this one (n to n)
@@ -851,10 +804,12 @@ public class DatabaseService {
                 }
             }
         }
+
+        return territory;
     }
 
-    public void exportTerritoryData(String number) throws Exception {
-        exportTerritoryData(number, false);
+    public Territory exportTerritoryData(Territory territory) throws Exception {
+        return exportTerritoryData(territory, false);
     }
 
     public void exportTerritoryData() throws Exception {
@@ -862,7 +817,7 @@ public class DatabaseService {
         MapDesign mapDesign = loadMapDesign();
 
         for (TerritoryMap territoryMap : mapDesign.getTerritoryMapList()) {
-            exportTerritoryData(territoryMap.getTerritoryNumber());
+            exportTerritoryData(getTerritoryByNumber(territoryMap.getTerritoryNumber()));
         }
     }
 
@@ -990,7 +945,6 @@ public class DatabaseService {
 
     public void importTerritoriesFromText(String filePath) throws IOException {
 
-        Congregation congregation = loadCongregation();
         File file = new File(filePath);
 
         List<String> lines = FileUtils.readLines(file, "UTF-8");
@@ -1021,10 +975,9 @@ public class DatabaseService {
             registryEntry.setPreacher(preacher);
             territory.getRegistryEntryList().add(registryEntry);
 
-            congregation.getTerritoryList().add(territory);
+           saveTerritory(territory);
         }
 
-        saveCongregation(congregation);
     }
 
     // FIXME
@@ -1042,29 +995,17 @@ public class DatabaseService {
     public void resetCongregation() throws IOException {
 
         Congregation congregation = loadCongregation();
-        resetCongregation(congregation);
-
-        saveCongregation(congregation);
-    }
-
-    private void resetCongregation(Congregation congregation) {
-
-        List<Territory> archivedTerritories = new ArrayList<>();
 
         for (Preacher preacher : congregation.getPreacherList()) {
             preacher.getTerritoryListNumbers().clear();
         }
 
-        for (Territory territory : congregation.getTerritoryList()) {
+        for (Territory territory : getTerritoryList()) {
             territory.getRegistryEntryList().clear();
             if (territory.isArchive()) {
-                archivedTerritories.add(territory);
+                deleteTerritory(territory.getNumber());
+                continue;
             }
-        }
-
-        congregation.getTerritoryList().removeAll(archivedTerritories);
-
-        for (Territory territory : congregation.getTerritoryList()) {
 
             RegistryEntry registryEntry = new RegistryEntry();
             registryEntry.setAssignDate(Calendar.getInstance().getTime());
@@ -1072,7 +1013,10 @@ public class DatabaseService {
             preacher.setName(Congregation.CONGREGATION);
             registryEntry.setPreacher(preacher);
             territory.getRegistryEntryList().add(registryEntry);
+            saveTerritory(territory);
         }
+
+        saveCongregation(congregation);
     }
 
     public void fakeMonths(String number, Integer months) throws IOException {
@@ -1265,11 +1209,11 @@ public class DatabaseService {
 
         Congregation congregation = loadCongregation();
         resetTerritoryList(congregation);
-        List<Territory> territories = congregation.getTerritoryList();
+        List<Territory> territories = getTerritoryList();
         territories.forEach(territory -> {
             if (territory.isFtpExported()) return;
             try {
-                exportTerritoryData(territory.getNumber(), true);
+                exportTerritoryData(territory, true);
             } catch (Exception e) {
                 logger.error(e);
             }

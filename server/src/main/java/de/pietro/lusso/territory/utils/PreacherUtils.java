@@ -1,6 +1,5 @@
 package de.pietro.lusso.territory.utils;
 
-import de.pietro.lusso.territory.domain.Congregation;
 import de.pietro.lusso.territory.domain.Preacher;
 import org.apache.commons.lang3.StringUtils;
 

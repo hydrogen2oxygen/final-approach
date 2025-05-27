@@ -1,7 +1,6 @@
 package de.pietro.lusso.territory.utils;
 
 import de.pietro.lusso.territory.exceptions.CryptographyException;
-import de.pietro.lusso.territory.services.DatabaseService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

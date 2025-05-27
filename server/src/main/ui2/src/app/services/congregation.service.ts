@@ -108,4 +108,24 @@ export class CongregationService {
   returnTerritory(territory: Territory):Observable<Congregation> {
     return this.http.put<Congregation>(`${CongregationService.url}returnTerritory/${territory.number}`,null);
   }
+
+  saveTerritory(territory: Territory) {
+    const getCircularReplacer = () => {
+      const seen = new WeakSet();
+      return (key:any, value:any) => {
+        if (typeof value === "object" && value !== null) {
+          if (seen.has(value)) {
+            return;
+          }
+          seen.add(value);
+        }
+        return value;
+      };
+    };
+
+    let stringTerritory = JSON.stringify(territory, getCircularReplacer());
+    let uncycledTerritory = JSON.parse(stringTerritory);
+
+    return this.http.put<Territory>(`${CongregationService.url}territory`,uncycledTerritory);
+  }
 }
