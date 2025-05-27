@@ -8,9 +8,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up JDK 1.8
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: 8
@@ -25,7 +25,7 @@ jobs:
           cp updater/target/updater-2.0.0-jar-with-dependencies.jar finalApproach/launcher.jar;
           cp updater/target/updater-2.0.0-jar-with-dependencies.jar finalApproach/newlauncher.jar;
           cp scripts/start.bat finalApproach/;
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: final-approach-2.0.0
           path: finalApproach
