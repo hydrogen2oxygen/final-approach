@@ -22,28 +22,38 @@
   </button>
 </div>
 <hr>
-<div style="width: 50%">
-  <table class="table table-bordered table-sm table-striped table-dark">
-    <thead>
-    <tr><th>SHORT</th><th>NAME</th></tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let p of congregation.preacherList">
-      <td>{{p.shortName}}</td>
-      <td>{{p.name}}</td>
-    </tr>
-    </tbody>
-  </table>
-</div>
 
-Preachers {{
-congregation.preacherList.length
-}}
 <hr>
-<h3>Protocol:</h3>
-<ul>
-  <li *ngFor="let p of congregation.protocol.reverse()"><span class="badge text-bg-dark">{{p}}</span></li>
-</ul>
+<div class="collapseContainer collapseProtocol">
+  <h4 class="collapseHeader" data-bs-toggle="collapse" href="#preacher" role="button" aria-expanded="false" aria-controls="preacher">
+    PREACHER LIST
+  </h4>
+  <div class="collapse" id="preacher">
+    <div style="width: 50%">
+      <table class="table table-bordered table-sm table-striped table-dark">
+        <thead>
+        <tr><th>SHORT</th><th>NAME</th></tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let p of congregation.preacherList">
+          <td>{{p.shortName}}</td>
+          <td>{{p.name}}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="collapseContainer collapseProtocol">
+  <h4 class="collapseHeader" data-bs-toggle="collapse" href="#protocol" role="button" aria-expanded="false" aria-controls="protocol">
+    PROTOCOL
+  </h4>
+  <div class="collapse" id="protocol">
+    <ul>
+      <li *ngFor="let p of congregation.protocol.reverse()"><span class="badge text-bg-dark">{{p}}</span></li>
+    </ul>
+  </div>
+</div>
 
 <!-- Modal -->
 <div class="modal fade" id="preacherDetailsModal" tabindex="-1" aria-labelledby="preacherDetailsModal" aria-hidden="true">
