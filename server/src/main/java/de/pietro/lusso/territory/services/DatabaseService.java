@@ -102,7 +102,8 @@ public class DatabaseService {
                 }
                 if (territory.getDate() != null && time != territory.getDate().getTime()) {
                     try {
-                        saveTerritory(territory);
+                        persistTerritory(territory);
+                        logger.info("Updated territory " + territory.getNumber() + " with date " + territory.getDate());
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -147,8 +148,7 @@ public class DatabaseService {
             }
             if (!congregation.getTerritoryList().isEmpty()) {
                 for (Territory territory : congregation.getTerritoryList()) {
-                    File file = new File(territoriesFolder, territory.getNumber() + ".json");
-                    objectMapper.writeValue(file, territory);
+                    persistTerritory(territory);
                 }
                 congregation.getTerritoryList().clear();
                 saveCongregation(congregation);
@@ -446,11 +446,41 @@ public class DatabaseService {
 
     public void saveTerritory(Territory territory) throws IOException {
 
+        // repair stuff
+        if (territory.getUuid() == null) {
+            territory.setUuid(UUID.randomUUID());
+        }
+
+        setLastAssignedDate(territory);
+
+        // Export all territories assigned to a new preacher
+        try {
+            territory = exportTerritoryData(territory);
+            Preacher preacher = territory.getRegistryEntryList().get(territory.getRegistryEntryList().size() - 1).getPreacher();
+            preacher = getPreacherByName(preacher.getName());
+            if (!preacher.getTerritoryListNumbers().contains(territory.getNumber())) {
+                preacher.getTerritoryListNumbers().add(territory.getNumber());
+            }
+            exportDashboard(preacher);
+            territory.setFtpExported(true);
+        } catch (Exception e) {
+            territory.setFtpExported(false);
+            e.printStackTrace();
+        }
+
+        persistTerritory(territory);
+    }
+
+    public void persistTerritory(Territory territory) throws IOException {
+
+        while (territory.getRegistryEntryList().size() > 10) {
+            territory.getRegistryEntryList().remove(0);
+        }
         File file = new File(territoriesFolder, territory.getNumber() + ".json");
         objectMapper.writeValue(file, territory);
     }
 
-    public void exportDashboard(Congregation congregation, Preacher preacher) {
+    public void exportDashboard(Preacher preacher) {
 
         if (preacher.getUuid() == null) {
             preacher.setUuid(UUID.randomUUID());
@@ -792,9 +822,11 @@ public class DatabaseService {
         try {
             ftpService.upload(jsonFile);
             territory.setFtpExported(true);
-            saveTerritory(territory);
+            persistTerritory(territory);
         } catch (Exception e) {
             logger.error("FTP Upload of new territory failed", e);
+            territory.setFtpExported(false);
+            persistTerritory(territory);
             throw e;
         }
 

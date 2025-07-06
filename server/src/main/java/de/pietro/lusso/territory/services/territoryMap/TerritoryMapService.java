@@ -122,11 +122,11 @@ public class TerritoryMapService {
                 ResponseEntity<byte[]> response = restTemplate.getForEntity(dashboardUrl, byte[].class);
                 System.out.println(response.getStatusCode());
                 if (repairEverything) {
-                    databaseService.exportDashboard(congregation, preacher);
+                    databaseService.exportDashboard(preacher);
                 }
             } catch (Exception e) {
                 System.out.println("- Error fetching dashboard for preacher " + preacher.getName());
-                databaseService.exportDashboard(congregation, preacher);
+                databaseService.exportDashboard(preacher);
             }
         }
     }
