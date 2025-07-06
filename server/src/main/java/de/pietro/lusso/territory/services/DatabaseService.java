@@ -791,6 +791,8 @@ public class DatabaseService {
         // Upload via FTP
         try {
             ftpService.upload(jsonFile);
+            territory.setFtpExported(true);
+            saveTerritory(territory);
         } catch (Exception e) {
             logger.error("FTP Upload of new territory failed", e);
             throw e;
@@ -1215,8 +1217,6 @@ public class DatabaseService {
 
     public void reexportFailedTerritoryData() throws IOException {
 
-        Congregation congregation = loadCongregation();
-        resetTerritoryList(congregation);
         List<Territory> territories = getTerritoryList();
         territories.forEach(territory -> {
             if (territory.isFtpExported()) return;
