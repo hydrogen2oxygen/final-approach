@@ -135,9 +135,9 @@ public class CongregationAdapter {
     }
 
     @PutMapping("territory")
-    public Territory saveTerritory(@RequestBody Territory territory) throws IOException {
+    public void saveTerritory(@RequestBody Territory territory) throws IOException {
 
-        return databaseService.saveTerritory(territory);
+        databaseService.saveTerritory(territory);
     }
 
     @GetMapping("territory")

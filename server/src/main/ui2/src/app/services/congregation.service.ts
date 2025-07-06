@@ -126,6 +126,6 @@ export class CongregationService {
     let stringTerritory = JSON.stringify(territory, getCircularReplacer());
     let uncycledTerritory = JSON.parse(stringTerritory);
 
-    return this.http.put<Territory>(`${CongregationService.url}territory`,uncycledTerritory);
+    return this.http.put(`${CongregationService.url}territory`,uncycledTerritory);
   }
 }

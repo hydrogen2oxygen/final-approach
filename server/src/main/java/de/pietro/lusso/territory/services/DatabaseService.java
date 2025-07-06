@@ -84,9 +84,51 @@ public class DatabaseService {
         openDatabase(databaseName);
         makeCopyOfDatabase();
         databaseCorrection001_translateCongregationName();
-
         // Corrections for older versions of the database
         correctionVersion115();
+        correctionTerritoriesDate();
+    }
+
+    private void correctionTerritoriesDate() throws IOException {
+        getTerritoryList().parallelStream().forEach(territory -> {
+            if (!territory.getRegistryEntryList().isEmpty() && territory.getDate() != null) {
+                if (territory.getNumber().equals("1020")) {
+                    logger.info("Territory 1020 has a date " + territory.getDate());
+                }
+                final long time = territory.getDate().getTime();
+                sortRegistryEntryList(territory);
+                RegistryEntry lastEntry = territory.getRegistryEntryList().get(territory.getRegistryEntryList().size() - 1);
+                if (lastEntry.getReturnDate() != null) {
+                    territory.setDate(lastEntry.getReturnDate());
+                } else if (lastEntry.getAssignDate() != null) {
+                    territory.setDate(lastEntry.getAssignDate());
+                }
+                if (territory.getDate() != null && time != territory.getDate().getTime()) {
+                    try {
+                        saveTerritory(territory);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        });
+    }
+
+    public static void sortRegistryEntryList(Territory territory) {
+        territory.getRegistryEntryList().sort((o1, o2) -> {
+            int result = 0;
+            // sort by assignDate first, then by returnDate, in ascending order
+            if (o1.getAssignDate() != null && o2.getAssignDate() != null) {
+                result = o1.getAssignDate().compareTo(o2.getAssignDate());
+            } else if (o1.getReturnDate() != null && o2.getReturnDate() != null) {
+                result = o1.getReturnDate().compareTo(o2.getReturnDate());
+            } else if (o1.getAssignDate() != null) {
+                result = -1; // o1 comes first
+            } else if (o2.getAssignDate() != null) {
+                result = 1; // o2 comes first
+            }
+            return result;
+        });
     }
 
     /**
@@ -405,41 +447,10 @@ public class DatabaseService {
         return enhanceCongregationData(loadCongregation());
     }
 
-    public Territory saveTerritory(Territory territory) throws IOException {
+    public void saveTerritory(Territory territory) throws IOException {
 
-        // For handling preacher only
-        Congregation congregation = loadCongregation();
-
-        // repair stuff
-        if (territory.getUuid() == null) {
-            territory.setUuid(UUID.randomUUID());
-        }
-
-        setLastAssignedDate(territory);
-
-        // Export all territories assigned to a new preacher
-        try {
-            territory = exportTerritoryData(territory);
-            Preacher preacher = territory.getRegistryEntryList().get(territory.getRegistryEntryList().size() - 1).getPreacher();
-            preacher = getPreacherByName(preacher.getName());
-            if (!preacher.getTerritoryListNumbers().contains(territory.getNumber())) {
-                preacher.getTerritoryListNumbers().add(territory.getNumber());
-            }
-            exportDashboard(congregation, preacher);
-            territory.setFtpExported(true);
-        } catch (Exception e) {
-            territory.setFtpExported(false);
-            e.printStackTrace();
-        }
-
-        // limit the registry entries to 20
-        while (territory.getRegistryEntryList().size() > 20) {
-            territory.getRegistryEntryList().remove(0);
-        }
-
-        objectMapper.writeValue(new File(territoriesFolder, territory.getNumber() + ".json"), territory);
-
-        return territory;
+        File file = new File(territoriesFolder, territory.getNumber() + ".json");
+        objectMapper.writeValue(file, territory);
     }
 
     public void exportDashboard(Congregation congregation, Preacher preacher) {

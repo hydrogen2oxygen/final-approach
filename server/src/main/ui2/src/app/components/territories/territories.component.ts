@@ -110,6 +110,7 @@ export class TerritoriesComponent implements OnInit {
             this.territoriesToBeAssigned.push(t);
           } else if (new Date(t.date) < eightMonthsAgo) {
             this.territoriesOlder8Months.push(t);
+            console.log(t)
           } else if (new Date(t.date) < fourMonthsAgo) {
             this.territoriesOlder4Months.push(t);
           } else {
@@ -227,7 +228,7 @@ export class TerritoriesComponent implements OnInit {
 
     this.territory.registryEntryList.push(registryEntry);
     this.territory.newPreacherAssigned = true;
-    this.congregationService.saveTerritory(this.territory).subscribe((t: Territory) => {
+    this.congregationService.saveTerritory(this.territory).subscribe(() => {
       this.congregation.protocol.push(new Date().toLocaleString() + " - Territory " + this.territory.number + " - " + this.territory.name + " assigned to " + copyOfPreacher.name);
       if (this.congregation.protocol.length > 50) {
         this.congregation.protocol.shift();
@@ -339,14 +340,14 @@ export class TerritoriesComponent implements OnInit {
     date12.setDate(date12.getDate() - 365);
     let maxLength = 0
 
-    this.congregation.territoriesOlder8Months.forEach( (t,i) => {
+    this.territoriesOlder8Months.forEach( (t,i) => {
       let line = `${t.number} ${t.name}`
       if (maxLength < line.length) maxLength = line.length
     })
 
     console.log(maxLength)
 
-    this.congregation.territoriesOlder8Months.forEach( (t,i) => {
+    this.territoriesOlder8Months.forEach( (t,i) => {
       if (i > maxEntries) return
       let dateCurrent = new Date(t.date) // fix api problem
       if (dateCurrent.getTime() < date12.getTime()) {
