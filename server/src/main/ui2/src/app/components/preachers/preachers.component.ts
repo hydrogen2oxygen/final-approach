@@ -276,4 +276,9 @@ export class PreachersComponent implements OnInit {
     })
   }
 
+  registerTerritory(territory: Territory) {
+    this.congregationService.registerTerritory(territory.number).subscribe( () => {
+      this.toastr.info('Territory registered!','Territory Service')
+    });
+  }
 }

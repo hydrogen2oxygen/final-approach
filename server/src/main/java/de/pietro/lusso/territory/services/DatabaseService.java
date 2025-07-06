@@ -92,9 +92,6 @@ public class DatabaseService {
     private void correctionTerritoriesDate() throws IOException {
         getTerritoryList().parallelStream().forEach(territory -> {
             if (!territory.getRegistryEntryList().isEmpty() && territory.getDate() != null) {
-                if (territory.getNumber().equals("1020")) {
-                    logger.info("Territory 1020 has a date " + territory.getDate());
-                }
                 final long time = territory.getDate().getTime();
                 sortRegistryEntryList(territory);
                 RegistryEntry lastEntry = territory.getRegistryEntryList().get(territory.getRegistryEntryList().size() - 1);

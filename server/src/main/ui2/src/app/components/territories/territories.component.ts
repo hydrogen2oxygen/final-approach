@@ -110,7 +110,6 @@ export class TerritoriesComponent implements OnInit {
             this.territoriesToBeAssigned.push(t);
           } else if (new Date(t.date) < eightMonthsAgo) {
             this.territoriesOlder8Months.push(t);
-            console.log(t)
           } else if (new Date(t.date) < fourMonthsAgo) {
             this.territoriesOlder4Months.push(t);
           } else {
@@ -145,11 +144,11 @@ export class TerritoriesComponent implements OnInit {
             if (registryExist) this.visitedDuringLastYear = this.visitedDuringLastYear + 1
           })
 
-          this.notVisitedForOneYear = this.congregation.territoriesAssigned.length
-            + this.congregation.territoriesNoContacts.length
-            + this.congregation.territoriesOlder4Months.length
-            + this.congregation.territoriesOlder8Months.length
-            + this.congregation.territoriesToBeAssigned.length
+          this.notVisitedForOneYear = this.territoriesAssigned.length
+            + this.territoriesNoContacts.length
+            + this.territoriesOlder4Months.length
+            + this.territoriesOlder8Months.length
+            + this.territoriesToBeAssigned.length
             - this.visitedDuringLastYear;
 
           },1)
@@ -346,18 +345,25 @@ export class TerritoriesComponent implements OnInit {
     })
 
     console.log(maxLength)
+    let olderTerritories: Territory[] = []
 
     this.territoriesOlder8Months.forEach( (t,i) => {
       if (i > maxEntries) return
       let dateCurrent = new Date(t.date) // fix api problem
       if (dateCurrent.getTime() < date12.getTime()) {
-        let entry = `${t.number} ${t.name}`
-        if (maxLength - entry.length > 0) {
-          entry += ' '.repeat(maxLength - entry.length)
-        }
-        entry += `| ${t.registryEntryList[t.registryEntryList.length - 1].preacher.name}\n`
-        message += entry
+        olderTerritories.push(t)
       }
+    })
+
+    olderTerritories = olderTerritories.sort((a, b) => a.registryEntryList[a.registryEntryList.length -1].preacher.name.localeCompare(b.registryEntryList[b.registryEntryList.length -1].preacher.name));
+
+    olderTerritories.forEach((t, i) => {
+      let entry = `${t.number} ${t.name}`
+      if (maxLength - entry.length > 0) {
+        entry += ' '.repeat(maxLength - entry.length)
+      }
+      entry += `| ${t.registryEntryList[t.registryEntryList.length - 1].preacher.name}\n`
+      message += entry
     })
 
     message += "--------------------\n";

@@ -86,7 +86,7 @@ export class AppComponent {
       this.showSearch = false;
       return
     }
-    this.sharedService.search.next(this.searchField.value)
+    this.sharedService.search.next(this.searchField.value.trim())
   }
 
   checkVersion() {
