@@ -6,7 +6,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <revision>2.0.0</revision>
+        <revision>2.1.0</revision>
         <version.info>Improvements like Search and Repair Function, Dashboard</version.info>
     </properties>
 
