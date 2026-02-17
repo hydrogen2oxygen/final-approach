@@ -1,10 +1,10 @@
 {
-  "downloadPath": "https://github.com/hydrogen2oxygen/final-approach/releases/download/v2.1.0/final-approach-2.1.0.zip",
-  "currentVersion": "2.1.0",
-  "currentVersionInfo": "Bugfixes and improvements",
+  "downloadPath": "https://github.com/hydrogen2oxygen/final-approach/releases/download/v2.1.1/final-approach-2.1.1.zip",
+  "currentVersion": "2.1.1",
+  "currentVersionInfo": "Bugfix Save Territory Notes",
   "versionInfoDetailList": [
     {
-      "version": "2.1.0"
+      "version": "2.1.1"
     }
   ]
 }
