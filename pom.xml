@@ -6,8 +6,8 @@
     <packaging>pom</packaging>
 
     <properties>
-        <revision>2.1.0</revision>
-        <version.info>Improvements like Search and Repair Function, Dashboard</version.info>
+        <revision>2.1.1</revision>
+        <version.info>Bugfix Save Territory Notes</version.info>
     </properties>
 
     <version>${revision}</version>
