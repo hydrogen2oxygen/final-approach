@@ -256,20 +256,17 @@ export class TerritoriesComponent implements OnInit {
       this.territory.noContacts = this.noContacts.value;
     }
 
-    this.congregationService.saveCongregation(this.congregation).subscribe((c: Congregation) => {
-      this.congregation = c;
-      this.preacherList = c.preacherList;
-      this.loading = false;
-      if (this.territory == null) return;
-
-      if (this.territory.newPreacherAssigned) {
-        this.toastr.success('Territory ' + this.territory.number + " " + this.territory.name
-          + " exported successfully for "
-          + this.territory.registryEntryList[this.territory.registryEntryList.length -1].preacher.name, "Export Service");
+    this.congregationService.saveTerritory(this.territory).subscribe(() => {
+      this.congregation.protocol.push(new Date().toLocaleString() + " - Territory " + this.territory.number + " - " + this.territory.name + " saved");
+      if (this.congregation.protocol.length > 50) {
+        this.congregation.protocol.shift();
       }
+      this.toastr.success('Territory ' + this.territory.number + " " + this.territory.name
+        + " saved successfully!", "Territory Service");
+      this.reloadCongregation()
+      this.loading = false
+    });
 
-      this.territory = null;
-    })
   }
 
   deleteTerritory(number: string) {
