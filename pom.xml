@@ -7,7 +7,7 @@
 
     <properties>
         <revision>2.2.0</revision>
-        <version.info>Bugfix Save Territory Notes</version.info>
+        <version.info>Change Preacher Name</version.info>
     </properties>
 
     <version>${revision}</version>
