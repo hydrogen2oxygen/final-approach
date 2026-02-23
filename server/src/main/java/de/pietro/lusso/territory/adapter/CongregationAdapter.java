@@ -79,6 +79,13 @@ public class CongregationAdapter {
         return msg;
     }
 
+    @PutMapping("preacher/{oldName}/{newName}")
+    public Congregation changePreacherName(@PathVariable String oldName, @PathVariable String newName) throws Exception {
+        Congregation congregation = databaseService.changePreacherName(oldName, newName);
+        logger.info("Preacher Name changed from " + oldName + " to " + newName + "!");
+        return congregation;
+    }
+
     @PostMapping("exportDatabase")
     public void exportDatabase() {
         databaseService.exportDatabase();

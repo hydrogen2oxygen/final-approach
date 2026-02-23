@@ -40,6 +40,11 @@ export class CongregationService {
       return this.http.post<Message>(`${CongregationService.url}registerTerritory/${territoryNumber}`,null);
   }
 
+  changePreacherName(oldName:string, newName:string):Observable<Congregation> {
+
+    return this.http.put<Congregation>(`${CongregationService.url}preacher/${oldName}/${newName}`,null);
+  }
+
   exportDatabase():Observable<void> {
     return this.http.post<void>(`${CongregationService.url}exportDatabase`,null);
   }

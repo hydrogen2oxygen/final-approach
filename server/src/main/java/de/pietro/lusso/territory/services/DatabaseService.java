@@ -1275,4 +1275,31 @@ public class DatabaseService {
     public ObjectMapper getObjectMapper() {
         return objectMapper;
     }
+
+    public Congregation changePreacherName(String oldName, String newName) throws Exception {
+        Congregation congregation = loadCongregation();
+        congregation.getPreacherList().forEach(preacher -> {
+            if (preacher.getName().equals(oldName)) {
+                preacher.setName(newName);
+            }
+        });
+        saveCongregation(congregation);
+
+        List<Territory> territories = getTerritoryList();
+        territories.forEach(territory -> {
+            if (!territory.getRegistryEntryList().isEmpty()) {
+                RegistryEntry lastEntry = territory.getRegistryEntryList().get(territory.getRegistryEntryList().size() - 1);
+                if (lastEntry.getPreacher().getName().equals(oldName)) {
+                    lastEntry.getPreacher().setName(newName);
+                    try {
+                        saveTerritory(territory);
+                    } catch (IOException e) {
+                        logger.error(e);
+                    }
+                }
+            }
+        });
+
+        return congregation;
+    }
 }

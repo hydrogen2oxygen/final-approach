@@ -21,6 +21,7 @@ export class PreachersComponent implements OnInit {
   preacher: Preacher | null = null;
   settings: Settings | null = null;
   newPreacherName = new FormControl('');
+  newPreacherNameChange = new FormControl('');
   notes = new FormControl('');
   datepipe: DatePipe = new DatePipe('en-US');
   monthsBefore4: Date = new Date();
@@ -224,6 +225,7 @@ export class PreachersComponent implements OnInit {
     this.territoryUrl = null;
     this.selectedTerritoryNumber = null;
     this.preacher = preacher;
+    this.newPreacherNameChange.setValue(preacher.name)
     this.territories = [];
     preacher.territoryListNumbers.forEach(n => {
       let territory = this.getTerritoryByNumber(n);
@@ -280,5 +282,15 @@ export class PreachersComponent implements OnInit {
     this.congregationService.registerTerritory(territory.number).subscribe( () => {
       this.toastr.info('Territory registered!','Territory Service')
     });
+  }
+
+  protected saveNewNameOfPreacher() {
+    if (this.newPreacherNameChange.value) {
+      this.loading = true
+      this.congregationService.changePreacherName(this.preacher.name, this.newPreacherNameChange.value).subscribe( congregation => {
+        this.congregation = congregation
+        this.loading = false
+      })
+    }
   }
 }

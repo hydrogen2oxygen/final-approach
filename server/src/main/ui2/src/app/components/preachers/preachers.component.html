@@ -57,7 +57,7 @@
 
 <!-- Modal -->
 <div class="modal fade" id="preacherDetailsModal" tabindex="-1" aria-labelledby="preacherDetailsModal" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-body" *ngIf="preacher">
 
@@ -78,10 +78,29 @@
       <div class="modal-footer" *ngIf="preacher">
         <button class="btn btn-primary btn-sm" (click)="getWhatsAppMessage(preacher)" data-bs-toggle="modal" data-bs-target="#preacherDetailsModal">Copy WhatsAppMessage</button>
         <!--<button class="btn btn-success btn-sm" style="margin-left: 0.1rem" (click)="addGroupMember(p)">Add Group Member</button>-->
+        <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#changePreacherNameModal">Change Name</button>
         <button class="btn btn-danger btn-sm" style="margin-left: 0.1rem" (click)="deletePreacher(preacher)">Delete {{preacher.name}}</button>
         <button *ngIf="preacher.softdelete" class="btn btn-danger btn-sm" style="margin-left: 0.1rem"
                 (click)="harddeletePreacher(preacher)" data-bs-toggle="modal" data-bs-target="#preacherDetailsModal">Delete {{preacher.name}} for real!!!
         </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="changePreacherNameModal" tabindex="-1" aria-labelledby="changePreacherNameModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-body" *ngIf="preacher">
+
+        <h3 class="text-dark">Change the Name of the Preacher</h3>
+        <p>A name change will only affect the current set of registry, not the historical data.</p>
+        Current name is {{preacher.name}}
+        <input type="text" class="form-control" placeholder="New Preacher Full Name" aria-label="New Preacher Full Name" aria-describedby="button-Preacher" [formControl]="newPreacherNameChange">
+        <div class="modal-footer" *ngIf="preacher">
+          <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#changePreacherNameModal" (click)="saveNewNameOfPreacher()">Save New Name</button>
+          <button class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#changePreacherNameModal">Cancel</button>
+        </div>
       </div>
     </div>
   </div>
